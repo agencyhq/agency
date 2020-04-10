@@ -6,7 +6,9 @@
   "scripts": {
     "test": "mocha tests/**/test_*.js",
     "lint": "eslint .",
-    "server": "node index.js"
+    "sensor": "node sensor.js",
+    "ruleengine": "node ruleengine.js",
+    "actionrunner": "node actionrunner.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,7 @@
   },
   "homepage": "https://github.com/enykeev/ifttt#readme",
   "dependencies": {
+    "amqplib": "^0.5.5",
     "axios": "^0.19.2",
     "chai": "^4.2.0",
     "express": "^4.17.1",
