@@ -8,7 +8,8 @@
     "lint": "eslint .",
     "sensor": "node sensor.js",
     "ruleengine": "node ruleengine.js",
-    "actionrunner": "node actionrunner.js"
+    "actionrunner": "node actionrunner.js",
+    "service": "pm2 start ecosystem.yaml --no-daemon"
   },
   "repository": {
     "type": "git",
@@ -25,7 +26,8 @@
     "axios": "^0.19.2",
     "chai": "^4.2.0",
     "express": "^4.17.1",
-    "mocha": "^7.1.1"
+    "mocha": "^7.1.1",
+    "pm2": "^4.2.3"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
