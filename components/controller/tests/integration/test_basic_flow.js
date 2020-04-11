@@ -2,7 +2,7 @@ const axios = require('axios').default
 const expect = require('chai').expect
 const express = require('express')
 
-describe('Sensor', () => {
+describe('Server', () => {
   const client = axios.create({
     baseURL: 'http://localhost:3000'
   })
@@ -12,6 +12,12 @@ describe('Sensor', () => {
       const resp = await client.get('/')
       expect(resp.data).to.equal('Hello World')
     })
+  })
+})
+
+describe('Sensor', () => {
+  const client = axios.create({
+    baseURL: 'http://localhost:3001'
   })
 
   describe('#/http', () => {
@@ -24,7 +30,7 @@ describe('Sensor', () => {
 
 describe('E2E', () => {
   const client = axios.create({
-    baseURL: 'http://localhost:3000'
+    baseURL: 'http://localhost:3001'
   })
 
   const app = express()
@@ -32,7 +38,7 @@ describe('E2E', () => {
 
   beforeEach(() => {
     app.use(express.json())
-    server = app.listen(3001)
+    server = app.listen(3002)
   })
 
   afterEach(() => {
@@ -49,7 +55,7 @@ describe('E2E', () => {
 
     const event = {
       type: 'e2e',
-      url: 'http://localhost:3001/fakeEndpoint',
+      url: 'http://localhost:3002/fakeEndpoint',
       payload: { a: 'b' }
     }
 

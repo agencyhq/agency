@@ -3,7 +3,7 @@ const axios = require('axios').default
 const pubsub = require('./pubsub')
 
 function httpAction (execution) {
-  axios.post(execution.url, execution.payload)
+  return axios.post(execution.url, execution.payload)
 }
 
 const ACTIONS = {
@@ -11,16 +11,27 @@ const ACTIONS = {
 }
 
 ;(async () => {
-  await pubsub.execution.init()
+  await pubsub.init()
 
-  pubsub.execution.subscribe('some', msg => {
+  pubsub.subscribe('execution', async msg => {
     const execution = JSON.parse(msg.content.toString())
-    console.log(" [actionexecutor] %s:'%s'", msg.fields.routingKey, execution)
+    console.log('%s:%s', msg.fields.routingKey, execution.id)
 
     const action = ACTIONS[execution.action]
-    if (action) {
-      action(execution)
-      pubsub.execution.channel.ack(msg)
+    if (!action) {
+      return
     }
+
+    const promise = action(execution)
+    pubsub.channel.ack(msg)
+
+    const result = await promise
+
+    delete result.request
+
+    pubsub.publish('result', {
+      id: execution.id,
+      result
+    })
   })
 })()

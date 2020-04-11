@@ -26,13 +26,7 @@ class PubSub {
   }
 }
 
-module.exports = {
-  trigger: new PubSub('trigger_instance', 'topic', {
-    durable: true,
-    autoDelete: true
-  }),
-  execution: new PubSub('execution', 'topic', {
-    durable: true,
-    autoDelete: true
-  })
-}
+module.exports = new PubSub('data', 'topic', {
+  durable: true,
+  autoDelete: true
+})

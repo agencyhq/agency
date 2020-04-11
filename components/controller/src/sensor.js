@@ -1,29 +1,25 @@
+const crypto = require('crypto')
 const express = require('express')
 
 const pubsub = require('./pubsub')
 
 // Server
 ;(async () => {
-  await pubsub.trigger.init()
+  await pubsub.init()
 
   const app = express()
 
   app.use(express.json())
 
-  app.get('/', (req, res) => {
-    res.send('Hello World')
-  })
-
   app.post('/http', async (req, res) => {
-    const data = {
-      trigger: {
-        type: 'http',
-        event: req.body
-      }
+    const trigger = {
+      id: crypto.randomBytes(16).toString('hex'),
+      type: 'http',
+      event: req.body
     }
-    pubsub.trigger.publish('some', data)
+    pubsub.publish('trigger', trigger)
     res.send('OK')
   })
 
-  app.listen(3000)
+  app.listen(3001)
 })()

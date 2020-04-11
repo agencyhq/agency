@@ -1,8 +1,11 @@
+const crypto = require('crypto')
 const pubsub = require('./pubsub')
 
 const RULES = [{
   if: trigger => trigger.type === 'http' && trigger.event.type === 'e2e',
   then: trigger => ({
+    id: crypto.randomBytes(16).toString('hex'),
+    triggered_by: trigger.id,
     action: 'http',
     url: trigger.event.url,
     payload: trigger.event.payload
@@ -10,20 +13,19 @@ const RULES = [{
 }]
 
 ;(async () => {
-  await pubsub.trigger.init()
-  await pubsub.execution.init()
+  await pubsub.init()
 
-  await pubsub.trigger.subscribe('some', msg => {
-    const { trigger } = JSON.parse(msg.content.toString())
-    console.log(" [ruleengine] %s:'%s'", msg.fields.routingKey, trigger)
+  await pubsub.subscribe('trigger', msg => {
+    const trigger = JSON.parse(msg.content.toString())
+    console.log('%s:%s', msg.fields.routingKey, trigger.id)
 
     RULES.forEach(rule => {
       if (rule.if(trigger)) {
         const execution = rule.then(trigger)
-        pubsub.execution.publish('some', execution)
+        pubsub.publish('execution', execution)
       }
     })
 
-    pubsub.trigger.channel.ack(msg)
+    pubsub.channel.ack(msg)
   })
 })()
