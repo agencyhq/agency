@@ -1,19 +1,10 @@
 const express = require('express')
-const amqp = require('amqplib')
 
-const constants = require('./const')
+const pubsub = require('./pubsub')
 
 // Server
 ;(async () => {
-  const {
-    TRIGGER_EXCHANGE_NAME,
-    TRIGGER_EXCHANGE_TYPE,
-    TRIGGER_EXCHANGE_OPTION
-  } = constants
-
-  const conn = await amqp.connect('amqp://localhost')
-  const channel = await conn.createChannel()
-  await channel.assertExchange(TRIGGER_EXCHANGE_NAME, TRIGGER_EXCHANGE_TYPE, TRIGGER_EXCHANGE_OPTION)
+  await pubsub.trigger.init()
 
   const app = express()
 
@@ -30,7 +21,7 @@ const constants = require('./const')
         event: req.body
       }
     }
-    channel.publish(TRIGGER_EXCHANGE_NAME, 'some', Buffer.from(JSON.stringify(data)))
+    pubsub.trigger.publish('some', data)
     res.send('OK')
   })
 
