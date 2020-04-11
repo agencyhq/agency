@@ -2,14 +2,14 @@ const crypto = require('crypto')
 const pubsub = require('../pubsub')
 
 const RULES = [{
-  if: trigger => trigger.type === 'http' && trigger.event.type === 'e2e',
+  if: trigger => trigger.type === 'http' && trigger.event.body.type === 'e2e',
   then: trigger => ({
     id: crypto.randomBytes(16).toString('hex'),
     triggered_by: trigger.id,
     action: 'http',
     parameters: {
-      url: trigger.event.url,
-      payload: trigger.event.payload
+      url: trigger.event.body.url,
+      payload: trigger.event.body.payload
     }
   })
 }]

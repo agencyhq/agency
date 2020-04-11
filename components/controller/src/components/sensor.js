@@ -11,11 +11,16 @@ async function main () {
 
   app.use(express.json())
 
-  app.post('/http', async (req, res) => {
+  app.post('*', async (req, res) => {
     const trigger = {
       id: crypto.randomBytes(16).toString('hex'),
       type: 'http',
-      event: req.body
+      event: {
+        path: req.path,
+        headers: req.headers,
+        query: req.query,
+        body: req.body
+      }
     }
     pubsub.publish('trigger', trigger)
     res.send('OK')
