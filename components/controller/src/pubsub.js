@@ -20,13 +20,13 @@ class PubSub {
   }
 
   async subscribe (key, fn) {
-    const q = await this.channel.assertQueue('', { exclusive: true })
+    const q = await this.channel.assertQueue(key)
     this.channel.bindQueue(q.queue, this.exchange, key)
     this.channel.consume(q.queue, fn)
   }
 }
 
-module.exports = new PubSub('data', 'topic', {
+module.exports = new PubSub('ifttt', 'topic', {
   durable: true,
   autoDelete: true
 })

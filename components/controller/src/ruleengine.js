@@ -7,8 +7,10 @@ const RULES = [{
     id: crypto.randomBytes(16).toString('hex'),
     triggered_by: trigger.id,
     action: 'http',
-    url: trigger.event.url,
-    payload: trigger.event.payload
+    parameters: {
+      url: trigger.event.url,
+      payload: trigger.event.payload
+    }
   })
 }]
 

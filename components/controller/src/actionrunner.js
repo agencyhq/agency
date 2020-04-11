@@ -3,7 +3,8 @@ const axios = require('axios').default
 const pubsub = require('./pubsub')
 
 function httpAction (execution) {
-  return axios.post(execution.url, execution.payload)
+  const { url, payload } = execution.parameters
+  return axios.post(url, payload)
 }
 
 const ACTIONS = {

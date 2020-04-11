@@ -1,4 +1,8 @@
 apps:
+  - name: 'Database migration'
+    script: 'knex migrate:latest'
+    autorestart: false
+    watch: true
   - name: 'HTTP Sensor'
     script: 'src/sensor.js'
     instances: 1
@@ -31,7 +35,7 @@ apps:
       NODE_ENV: 'production'
   - name: 'API Server'
     script: 'src/api.js'
-    instances: 1
+    instances: 2
     autorestart: true
     watch: true
     max_memory_restart: '1G'
