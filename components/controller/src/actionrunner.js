@@ -3,28 +3,35 @@ const axios = require('axios').default
 
 const constants = require('./const')
 
-const {
-  EXEC_EXCHANGE_NAME,
-  EXEC_EXCHANGE_TYPE,
-  EXEC_EXCHANGE_OPTION
-} = constants
+function httpAction (execution) {
+  axios.post(execution.url, execution.payload)
+}
+
+const ACTIONS = {
+  http: httpAction
+}
 
 ;(async () => {
+  const {
+    EXEC_EXCHANGE_NAME,
+    EXEC_EXCHANGE_TYPE,
+    EXEC_EXCHANGE_OPTION
+  } = constants
+
   const conn = await amqp.connect('amqp://localhost')
   const channel = await conn.createChannel()
-  const q = await channel.assertQueue('', { exclusive: true })
   await channel.assertExchange(EXEC_EXCHANGE_NAME, EXEC_EXCHANGE_TYPE, EXEC_EXCHANGE_OPTION)
 
+  const q = await channel.assertQueue('', { exclusive: true })
   channel.bindQueue(q.queue, EXEC_EXCHANGE_NAME, 'some')
-
   channel.consume(q.queue, msg => {
     const execution = JSON.parse(msg.content.toString())
     console.log(" [actionexecutor] %s:'%s'", msg.fields.routingKey, execution)
 
-    if (execution.action === 'http') {
-      axios.post(execution.url, execution.payload)
+    const action = ACTIONS[execution.action]
+    if (action) {
+      action(execution)
+      channel.ack(msg)
     }
-
-    channel.ack(msg)
   })
 })()

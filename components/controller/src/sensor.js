@@ -3,14 +3,14 @@ const amqp = require('amqplib')
 
 const constants = require('./const')
 
-const {
-  TRIGGER_EXCHANGE_NAME,
-  TRIGGER_EXCHANGE_TYPE,
-  TRIGGER_EXCHANGE_OPTION
-} = constants
-
 // Server
 ;(async () => {
+  const {
+    TRIGGER_EXCHANGE_NAME,
+    TRIGGER_EXCHANGE_TYPE,
+    TRIGGER_EXCHANGE_OPTION
+  } = constants
+
   const conn = await amqp.connect('amqp://localhost')
   const channel = await conn.createChannel()
   await channel.assertExchange(TRIGGER_EXCHANGE_NAME, TRIGGER_EXCHANGE_TYPE, TRIGGER_EXCHANGE_OPTION)
