@@ -6,7 +6,7 @@ const pubsub = require('./pubsub')
 const models = require('./models')
 
 // Server
-;(async () => {
+async function main () {
   await pubsub.init()
 
   pubsub.subscribe('*', async msg => {
@@ -50,4 +50,7 @@ const models = require('./models')
   })
 
   app.listen(3000)
-})()
+}
+
+main()
+  .catch(e => console.error(e))

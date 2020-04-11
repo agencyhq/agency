@@ -14,7 +14,7 @@ const RULES = [{
   })
 }]
 
-;(async () => {
+async function main () {
   await pubsub.init()
 
   await pubsub.subscribe('trigger', msg => {
@@ -30,4 +30,7 @@ const RULES = [{
 
     pubsub.channel.ack(msg)
   })
-})()
+}
+
+main()
+  .catch(e => console.error(e))

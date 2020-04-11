@@ -11,7 +11,7 @@ const ACTIONS = {
   http: httpAction
 }
 
-;(async () => {
+async function main () {
   await pubsub.init()
 
   pubsub.subscribe('execution', async msg => {
@@ -35,4 +35,7 @@ const ACTIONS = {
       result
     })
   })
-})()
+}
+
+main()
+  .catch(e => console.error(e))

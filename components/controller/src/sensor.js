@@ -4,7 +4,7 @@ const express = require('express')
 const pubsub = require('./pubsub')
 
 // Server
-;(async () => {
+async function main () {
   await pubsub.init()
 
   const app = express()
@@ -22,4 +22,7 @@ const pubsub = require('./pubsub')
   })
 
   app.listen(3001)
-})()
+}
+
+main()
+  .catch(e => console.error(e))
