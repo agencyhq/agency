@@ -1,5 +1,8 @@
 const crypto = require('crypto')
+const log = require('loglevel')
 const pubsub = require('../pubsub')
+
+log.setLevel(process.env.LOG_LEVEL || 'info')
 
 const RULES = [{
   if: trigger => trigger.type === 'http' && trigger.event.body.type === 'e2e',
@@ -19,10 +22,11 @@ async function main () {
 
   await pubsub.subscribe('trigger', msg => {
     const trigger = JSON.parse(msg.content.toString())
-    console.log('%s:%s', msg.fields.routingKey, trigger.id)
+    log.info('processing %s: %s', msg.fields.routingKey, trigger.id)
 
     RULES.forEach(rule => {
       if (rule.if(trigger)) {
+        log.info('found match for %s: %s', msg.fields.routingKey, trigger.id)
         const execution = rule.then(trigger)
         pubsub.publish('execution', execution)
       }

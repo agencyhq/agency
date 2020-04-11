@@ -1,9 +1,12 @@
 const util = require('util')
 
 const express = require('express')
+const log = require('loglevel')
 
 const pubsub = require('../pubsub')
 const models = require('../models')
+
+log.setLevel(process.env.LOG_LEVEL || 'info')
 
 const router = express.Router()
 
@@ -19,6 +22,7 @@ router.get('/executions', async (req, res) => {
     .map(execution => {
       return {
         ...execution.serialize(),
+        status: execution.relations.result.get('status'),
         result: execution.relations.result.get('result')
       }
     })
@@ -28,7 +32,7 @@ router.get('/executions', async (req, res) => {
 
 async function handleMessages (msg) {
   const message = JSON.parse(msg.content.toString())
-  console.log('%s:%s', msg.fields.routingKey, util.inspect(message))
+  log.debug('%s:%s', msg.fields.routingKey, util.inspect(message))
 
   if (msg.fields.routingKey === 'execution') {
     const mod = models.Executions.forge(message)
