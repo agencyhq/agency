@@ -1,5 +1,5 @@
 const crypto = require('crypto')
-const pubsub = require('./pubsub')
+const pubsub = require('../pubsub')
 
 const RULES = [{
   if: trigger => trigger.type === 'http' && trigger.event.type === 'e2e',

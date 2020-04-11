@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 const express = require('express')
 
-const pubsub = require('./pubsub')
+const pubsub = require('../pubsub')
 
 // Server
 async function main () {

@@ -4,7 +4,7 @@ apps:
     autorestart: false
     watch: true
   - name: 'HTTP Sensor'
-    script: 'src/sensor.js'
+    script: 'src/components/sensor.js'
     instances: 1
     autorestart: true
     watch: true
@@ -14,7 +14,7 @@ apps:
     env_production:
       NODE_ENV: 'production'
   - name: 'Rule Engine'
-    script: 'src/ruleengine.js'
+    script: 'src/components/ruleengine.js'
     instances: 1
     autorestart: true
     watch: true
@@ -24,7 +24,7 @@ apps:
     env_production:
       NODE_ENV: 'production'
   - name: 'HTTP Action Runner'
-    script: 'src/actionrunner.js'
+    script: 'src/components/actionrunner.js'
     instances: 1
     autorestart: true
     watch: true
@@ -34,7 +34,7 @@ apps:
     env_production:
       NODE_ENV: 'production'
   - name: 'API Server'
-    script: 'src/api.js'
+    script: 'src/components/api.js'
     instances: 2
     autorestart: true
     watch: true

@@ -2,8 +2,8 @@ const util = require('util')
 
 const express = require('express')
 
-const pubsub = require('./pubsub')
-const models = require('./models')
+const pubsub = require('../pubsub')
+const models = require('../models')
 
 // Server
 async function main () {

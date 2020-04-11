@@ -1,6 +1,6 @@
 const axios = require('axios').default
 
-const pubsub = require('./pubsub')
+const pubsub = require('../pubsub')
 
 function httpAction (execution) {
   const { url, payload } = execution.parameters
