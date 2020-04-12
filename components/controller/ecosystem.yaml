@@ -1,13 +1,18 @@
 apps:
   - name: 'Database migration'
-    script: 'knex migrate:latest'
+    script: 'knex'
+    args: 'migrate:latest'
     autorestart: false
-    watch: true
+    watch: ['migrations']
+  - name: 'Web UI'
+    script: 'parcel'
+    args: 'web/index.html'
+    autorestart: true
   - name: 'HTTP Sensor'
     script: 'src/components/sensor.js'
     instances: 1
     autorestart: true
-    watch: true
+    watch: ['src']
     max_memory_restart: '1G'
     env:
       NODE_ENV: 'development'
@@ -17,7 +22,7 @@ apps:
     script: 'src/components/ruleengine.js'
     instances: 1
     autorestart: true
-    watch: true
+    watch: ['src']
     max_memory_restart: '1G'
     env:
       NODE_ENV: 'development'
@@ -27,7 +32,7 @@ apps:
     script: 'src/components/actionrunner.js'
     instances: 1
     autorestart: true
-    watch: true
+    watch: ['src']
     max_memory_restart: '1G'
     env:
       NODE_ENV: 'development'
@@ -37,7 +42,7 @@ apps:
     script: 'src/components/api.js'
     instances: 2
     autorestart: true
-    watch: true
+    watch: ['src']
     max_memory_restart: '1G'
     env:
       NODE_ENV: 'development'

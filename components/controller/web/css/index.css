@@ -1,0 +1,45 @@
+@import './skeuos.css';
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.executions {
+  width: 500px;
+  margin: 0 auto;
+}
+
+.execution {
+
+}
+
+.execution_name {
+  font-weight: bold;
+}
+
+.execution_parameters {
+  font-family: 'PT Mono';
+  font-size: .8em;
+  line-height: 1.4em;
+
+  white-space: pre;
+  cursor: auto;
+  user-select: text;
+}
+
+@font-face {
+  font-family: 'PT Sans';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("PT Sans"), local("PTSans"), url(PTSans-Regular.ttf);
+}
+
+@font-face {
+  font-family: 'PT Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("PT Mono"), local("PTMono"), url(PTMono-Regular.ttf);
+}

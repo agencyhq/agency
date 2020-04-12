@@ -9,7 +9,7 @@
     "sensor": "node sensor.js",
     "ruleengine": "node ruleengine.js",
     "actionrunner": "node actionrunner.js",
-    "service": "pm2 start ecosystem.yaml --no-daemon"
+    "service": "pm2 kill && pm2 start ecosystem.yaml --no-daemon"
   },
   "repository": {
     "type": "git",
@@ -22,24 +22,35 @@
   },
   "homepage": "https://github.com/enykeev/ifttt#readme",
   "dependencies": {
+    "@babel/runtime": "^7.9.2",
     "amqplib": "^0.5.5",
     "axios": "^0.19.2",
     "bookshelf": "^1.1.1",
+    "cors": "^2.8.5",
     "knex": "^0.20.13",
     "loglevel": "^1.6.7",
     "mocha": "^7.1.1",
-    "pg": "^8.0.2"
+    "pg": "^8.0.2",
+    "prop-types": "^15.7.2",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-redux": "^7.2.0",
+    "redux": "^4.0.5"
   },
   "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-transform-runtime": "^7.9.0",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-standard": "^4.0.1",
     "express": "^4.17.1",
     "mocha": "^7.1.1",
+    "parcel-bundler": "^1.12.4",
     "pm2": "^4.2.3"
   }
 }

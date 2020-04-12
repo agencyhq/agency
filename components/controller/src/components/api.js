@@ -1,5 +1,6 @@
 const util = require('util')
 
+const cors = require('cors')
 const express = require('express')
 const log = require('loglevel')
 
@@ -52,8 +53,9 @@ async function main () {
   pubsub.subscribe('*', handleMessages)
 
   const app = express()
-  app.use(express.json())
 
+  app.use(cors())
+  app.use(express.json())
   app.use(router)
 
   app.listen(3000)
