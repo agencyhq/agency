@@ -1,0 +1,107 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER: ifttt
+      POSTGRES_PASSWORD: mypassword
+    networks:
+      - db
+  mq:
+    image: rabbitmq:3.8
+    networks:
+      - mq
+  http:
+    image: lucaslorentz/caddy-docker-proxy:alpine
+    command: -log stdout
+    environment:
+      CADDY_DOCKER_LABEL_PREFIX: ifttt
+    ports:
+      - 2015:2015
+      - 80:80
+    networks:
+      - http
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+
+  api:
+    build: .
+    image: enykeev/ifttt:latest
+    command: pm2-runtime ecosystem.yaml --only "migration,api"
+    environment:
+      NODE_ENV: staging
+      WAIT_MQ: 1
+      WAIT_DB: 1
+      PG_CONNECTION_STRING: postgres://ifttt:mypassword@db/ifttt
+      AMQP_CONNECTION_STRING: amqp://mq
+    restart: unless-stopped
+    depends_on:
+      - db
+      - mq
+    networks:
+      - http
+      - db
+      - mq
+    labels:
+      - ifttt_1.address=http://localhost/
+      - ifttt_1.proxy.except=/
+      - ifttt_1.root=/app/dist
+      - ifttt_2.address=http://localhost/api
+      - ifttt_2.targetport=3000
+
+  sensor:
+    build: .
+    image: enykeev/ifttt:latest
+    command: pm2-runtime ecosystem.yaml --only sensor_http
+    environment:
+      NODE_ENV: staging
+      WAIT_MQ: 1
+      AMQP_CONNECTION_STRING: amqp://mq
+    restart: unless-stopped
+    depends_on:
+      - mq
+    networks:
+      - http
+      - mq
+    labels:
+      - ifttt.address=http://localhost/sensor
+      - ifttt.targetport=3001
+
+  actionrunner:
+    build: .
+    image: enykeev/ifttt:latest
+    command: pm2-runtime ecosystem.yaml --only actionrunner_http
+    environment:
+      NODE_ENV: staging
+      WAIT_MQ: 1
+      AMQP_CONNECTION_STRING: amqp://mq
+    restart: unless-stopped
+    depends_on:
+      - mq
+    networks:
+      - mq
+
+  ruleengine:
+    build: .
+    image: enykeev/ifttt:latest
+    command: pm2-runtime ecosystem.yaml --only ruleengine
+    environment:
+      NODE_ENV: staging
+      WAIT_MQ: 1
+      AMQP_CONNECTION_STRING: amqp://mq
+    restart: unless-stopped
+    depends_on:
+      - mq
+    networks:
+      - mq
+
+networks:
+  db:
+  mq:
+  http:

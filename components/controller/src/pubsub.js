@@ -9,7 +9,7 @@ class PubSub {
 
   async init () {
     if (!this.channel) {
-      this.conn = await amqp.connect('amqp://localhost')
+      this.conn = await amqp.connect(process.env.AMQP_CONNECTION_STRING || 'amqp://localhost')
       this.channel = await this.conn.createChannel()
       await this.channel.assertExchange(this.exchange, this.exchangeType, this.exchangeOpts)
     }

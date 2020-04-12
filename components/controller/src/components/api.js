@@ -3,6 +3,7 @@ const util = require('util')
 const cors = require('cors')
 const express = require('express')
 const log = require('loglevel')
+const morgan = require('morgan')
 
 const pubsub = require('../pubsub')
 const models = require('../models')
@@ -56,10 +57,14 @@ async function main () {
 
   app.use(cors())
   app.use(express.json())
+  app.use(morgan('combined'))
   app.use(router)
 
   app.listen(3000)
 }
 
 main()
-  .catch(e => console.error(e))
+  .catch(e => {
+    log.error(e)
+    process.exit(1)
+  })

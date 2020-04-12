@@ -1,9 +1,12 @@
 const crypto = require('crypto')
+
 const express = require('express')
+const log = require('loglevel')
 
 const pubsub = require('../pubsub')
 
-// Server
+log.setLevel(process.env.LOG_LEVEL || 'info')
+
 async function main () {
   await pubsub.init()
 
@@ -30,4 +33,7 @@ async function main () {
 }
 
 main()
-  .catch(e => console.error(e))
+  .catch(e => {
+    log.error(e)
+    process.exit(1)
+  })

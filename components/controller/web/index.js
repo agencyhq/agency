@@ -11,7 +11,7 @@ require('./css/index.css')
 async function fetchExecutions () {
   store.dispatch({ type: 'EXECUTION_FETCH', status: 'pending' })
   try {
-    const res = await fetch('http://localhost:3000/executions')
+    const res = await fetch('/api/executions')
     const data = await res.json()
     store.dispatch({ type: 'EXECUTION_FETCH', status: 'success', data })
   } catch (error) {
@@ -22,7 +22,7 @@ async function fetchExecutions () {
 function App () {
   React.useEffect(() => {
     fetchExecutions()
-  })
+  }, [])
 
   const executions = useSelector(state => {
     return state.executions
