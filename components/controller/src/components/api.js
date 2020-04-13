@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
 
 router.get('/executions', async (req, res) => {
   const collection = await models.Executions
+    .query(q => q.orderBy('created_at', 'DESC'))
     .fetchAll({
       withRelated: ['result']
     })

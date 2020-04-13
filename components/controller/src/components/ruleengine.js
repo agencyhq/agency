@@ -20,6 +20,7 @@ const RULES = [{
   then: trigger => ({
     id: crypto.randomBytes(16).toString('hex'),
     triggered_by: trigger.id,
+    created_at: new Date().toISOString(),
     action: 'http',
     parameters: {
       url: trigger.event.body.url,
