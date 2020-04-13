@@ -31,10 +31,10 @@ function rootReducer (state, action) {
         default:
           return state
       }
-    case 'EXECUTION_INC':
+    case 'EXECUTION_ADD':
       return {
         ...state,
-        newExecutions: state.newExecutions + 1
+        executions: [action.execution, ...state.executions]
       }
     default:
       return state

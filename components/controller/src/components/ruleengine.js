@@ -15,6 +15,17 @@ const RULES = [{
       payload: trigger.event.body.payload
     }
   })
+}, {
+  if: trigger => trigger.type === 'http' && trigger.event.body.type === 'web',
+  then: trigger => ({
+    id: crypto.randomBytes(16).toString('hex'),
+    triggered_by: trigger.id,
+    action: 'http',
+    parameters: {
+      url: trigger.event.body.url,
+      payload: trigger.event.body.payload
+    }
+  })
 }]
 
 async function main () {

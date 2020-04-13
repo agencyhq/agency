@@ -17,6 +17,17 @@ app.use(
 )
 
 app.use(
+  '/sensor',
+  proxy.createProxyMiddleware({
+    target: 'http://localhost:3001',
+    changeOrigin: true,
+    pathRewrite: {
+      '^/sensor[/]*': ''
+    }
+  })
+)
+
+app.use(
   '/ws',
   proxy.createProxyMiddleware({
     target: 'http://localhost:3002',

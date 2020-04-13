@@ -5,13 +5,31 @@ body {
   padding: 0;
 }
 
+.page {
+  display: flex;
+}
+
+.intro {
+  flex: 1;
+  margin: 20px;
+}
+
+.trigger {
+  margin: 2em 0;
+}
+
+.snippet {
+  white-space: pre-wrap;
+  overflow: auto;
+  margin: 2em 0;
+}
+
 .executions {
   width: 500px;
-  margin: 0 auto;
 }
 
 .execution {
-
+  margin: 20px;
 }
 
 .execution_name {
