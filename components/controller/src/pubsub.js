@@ -19,8 +19,8 @@ class PubSub {
     return this.channel.publish(this.exchange, key, Buffer.from(JSON.stringify(data)))
   }
 
-  async subscribe (key, fn) {
-    const q = await this.channel.assertQueue(key)
+  async subscribe (key, fn, { name = key, ...opts } = {}) {
+    const q = await this.channel.assertQueue(name, opts)
     this.channel.bindQueue(q.queue, this.exchange, key)
     this.channel.consume(q.queue, fn)
   }

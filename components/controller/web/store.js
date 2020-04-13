@@ -2,7 +2,9 @@ const { createStore } = require('redux')
 
 function rootReducer (state, action) {
   state = state || {
-    executions: []
+    loading: false,
+    executions: [],
+    newExecutions: 0
   }
 
   switch (action.type) {
@@ -17,7 +19,8 @@ function rootReducer (state, action) {
           return {
             ...state,
             loading: false,
-            executions: action.data
+            executions: action.data,
+            newExecutions: 0
           }
         case 'error':
           return {
@@ -27,6 +30,11 @@ function rootReducer (state, action) {
           }
         default:
           return state
+      }
+    case 'EXECUTION_INC':
+      return {
+        ...state,
+        newExecutions: state.newExecutions + 1
       }
     default:
       return state

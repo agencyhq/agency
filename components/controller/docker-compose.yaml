@@ -55,6 +55,25 @@ services:
       - ifttt_2.address=http://localhost/api
       - ifttt_2.targetport=3000
 
+  ws:
+    build: .
+    image: enykeev/ifttt:latest
+    command: pm2-runtime ecosystem.yaml --only "ws"
+    environment:
+      NODE_ENV: staging
+      WAIT_MQ: 1
+      AMQP_CONNECTION_STRING: amqp://mq
+    restart: unless-stopped
+    depends_on:
+      - mq
+    networks:
+      - http
+      - mq
+    labels:
+      - ifttt.address=http://localhost/ws
+      - ifttt.targetport=3002
+      - ifttt.proxy.websocket=
+
   sensor:
     build: .
     image: enykeev/ifttt:latest

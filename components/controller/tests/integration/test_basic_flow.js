@@ -38,7 +38,7 @@ describe('E2E', () => {
 
   beforeEach(() => {
     app.use(express.json())
-    server = app.listen(3002)
+    server = app.listen(2999)
   })
 
   afterEach(() => {
@@ -55,7 +55,7 @@ describe('E2E', () => {
 
     const event = {
       type: 'e2e',
-      url: 'http://localhost:3002/fakeEndpoint',
+      url: 'http://localhost:2999/fakeEndpoint',
       payload: { a: 'b' }
     }
 

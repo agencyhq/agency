@@ -11,7 +11,19 @@ app.use(
     target: 'http://localhost:3000',
     changeOrigin: true,
     pathRewrite: {
-      '^/api/': '/'
+      '^/api[/]*': ''
+    }
+  })
+)
+
+app.use(
+  '/ws',
+  proxy.createProxyMiddleware({
+    target: 'http://localhost:3002',
+    changeOrigin: true,
+    ws: true,
+    pathRewrite: {
+      '^/ws[/]*': ''
     }
   })
 )

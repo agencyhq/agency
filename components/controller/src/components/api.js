@@ -60,7 +60,9 @@ async function main () {
   app.use(morgan('combined'))
   app.use(router)
 
-  app.listen(3000)
+  app.listen(3000, () => {
+    log.info('Listening on http://localhost:3000')
+  })
 }
 
 main()
