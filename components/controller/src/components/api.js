@@ -1,3 +1,4 @@
+const crypto = require('crypto')
 const util = require('util')
 
 const cors = require('cors')
@@ -31,6 +32,57 @@ router.get('/executions', async (req, res) => {
     })
 
   res.json(collection)
+})
+
+router.get('/rules', async (req, res) => {
+  const rules = await models.Rules
+    .fetchAll()
+
+  res.json(rules)
+})
+
+router.post('/rules', async (req, res) => {
+  const { if: _if, then } = req.body
+
+  if (!_if || !then || typeof _if !== 'string' || typeof then !== 'string') {
+    return res.status(400).end()
+  }
+
+  const model = await models.Rules.forge({
+    id: crypto.randomBytes(16).toString('hex')
+  })
+    .save({
+      if: _if,
+      then: then
+    }, {
+      method: 'insert'
+    })
+
+  res.json(model)
+})
+
+router.get('/rules/:id', async (req, res) => {
+  const { params } = req
+
+  const rule = await models.Rules
+    .forge({
+      id: params.id
+    })
+    .fetch()
+
+  res.json(rule)
+})
+
+router.delete('/rules/:id', async (req, res) => {
+  const { params } = req
+
+  await models.Rules
+    .forge({
+      id: params.id
+    })
+    .destroy()
+
+  res.send('OK')
 })
 
 async function handleMessages (msg) {

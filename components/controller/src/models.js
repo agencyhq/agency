@@ -14,9 +14,14 @@ const Results = bookshelf.model('Results', {
   tableName: 'results'
 })
 
+const Rules = bookshelf.model('Rules', {
+  tableName: 'rules'
+})
+
 module.exports = {
   knex,
   bookshelf,
   Executions,
-  Results
+  Results,
+  Rules
 }

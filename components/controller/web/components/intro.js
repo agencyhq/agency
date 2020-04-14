@@ -10,11 +10,10 @@ const exampleEvent = {
 
 const snippetCurl = `curl -X POST ${location.origin}/sensor/http -H Content-Type:application/json -d '${JSON.stringify(exampleEvent)}'`
 
-const snippetIf = "trigger => trigger.type === 'http' && trigger.event.body.type === 'web'"
+const snippetIf = `trigger => trigger.type === 'http'
+  && trigger.event.body.type === 'web'`
 
 const snippetThen = `trigger => ({
-  id: crypto.randomBytes(16).toString('hex'),
-  triggered_by: trigger.id,
   action: 'http',
   parameters: {
     url: trigger.event.body.url,

@@ -113,11 +113,15 @@ services:
     environment:
       NODE_ENV: staging
       WAIT_MQ: 1
+      WAIT_DB: 1
+      PG_CONNECTION_STRING: postgres://ifttt:mypassword@db/ifttt
       AMQP_CONNECTION_STRING: amqp://mq
     restart: unless-stopped
     depends_on:
+      - db
       - mq
     networks:
+      - db
       - mq
 
 networks:
