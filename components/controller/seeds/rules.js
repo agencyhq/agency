@@ -24,5 +24,22 @@ exports.seed = async knex => {
         payload: trigger.event.body.payload
       }
     })`
+  }, {
+    id: crypto.randomBytes(16).toString('hex'),
+    if: `
+    sensor = 'sensor1'
+    critical_temp = 10
+    trigger.type === 'converge_sensor'
+      && trigger.event.sensors[sensor].last.value_avg >= critical_temp
+      && trigger.event.sensors[sensor].previous.value_avg < critical_temp`,
+    then: `({
+      action: 'http',
+      parameters: {
+        url: 'https://httpbin.org/post',
+        payload: {
+          message: \`sensor \${sensor} reached critical temperature of \${critical_temp}\`
+        }
+      }
+    })`
   }])
 }

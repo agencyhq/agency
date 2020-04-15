@@ -1,18 +1,18 @@
 apps:
-  - name: migration
+  - name: ifttt_migration
     script: npx
     args: knex migrate:latest
     autorestart: false
     watch:
       - migrations
 
-  - name: webui
+  - name: ifttt_webui
     script: dev.js
     autorestart: true
     watch:
       - dev.js
 
-  - name: sensor_http
+  - name: ifttt_sensor_http
     script: src/components/sensor.js
     instances: 1
     autorestart: true
@@ -21,7 +21,16 @@ apps:
       - src
     max_memory_restart: 1G
 
-  - name: ruleengine
+  - name: ifttt_sensor_converge
+    script: src/components/sensor_converge.js
+    instances: 1
+    autorestart: true
+    restart_delay: 10000
+    watch:
+      - src
+    max_memory_restart: 1G
+
+  - name: ifttt_ruleengine
     script: src/components/ruleengine.js
     instances: 1
     autorestart: true
@@ -30,7 +39,7 @@ apps:
       - src
     max_memory_restart: 1G
 
-  - name: actionrunner_http
+  - name: ifttt_actionrunner_http
     script: src/components/actionrunner.js
     instances: 1
     autorestart: true
@@ -39,7 +48,7 @@ apps:
       - src
     max_memory_restart: 1G
 
-  - name: api
+  - name: ifttt_api
     script: src/components/api.js
     instances: 2
     autorestart: true
@@ -48,7 +57,7 @@ apps:
       - src
     max_memory_restart: 1G
 
-  - name: ws
+  - name: ifttt_ws
     script: src/components/ws.js
     instances: 2
     autorestart: true

@@ -33,7 +33,7 @@ services:
   api:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only "migration,api"
+    command: pm2-runtime ecosystem.yaml --only "ifttt_migration,ifttt_api"
     environment:
       NODE_ENV: staging
       WAIT_MQ: 1
@@ -58,7 +58,7 @@ services:
   ws:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only "ws"
+    command: pm2-runtime ecosystem.yaml --only "ifttt_ws"
     environment:
       NODE_ENV: staging
       WAIT_MQ: 1
@@ -77,7 +77,7 @@ services:
   sensor:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only sensor_http
+    command: pm2-runtime ecosystem.yaml --only ifttt_sensor_http
     environment:
       NODE_ENV: staging
       WAIT_MQ: 1
@@ -95,7 +95,7 @@ services:
   actionrunner:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only actionrunner_http
+    command: pm2-runtime ecosystem.yaml --only ifttt_actionrunner_http
     environment:
       NODE_ENV: staging
       WAIT_MQ: 1
@@ -109,7 +109,7 @@ services:
   ruleengine:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only ruleengine
+    command: pm2-runtime ecosystem.yaml --only ifttt_ruleengine
     environment:
       NODE_ENV: staging
       WAIT_MQ: 1
