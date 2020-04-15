@@ -8,10 +8,14 @@ services:
       POSTGRES_PASSWORD: mypassword
     networks:
       - db
+    ports:
+      - 5432:5432
   mq:
     image: rabbitmq:3.8
     networks:
       - mq
+    ports:
+      - 5672:5672
   http:
     image: lucaslorentz/caddy-docker-proxy:alpine
     command: -log stdout
@@ -19,7 +23,7 @@ services:
       CADDY_DOCKER_LABEL_PREFIX: ifttt
     ports:
       - 2015:2015
-      - 80:80
+      - 1234:80
     networks:
       - http
     volumes:
@@ -49,8 +53,7 @@ services:
       - db
       - mq
     labels:
-      - ifttt_1.address=http://localhost/
-      - ifttt_1.proxy.except=/
+      - ifttt_1=http://localhost/
       - ifttt_1.root=/app/dist
       - ifttt_2.address=http://localhost/api
       - ifttt_2.targetport=3000

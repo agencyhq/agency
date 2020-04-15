@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha tests/**/test_*.js",
     "lint": "eslint .",
-    "build": "parcel build web/index.js",
+    "build": "parcel build web/index.html",
     "start": "pm2 start ecosystem.yaml --no-daemon"
   },
   "repository": {
