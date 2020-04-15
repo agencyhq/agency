@@ -54,6 +54,7 @@ body {
   white-space: pre;
   cursor: auto;
   user-select: text;
+  overflow: auto;
 }
 
 @font-face {

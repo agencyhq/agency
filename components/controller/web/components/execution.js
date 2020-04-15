@@ -9,7 +9,8 @@ function Execution ({ opts }) {
   const {
     created_at: createdAt,
     action,
-    parameters
+    parameters,
+    result
   } = opts
 
   return <div className='execution paper'>
@@ -17,6 +18,9 @@ function Execution ({ opts }) {
     <div className='execution_created'><ReactTimeAgo date={ new Date(createdAt) } /></div>
     <div className='execution_parameters selectable'>
       { JSON.stringify(parameters, null, 2) }
+    </div>
+    <div className='execution_parameters selectable'>
+      { JSON.stringify(result, null, 2) }
     </div>
   </div>
 }
