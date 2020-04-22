@@ -1,4 +1,5 @@
 const crypto = require('crypto')
+const http = require('http')
 const util = require('util')
 
 const cors = require('cors')
@@ -8,8 +9,13 @@ const morgan = require('morgan')
 
 const pubsub = require('../pubsub')
 const models = require('../models')
+const RPCServer = require('../rpc/server')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
+
+const app = express()
+const server = http.createServer(app)
+const rpc = new RPCServer({ server })
 
 const router = express.Router()
 
@@ -85,35 +91,101 @@ router.delete('/rules/:id', async (req, res) => {
   res.send('OK')
 })
 
-async function handleMessages (msg) {
+rpc.event('execution')
+
+rpc.register('trigger.emit', trigger => {
+  pubsub.publish('trigger', trigger)
+})
+
+rpc.register('rule.list', async query => {
+  return await models.Rules
+    .fetchAll(query)
+})
+
+rpc.register('execution.claim', async ({ id }) => {
+  try {
+    await models.Executions.forge({ id })
+      .where('status', 'requested')
+      .save({
+        status: 'claimed'
+      })
+  } catch (e) {
+    log.info(`claim denied: ${id}`)
+    return {
+      granted: false
+    }
+  }
+
+  log.info(`claim granted: ${id}`)
+  return {
+    granted: true
+  }
+})
+
+rpc.register('execution.started', async ({ id }) => {
+  log.info('execution started: %s', id)
+  await models.Executions.forge({ id })
+    .where('status', 'claimed')
+    .save({
+      status: 'running'
+    })
+})
+
+rpc.register('execution.completed', async result => {
+  const mod = models.Results.forge(result)
+  await mod.save(null, { method: 'insert' })
+  return true
+})
+
+const ruleNS = rpc.of('/rule')
+
+ruleNS.event('trigger')
+
+ruleNS.register('rule.list', async query => {
+  return await models.Rules
+    .fetchAll(query)
+})
+
+ruleNS.register('execution.request', async message => {
+  const mod = models.Executions.forge({
+    ...message,
+    id: crypto.randomBytes(16).toString('hex'),
+    created_at: new Date().toISOString(),
+    status: 'requested'
+  })
+  const execution = await mod.save(null, { method: 'insert' })
+  await pubsub.publish('execution', execution)
+})
+
+async function handleExecution (msg) {
   const message = JSON.parse(msg.content.toString())
   log.debug('%s:%s', msg.fields.routingKey, util.inspect(message))
 
-  if (msg.fields.routingKey === 'execution') {
-    const mod = models.Executions.forge(message)
-    await mod.save(null, { method: 'insert' })
-  }
+  rpc.emit('execution', message)
 
-  if (msg.fields.routingKey === 'result') {
-    const mod = models.Results.forge(message)
-    await mod.save(null, { method: 'insert' })
-  }
+  pubsub.channel.ack(msg)
+}
+
+async function handleTrigger (msg) {
+  const message = JSON.parse(msg.content.toString())
+  log.debug('%s:%s', msg.fields.routingKey, util.inspect(message))
+
+  ruleNS.emitRandomly('trigger', message)
 
   pubsub.channel.ack(msg)
 }
 
 async function main () {
   await pubsub.init()
-  pubsub.subscribe('*', handleMessages)
-
-  const app = express()
+  pubsub.subscribe('execution', handleExecution)
+  pubsub.subscribe('trigger', handleTrigger)
 
   app.use(cors())
   app.use(express.json())
   app.use(morgan('combined'))
   app.use(router)
 
-  app.listen(3000, () => {
+  server.listen(3000, () => {
     log.info('Listening on http://localhost:3000')
   })
 }

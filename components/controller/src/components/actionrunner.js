@@ -1,7 +1,7 @@
 const axios = require('axios').default
 const log = require('loglevel')
 
-const pubsub = require('../pubsub')
+const rpc = require('../rpc/client')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
@@ -15,40 +15,48 @@ const ACTIONS = {
 }
 
 async function main () {
-  await pubsub.init()
+  await rpc.connect()
 
-  pubsub.subscribe('execution', async msg => {
-    const execution = JSON.parse(msg.content.toString())
-    log.info('processing %s: %s', msg.fields.routingKey, execution.id)
+  rpc.on('execution', async execution => {
+    const { id } = execution
+    log.info('processing execution: %s', id)
 
     const action = ACTIONS[execution.action]
     if (!action) {
       return
     }
 
+    const claim = await rpc.call('execution.claim', { id })
+
+    if (!claim.granted) {
+      return
+    }
+
     const promise = action(execution)
-    pubsub.channel.ack(msg)
+
+    rpc.notify('execution.started', { id })
 
     try {
       const { request, ...result } = await promise
 
-      log.info('%s completed successfully: %s', msg.fields.routingKey, execution.id)
+      log.info('execution completed successfully: %s', execution.id)
 
-      pubsub.publish('result', {
+      await rpc.call('execution.completed', {
         id: execution.id,
         status: 'succeeded',
         result
       })
     } catch (e) {
-      log.info('%s failed: %s', msg.fields.routingKey, execution.id)
+      log.info('execution failed: %s', execution.id)
 
-      pubsub.publish('result', {
+      await rpc.call('execution.completed', {
         id: execution.id,
         status: 'failed',
         result: e
       })
     }
   })
+  await rpc.subscribe('execution')
 }
 
 main()

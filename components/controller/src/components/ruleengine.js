@@ -1,29 +1,24 @@
-const crypto = require('crypto')
-
 const log = require('loglevel')
 const { VM, VMScript } = require('vm2')
 
-const models = require('../models')
-const pubsub = require('../pubsub')
+const rpc = require('../rpc/client')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
 async function main () {
-  await pubsub.init()
+  await rpc.connect('/rule')
 
-  const rules = await models.Rules
-    .fetchAll()
+  const rules = (await rpc.call('rule.list'))
     .map(rule => {
       return {
-        ...rule.attributes,
-        if: new VMScript(rule.get('if')),
-        then: new VMScript(rule.get('then'))
+        ...rule,
+        if: new VMScript(rule.if),
+        then: new VMScript(rule.then)
       }
     })
 
-  await pubsub.subscribe('trigger', msg => {
-    const trigger = JSON.parse(msg.content.toString())
-    log.info('processing %s: %s', msg.fields.routingKey, trigger.id)
+  rpc.on('trigger', trigger => {
+    log.info('processing trigger: %s', trigger.id)
 
     rules.forEach(rule => {
       const vm = new VM({
@@ -34,21 +29,19 @@ async function main () {
       })
 
       if (vm.run(rule.if)) {
-        log.info('found match for %s: %s', msg.fields.routingKey, trigger.id)
+        log.info('found match for trigger: %s', trigger.id)
         const { action, parameters = {} } = vm.run(rule.then)
         const execution = {
-          id: crypto.randomBytes(16).toString('hex'),
           triggered_by: trigger.id,
-          created_at: new Date().toISOString(),
           action,
           parameters
         }
-        pubsub.publish('execution', execution)
+        rpc.call('execution.request', execution)
       }
     })
-
-    pubsub.channel.ack(msg)
   })
+
+  await rpc.subscribe('trigger')
 }
 
 main()

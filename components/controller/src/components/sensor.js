@@ -2,13 +2,15 @@ const crypto = require('crypto')
 
 const express = require('express')
 const log = require('loglevel')
-
-const pubsub = require('../pubsub')
+const RPCClient = require('rpc-websockets').Client
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
 async function main () {
-  await pubsub.init()
+  const rpc = new RPCClient(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
+  await new Promise(resolve => {
+    rpc.once('open', resolve)
+  })
 
   const app = express()
 
@@ -25,7 +27,8 @@ async function main () {
         body: req.body
       }
     }
-    pubsub.publish('trigger', trigger)
+
+    rpc.call('trigger.emit', trigger)
     res.send('OK')
   })
 
