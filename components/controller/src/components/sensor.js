@@ -2,15 +2,13 @@ const crypto = require('crypto')
 
 const express = require('express')
 const log = require('loglevel')
-const RPCClient = require('rpc-websockets').Client
+
+const rpc = require('../rpc/client')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
 async function main () {
-  const rpc = new RPCClient(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
-  await new Promise(resolve => {
-    rpc.once('open', resolve)
-  })
+  rpc.connect('/sensor')
 
   const app = express()
 

@@ -1,0 +1,89 @@
+version: 0
+
+info:
+  title: IFTTT RPC API
+  description: Spec for intercomponent communication
+  version: 0.0.1
+
+methods:
+  trigger.emit:
+    operationId: triggerEmit
+    namespaces:
+      - /
+      - /sensor
+    parameters:
+      - name: trigger
+        schema:
+          type: object
+          # Trigger component
+  rule.list:
+    operationId: ruleList
+    namespaces:
+      - /
+      - /rule
+    parameters:
+      - name: query
+        schema:
+          type: object
+    response:
+      type: array
+      items:
+        type: object
+        # Rule component
+  execution.request:
+    operationId: executionRequest
+    namespaces:
+      - /
+      - /rule
+    parameters:
+      - name: execution
+        schema:
+          type: object
+          # Execution request component
+  execution.claim:
+    operationId: executionClaim
+    namespaces:
+      - /
+      - /execution
+    parameters:
+      - name: id
+        schema:
+          type: string
+    response:
+      type: object
+      properties:
+        granted:
+          type: boolean
+  execution.started:
+    operationId: executionStarted
+    namespaces:
+      - /
+      - /execution
+    parameters:
+      - name: id
+        schema:
+          type: string
+  execution.completed:
+    operationId: executionCompleted
+    namespaces:
+      - /
+      - /execution
+    parameters:
+      - name: result
+        schema:
+          type: object
+          # Result component
+
+events:
+  trigger:
+    namespaces:
+      - /rule
+    response:
+      type: object
+      # Trigger component
+  execution:
+    namespaces:
+      - /execution
+    response:
+      type: object
+      # Execution component

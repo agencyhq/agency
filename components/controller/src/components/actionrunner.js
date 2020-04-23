@@ -15,7 +15,7 @@ const ACTIONS = {
 }
 
 async function main () {
-  await rpc.connect()
+  await rpc.connect('/execution')
 
   rpc.on('execution', async execution => {
     const { id } = execution

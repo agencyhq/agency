@@ -91,71 +91,7 @@ router.delete('/rules/:id', async (req, res) => {
   res.send('OK')
 })
 
-rpc.event('execution')
-
-rpc.register('trigger.emit', trigger => {
-  pubsub.publish('trigger', trigger)
-})
-
-rpc.register('rule.list', async query => {
-  return await models.Rules
-    .fetchAll(query)
-})
-
-rpc.register('execution.claim', async ({ id }) => {
-  try {
-    await models.Executions.forge({ id })
-      .where('status', 'requested')
-      .save({
-        status: 'claimed'
-      })
-  } catch (e) {
-    log.info(`claim denied: ${id}`)
-    return {
-      granted: false
-    }
-  }
-
-  log.info(`claim granted: ${id}`)
-  return {
-    granted: true
-  }
-})
-
-rpc.register('execution.started', async ({ id }) => {
-  log.info('execution started: %s', id)
-  await models.Executions.forge({ id })
-    .where('status', 'claimed')
-    .save({
-      status: 'running'
-    })
-})
-
-rpc.register('execution.completed', async result => {
-  const mod = models.Results.forge(result)
-  await mod.save(null, { method: 'insert' })
-  return true
-})
-
-const ruleNS = rpc.of('/rule')
-
-ruleNS.event('trigger')
-
-ruleNS.register('rule.list', async query => {
-  return await models.Rules
-    .fetchAll(query)
-})
-
-ruleNS.register('execution.request', async message => {
-  const mod = models.Executions.forge({
-    ...message,
-    id: crypto.randomBytes(16).toString('hex'),
-    created_at: new Date().toISOString(),
-    status: 'requested'
-  })
-  const execution = await mod.save(null, { method: 'insert' })
-  await pubsub.publish('execution', execution)
-})
+rpc.registerSpec('../rpcapi.yaml')
 
 async function handleExecution (msg) {
   const message = JSON.parse(msg.content.toString())
@@ -170,7 +106,7 @@ async function handleTrigger (msg) {
   const message = JSON.parse(msg.content.toString())
   log.debug('%s:%s', msg.fields.routingKey, util.inspect(message))
 
-  ruleNS.emitRandomly('trigger', message)
+  rpc.of('/rule').emitRandomly('trigger', message)
 
   pubsub.channel.ack(msg)
 }
