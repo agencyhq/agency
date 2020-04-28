@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/enykeev/ifttt#readme",
   "dependencies": {
+    "@apidevtools/openapi-schemas": "^2.0.3",
     "@babel/runtime": "^7.9.2",
     "ajv": "^6.12.2",
     "amqplib": "^0.5.5",

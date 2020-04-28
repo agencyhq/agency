@@ -1,0 +1,125 @@
+openapi: "3.0.0"
+
+info:
+  title: IFTTT Rest API
+  version: 0.0.1
+
+paths:
+  /:
+    get:
+      operationId: root
+      responses:
+        '200':
+          description: welcome text
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /executions:
+    get:
+      operationId: executionList
+      responses:
+        '200':
+          description: list of executions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Execution"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /rules:
+    get:
+      operationId: ruleList
+      responses:
+        '200':
+          description: list of rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Rule"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    post:
+      operationId: ruleCreate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewPet'
+      responses:
+        '201':
+          description: new rule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /rules/{id}:
+    get:
+      operationId: ruleGet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: rule
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Rule"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+    delete:
+      operationId: ruleDelete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: rule successfully deleted
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Execution:
+      type: object
+    Rule:
+      type: object
+    Error:
+      type: object
