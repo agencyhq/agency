@@ -7,7 +7,8 @@
     "test": "mocha tests/**/test_*.js",
     "lint": "eslint .",
     "build": "parcel build web/index.html",
-    "start": "pm2 start ecosystem.yaml --no-daemon"
+    "start": "pm2 start ecosystem.yaml --no-daemon",
+    "migrate": "knex migrate:latest && knex seed:run"
   },
   "repository": {
     "type": "git",

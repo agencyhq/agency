@@ -1,4 +1,4 @@
-version: '3.7'
+version: '2.4'
 
 services:
   db:
@@ -34,17 +34,32 @@ services:
         source: /var/run/docker.sock
         target: /var/run/docker.sock
 
+  migration:
+    build: .
+    image: enykeev/ifttt:latest
+    command: npm run migrate
+    environment:
+      NODE_ENV: staging
+      WAIT_DB: 1
+      PG_CONNECTION_STRING: postgres://ifttt:mypassword@db/ifttt
+    depends_on:
+      - db
+    networks:
+      - db
+
   api:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only "ifttt_migration,ifttt_api"
+    command: node src/components/api.js
     environment:
       NODE_ENV: staging
+      # LOG_LEVEL: debug
       WAIT_MQ: 1
       WAIT_DB: 1
       PG_CONNECTION_STRING: postgres://ifttt:mypassword@db/ifttt
       AMQP_CONNECTION_STRING: amqp://mq
     restart: unless-stopped
+    scale: 2
     depends_on:
       - db
       - mq
@@ -61,9 +76,10 @@ services:
   ws:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only ifttt_ws
+    command: node src/components/ws.js
     environment:
       NODE_ENV: staging
+      # LOG_LEVEL: debug
       WAIT_MQ: 1
       AMQP_CONNECTION_STRING: amqp://mq
     restart: unless-stopped
@@ -80,10 +96,12 @@ services:
   sensor:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only ifttt_sensor_http
+    command: node src/components/sensor.js
     environment:
       NODE_ENV: staging
-      RPC_CONNECTION_STRING: ws://api
+      # LOG_LEVEL: debug
+      WAIT_API: 1
+      RPC_CONNECTION_STRING: ws://api:3000
     restart: unless-stopped
     networks:
       - http
@@ -94,22 +112,28 @@ services:
   actionrunner:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only ifttt_actionrunner_http
+    command: node src/components/actionrunner.js
     environment:
       NODE_ENV: staging
-      RPC_CONNECTION_STRING: ws://api
+      # LOG_LEVEL: debug
+      WAIT_API: 1
+      RPC_CONNECTION_STRING: ws://api:3000
     restart: unless-stopped
+    scale: 2
     networks:
       - http
 
   ruleengine:
     build: .
     image: enykeev/ifttt:latest
-    command: pm2-runtime ecosystem.yaml --only ifttt_ruleengine
+    command: node src/components/ruleengine.js
     environment:
       NODE_ENV: staging
-      RPC_CONNECTION_STRING: ws://api
+      # LOG_LEVEL: debug
+      WAIT_API: 1
+      RPC_CONNECTION_STRING: ws://api:3000
     restart: unless-stopped
+    scale: 2
     networks:
       - http
 
