@@ -2,6 +2,7 @@ const crypto = require('crypto')
 
 const express = require('express')
 const log = require('loglevel')
+const morgan = require('morgan')
 
 const rpc = require('../rpc/client')
 
@@ -13,6 +14,7 @@ async function main () {
   const app = express()
 
   app.use(express.json())
+  app.use(morgan('combined'))
 
   app.post('*', async (req, res) => {
     const trigger = {

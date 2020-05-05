@@ -1,6 +1,23 @@
 version: '2.4'
 
 services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./contrib/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.external-url=http://localhost:1234/prometheus/'
+      - '--web.route-prefix=/'
+    restart: unless-stopped
+    networks:
+      - http
+    labels:
+      - ifttt.address=http://localhost/prometheus
+      - ifttt.targetport=9090
   db:
     image: postgres:9.6
     environment:
@@ -33,6 +50,12 @@ services:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
+  sink:
+    image: nginx
+    networks:
+      - http
+    volumes:
+      - ./contrib/nginx.conf:/etc/nginx/nginx.conf
 
   migration:
     build: .

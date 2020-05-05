@@ -1,0 +1,39 @@
+# my global config
+global:
+  scrape_interval:     15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # By default, scrape targets every 15 seconds.
+  external_labels:
+      monitor: 'IFTTT'
+
+scrape_configs:
+  # - job_name: 'prometheus'
+  #   static_configs:
+  #     - targets: ['localhost:9090']
+
+  - job_name: 'api'
+    dns_sd_configs:
+      - names:
+          - 'api'
+        type: 'A'
+        port: 3000
+
+  # - job_name: 'sensor'
+  #   dns_sd_configs:
+  #     - names:
+  #       - 'tasks.sensor'
+  #       type: 'A'
+  #       port: 3000
+
+  # - job_name: 'ruleengine'
+  #   dns_sd_configs:
+  #     - names:
+  #       - 'tasks.ruleengine'
+  #       type: 'A'
+  #       port: 3000
+
+  # - job_name: 'actionrunner'
+  #   dns_sd_configs:
+  #     - names:
+  #       - 'tasks.actionrunner'
+  #       type: 'A'
+  #       port: 3000

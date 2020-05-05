@@ -1,5 +1,6 @@
 FROM node:12-alpine
 
+RUN apk update && apk add git
 RUN npm install -g wait-on
 
 WORKDIR /app
