@@ -3,10 +3,15 @@ const crypto = require('crypto')
 const express = require('express')
 const log = require('loglevel')
 const morgan = require('morgan')
+const promMid = require('express-prometheus-middleware')
 
 const rpc = require('../rpc/client')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
+
+const {
+  PORT = 3001
+} = process.env
 
 async function main () {
   await rpc.connect('/sensor')
@@ -14,6 +19,10 @@ async function main () {
 
   const app = express()
 
+  app.use(promMid({
+    metricsPath: '/metrics',
+    collectDefaultMetrics: true
+  }))
   app.use(express.json())
   app.use(morgan('combined'))
 
@@ -33,7 +42,9 @@ async function main () {
     res.send('OK')
   })
 
-  app.listen(3001)
+  app.listen(PORT, () => {
+    log.info(`Listening on http://localhost:${PORT}`)
+  })
 }
 
 main()

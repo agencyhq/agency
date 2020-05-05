@@ -1,7 +1,20 @@
 const { URL } = require('url')
 
 const log = require('loglevel')
+const Prometheus = require('prom-client')
 const RPC = require('rpc-websockets')
+
+const rpcMessagesCounter = new Prometheus.Counter({
+  name: 'ifttt_rpc_messages_received',
+  help: 'Counter for number of rpc messages received'
+})
+
+const rpcRequestDuration = new Prometheus.Histogram({
+  name: 'ifttt_rpc_request_duration',
+  help: 'Duration of rpc request in seconds',
+  buckets: Prometheus.exponentialBuckets(Math.pow(10, -3), 10, 5),
+  labelNames: ['method', 'status']
+})
 
 class RPCClient extends RPC.Client {
   constructor () {
@@ -26,8 +39,24 @@ class RPCClient extends RPC.Client {
         throw new Error(`error connecting to RPC server: ${e.message}`)
       })
     super.connect()
-    this.socket.addEventListener('message', m => log.debug('rpc message received:', m.data))
+    this.socket.addEventListener('message', m => {
+      rpcMessagesCounter.inc()
+      log.debug('rpc message received:', m.data)
+    })
     return p
+  }
+
+  call (method, ...args) {
+    const rpcRequestDurationEnd = rpcRequestDuration.startTimer({ method })
+    return super.call(method, ...args)
+      .then(v => {
+        rpcRequestDurationEnd({ status: 'resolved' })
+        return v
+      })
+      .catch(e => {
+        rpcRequestDurationEnd({ status: 'rejected' })
+        throw e
+      })
   }
 }
 
