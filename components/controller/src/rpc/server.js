@@ -1,5 +1,6 @@
 const fs = require('fs')
 const path = require('path')
+const EventEmitter = require('events')
 
 const Ajv = require('ajv')
 const CircularJSON = require('circular-json')
@@ -18,6 +19,38 @@ const connectionGauge = new Prometheus.Gauge({
   help: 'Gauge for number of clients currently connected via RPC'
 })
 
+class RPCNamespace {
+  constructor (originalObject) {
+    this.emitter = new EventEmitter()
+
+    for (const key of Object.keys(originalObject)) {
+      this[key] = originalObject[key]
+    }
+  }
+
+  hasClients () {
+    return !!this.clients.size
+  }
+
+  hasSubscribers (eventname) {
+    return !!(this.events[eventname] && this.events[eventname].length)
+  }
+
+  emitRandomly (event, ...params) {
+    const socketIds = [...this.clients.keys()]
+
+    if (!socketIds.length) {
+      return
+    }
+
+    const randomId = socketIds[Math.floor(Math.random() * socketIds.length)]
+    this.clients.get(randomId).send(CircularJSON.stringify({
+      notification: event,
+      params: params || []
+    }))
+  }
+}
+
 class RPCServer extends RPC.Server {
   constructor (...args) {
     super(...args)
@@ -33,9 +66,13 @@ class RPCServer extends RPC.Server {
         ws.isAlive = true
       })
 
+      this.of(namespace).emitter.emit('connected', ws, req)
+
       ws.on('close', () => {
         log.debug('client disconnected from rpc namespace %s: %s', namespace, ws._id)
         connectionGauge.set(this.wss.clients.size)
+
+        this.of(namespace).emitter.emit('disconnected', ws, req)
 
         this.emit('disconnect', ws, req)
       })
@@ -85,6 +122,10 @@ class RPCServer extends RPC.Server {
         // TODO: start checking for parameters
       } = spec.methods[method]
 
+      if (!operationId) {
+        continue
+      }
+
       const operation = require(`./methods/${operationId}`)
 
       for (const namespace of namespaces) {
@@ -103,27 +144,21 @@ class RPCServer extends RPC.Server {
     }
   }
 
-  of (name) {
-    const self = this
-    return {
+  _generateNamespace (name) {
+    super._generateNamespace(name)
+
+    this.namespaces[name] = new RPCNamespace({
       ...super.of(name),
-      hasClients () {
-        return !!self.namespaces[name].clients.size
-      },
-      emitRandomly (event, ...params) {
-        const socketIds = [...self.namespaces[name].clients.keys()]
+      ...this.namespaces[name]
+    })
+  }
 
-        if (!socketIds.length) {
-          return
-        }
-
-        const randomId = socketIds[Math.floor(Math.random() * socketIds.length)]
-        self.namespaces[name].clients.get(randomId).send(CircularJSON.stringify({
-          notification: event,
-          params: params || []
-        }))
-      }
+  of (name) {
+    if (!this.namespaces[name]) {
+      this._generateNamespace(name)
     }
+
+    return this.namespaces[name]
   }
 }
 

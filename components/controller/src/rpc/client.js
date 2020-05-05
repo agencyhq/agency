@@ -26,6 +26,7 @@ class RPCClient extends RPC.Client {
         throw new Error(`error connecting to RPC server: ${e.message}`)
       })
     super.connect()
+    this.socket.addEventListener('message', m => log.debug('rpc message received:', m.data))
     return p
   }
 }

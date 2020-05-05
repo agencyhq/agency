@@ -24,9 +24,15 @@ async function handleExecution (rpc, msg) {
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(message))
   executionCounter.inc()
 
-  rpc.emit('execution', message)
+  if (rpc.of('/execution').hasSubscribers('execution')) {
+    rpc.emit('execution', message)
 
-  pubsub.channel.ack(msg)
+    log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
+    pubsub.channel.ack(msg)
+  } else {
+    log.debug('reject reciving %s: %s', msg.fields.routingKey, message.id)
+    pubsub.channel.nack(msg)
+  }
 }
 
 const triggerCounter = new Prometheus.Counter({
@@ -39,8 +45,7 @@ async function handleTrigger (rpc, msg) {
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(message))
   triggerCounter.inc()
 
-  // TODO: instead of rejecting, api instance should probably unsubscribe itself from topic when it hits 0 clients on particular namespace
-  if (rpc.of('/rule').hasClients()) {
+  if (rpc.of('/rule').hasSubscribers('trigger')) {
     rpc.of('/rule').emitRandomly('trigger', message)
 
     log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
@@ -69,19 +74,31 @@ async function main () {
 
   rpc.registerSpec('../rpcapi.yaml')
 
-  // TODO: this two should be emitted on namespace rather than rpc object
-  rpc.on('connection', () => {
-    console.log('execution', rpc.of('/execution').hasClients())
-    console.log('rule', rpc.of('/rule').hasClients())
+  rpc.of('/execution').register('ready', () => {
+    if (pubsub.isSubscribed('execution')) {
+      return
+    }
+
+    pubsub.subscribe('execution', msg => handleExecution(rpc, msg))
+  })
+
+  rpc.of('/rule').register('ready', () => {
+    if (pubsub.isSubscribed('trigger')) {
+      return
+    }
+
+    pubsub.subscribe('trigger', msg => handleTrigger(rpc, msg))
   })
 
   rpc.on('disconnect', () => {
-    console.log('execution', rpc.of('/execution').hasClients())
-    console.log('rule', rpc.of('/rule').hasClients())
-  })
+    if (!rpc.of('/execution').hasSubscribers('execution')) {
+      pubsub.unsubscribe('execution')
+    }
 
-  pubsub.subscribe('execution', msg => handleExecution(rpc, msg))
-  pubsub.subscribe('trigger', msg => handleTrigger(rpc, msg))
+    if (!rpc.of('/rule').hasSubscribers('trigger')) {
+      pubsub.unsubscribe('trigger')
+    }
+  })
 
   server.listen(3000, () => {
     log.info('Listening on http://localhost:3000')

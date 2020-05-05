@@ -9,7 +9,8 @@ const rpc = require('../rpc/client')
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
 async function main () {
-  rpc.connect('/sensor')
+  await rpc.connect('/sensor')
+  await rpc.notify('ready')
 
   const app = express()
 

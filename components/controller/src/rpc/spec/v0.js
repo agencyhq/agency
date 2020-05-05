@@ -49,7 +49,6 @@ module.exports = {
               // TODO: validate as JSONSchema
             }
           },
-          required: ['operationId'],
           additionalProperties: false
         }
       },

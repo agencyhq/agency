@@ -6,6 +6,12 @@ info:
   version: 0.0.1
 
 methods:
+  ready:
+    namespaces:
+      - /
+      - /sensor
+      - /rule
+      - /execution
   trigger.emit:
     operationId: triggerEmit
     namespaces:

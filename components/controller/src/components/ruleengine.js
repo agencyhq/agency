@@ -42,6 +42,7 @@ async function main () {
   })
 
   await rpc.subscribe('trigger')
+  await rpc.notify('ready')
 }
 
 main()

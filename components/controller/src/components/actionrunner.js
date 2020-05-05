@@ -57,6 +57,7 @@ async function main () {
     }
   })
   await rpc.subscribe('execution')
+  await rpc.notify('ready')
 }
 
 main()
