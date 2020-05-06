@@ -21,7 +21,8 @@ async function main () {
 
   app.use(promMid({
     metricsPath: '/metrics',
-    collectDefaultMetrics: true
+    collectDefaultMetrics: true,
+    prefix: 'ifttt_sensor_http_'
   }))
   app.use(express.json())
   app.use(morgan('combined'))

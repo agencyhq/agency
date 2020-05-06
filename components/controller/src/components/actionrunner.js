@@ -30,7 +30,7 @@ const claimsReceivedCounter = new Prometheus.Counter({
 const executionDuration = new Prometheus.Histogram({
   name: 'ifttt_actionrunner_execution_duration',
   help: 'Duration of execution in seconds',
-  buckets: Prometheus.exponentialBuckets(Math.pow(10, -3), 10, 5),
+  buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.2, 0.5, 1],
   labelNames: ['action', 'status']
 })
 

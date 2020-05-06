@@ -65,7 +65,8 @@ async function main () {
 
   app.use(promMid({
     metricsPath: '/metrics',
-    collectDefaultMetrics: true
+    collectDefaultMetrics: true,
+    prefix: 'ifttt_api_'
   }))
   app.use(cors())
   app.use(express.json())

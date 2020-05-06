@@ -27,7 +27,7 @@ scrape_configs:
       - names:
         - 'sensor'
         type: 'A'
-        port: 3000
+        port: 3001
 
   - job_name: 'ruleengine'
     dns_sd_configs:
