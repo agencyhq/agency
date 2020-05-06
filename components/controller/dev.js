@@ -27,18 +27,6 @@ app.use(
   })
 )
 
-app.use(
-  '/ws',
-  proxy.createProxyMiddleware({
-    target: 'http://localhost:3002',
-    changeOrigin: true,
-    ws: true,
-    pathRewrite: {
-      '^/ws[/]*': ''
-    }
-  })
-)
-
 app.use(bundler.middleware())
 
 app.listen(Number(process.env.PORT || 1234))

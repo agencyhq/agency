@@ -36,6 +36,20 @@ methods:
       items:
         type: object
         # Rule component
+  execution.list:
+    operationId: executionList
+    namespaces:
+      - /
+      - /rule
+    parameters:
+      - name: query
+        schema:
+          type: object
+    response:
+      type: array
+      items:
+        type: object
+        # Rule component
   execution.request:
     operationId: executionRequest
     namespaces:

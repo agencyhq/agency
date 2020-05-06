@@ -39,10 +39,27 @@ class RPCClient extends RPC.Client {
         throw new Error(`error connecting to RPC server: ${e.message}`)
       })
     super.connect()
-    this.socket.addEventListener('message', m => {
+
+    function heartbeat () {
+      clearTimeout(this.pingTimeout)
+
+      this.pingTimeout = setTimeout(() => {
+        log.warn('missed heartbeat')
+        this.socket.terminate()
+      }, 30000 + 1000)
+    }
+
+    this.socket.on('open', heartbeat)
+    this.socket.on('ping', heartbeat)
+    this.socket.on('close', () => {
+      clearTimeout(this.pingTimeout)
+    })
+
+    this.socket.on('message', m => {
       rpcMessagesCounter.inc()
       log.debug('rpc message received:', m.data)
     })
+
     return p
   }
 

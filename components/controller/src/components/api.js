@@ -24,15 +24,10 @@ async function handleExecution (rpc, msg) {
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(message))
   executionCounter.inc()
 
-  if (rpc.of('/execution').hasSubscribers('execution')) {
-    rpc.emit('execution', message)
+  rpc.emit('execution', message)
 
-    log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
-    pubsub.channel.ack(msg)
-  } else {
-    log.debug('reject reciving %s: %s', msg.fields.routingKey, message.id)
-    pubsub.channel.nack(msg)
-  }
+  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
+  pubsub.channel.ack(msg)
 }
 
 const triggerCounter = new Prometheus.Counter({
@@ -75,12 +70,9 @@ async function main () {
 
   rpc.registerSpec('../rpcapi.yaml')
 
-  rpc.of('/execution').register('ready', () => {
-    if (pubsub.isSubscribed('execution')) {
-      return
-    }
-
-    pubsub.subscribe('execution', msg => handleExecution(rpc, msg))
+  pubsub.subscribe('execution', msg => handleExecution(rpc, msg), {
+    name: false,
+    exclusive: true
   })
 
   rpc.of('/rule').register('ready', () => {
@@ -92,10 +84,6 @@ async function main () {
   })
 
   rpc.on('disconnect', () => {
-    if (!rpc.of('/execution').hasSubscribers('execution')) {
-      pubsub.unsubscribe('execution')
-    }
-
     if (!rpc.of('/rule').hasSubscribers('trigger')) {
       pubsub.unsubscribe('trigger')
     }

@@ -47,12 +47,3 @@ apps:
     watch:
       - src
     max_memory_restart: 1G
-
-  - name: ifttt_ws
-    script: src/components/ws.js
-    instances: 2
-    autorestart: true
-    restart_delay: 10000
-    watch:
-      - src
-    max_memory_restart: 1G

@@ -2,35 +2,29 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 
 const { Provider } = require('react-redux')
-const store = require('./store')
+const RPC = require('rpc-websockets')
 
+const store = require('./store')
 const Intro = require('./components/intro')
 const Executions = require('./components/executions')
 
 require('./css/index.css')
 
-function connectWebsocket () {
-  const ws = new WebSocket(`ws://${location.host}/ws`)
+const socket = new Promise((resolve, reject) => {
+  const ws = window.ws = new RPC.Client(`ws://${location.hostname}:1234/api/`)
 
-  ws.onmessage = (event) => {
-    const data = JSON.parse(event.data)
-
-    if (data.key === 'execution') {
-      store.dispatch({
-        type: 'EXECUTION_ADD',
-        execution: data.message
-      })
-    }
-  }
-}
+  ws.once('open', () => resolve(ws))
+  ws.once('error', reject)
+})
 
 async function fetchExecutions () {
+  const ws = await socket
   store.dispatch({ type: 'EXECUTION_FETCH', status: 'pending' })
   try {
-    const res = await fetch('/api/executions')
-    const data = await res.json()
+    const data = await ws.call('execution.list', { pageSize: 15 })
     store.dispatch({ type: 'EXECUTION_FETCH', status: 'success', data })
   } catch (error) {
+    console.log(error)
     store.dispatch({ type: 'EXECUTION_FETCH', status: 'error', error })
   }
 }
@@ -38,7 +32,6 @@ async function fetchExecutions () {
 function App () {
   React.useEffect(() => {
     fetchExecutions()
-    connectWebsocket()
   }, [])
 
   return <div className="page">
