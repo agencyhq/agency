@@ -1,7 +1,7 @@
 IFTTT
 -----
 
-General-purpose automation for those, who are not exctatic of learning yet another DSL.
+General-purpose automation for those, who are not extatic of learning yet another DSL.
 
 To run development version:
 
