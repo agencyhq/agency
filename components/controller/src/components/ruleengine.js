@@ -1,25 +1,20 @@
-const express = require('express')
 const log = require('loglevel')
-const promMid = require('express-prometheus-middleware')
 const Prometheus = require('prom-client')
 const { VM, VMScript } = require('vm2')
 
+const metrics = require('../metrics')
 const rpc = require('../rpc/client')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
 const {
-  PORT = 3000
+  PORT = 3000,
+  METRICS = false
 } = process.env
 
-const app = express()
-app.use(promMid({
-  metricsPath: '/metrics',
-  collectDefaultMetrics: true
-}))
-app.listen(PORT, () => {
-  log.info(`Listening on http://localhost:${PORT}`)
-})
+if (METRICS) {
+  metrics.createServer(PORT)
+}
 
 const rulesRegisteredGauge = new Prometheus.Gauge({
   name: 'ifttt_ruleengine_rules_registered',

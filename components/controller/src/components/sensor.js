@@ -3,14 +3,15 @@ const crypto = require('crypto')
 const express = require('express')
 const log = require('loglevel')
 const morgan = require('morgan')
-const promMid = require('express-prometheus-middleware')
 
+const metrics = require('../metrics')
 const rpc = require('../rpc/client')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
 const {
-  PORT = 3001
+  PORT = 3001,
+  METRICS = false
 } = process.env
 
 async function main () {
@@ -19,11 +20,11 @@ async function main () {
 
   const app = express()
 
-  app.use(promMid({
-    metricsPath: '/metrics',
-    collectDefaultMetrics: true,
-    prefix: 'ifttt_sensor_http_'
-  }))
+  if (METRICS) {
+    app.use(metrics.middleware({
+      prefix: 'ifttt_sensor_http_'
+    }))
+  }
   app.use(express.json())
   app.use(morgan('combined'))
 

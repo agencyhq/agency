@@ -109,6 +109,7 @@ services:
       # LOG_LEVEL: debug
       WAIT_MQ: 1
       WAIT_DB: 1
+      METRICS: 1
       PG_CONNECTION_STRING: postgres://ifttt:mypassword@db/ifttt
       AMQP_CONNECTION_STRING: amqp://mq
     restart: unless-stopped
@@ -135,6 +136,7 @@ services:
       NODE_ENV: staging
       # LOG_LEVEL: debug
       WAIT_API: 1
+      METRICS: 1
       RPC_CONNECTION_STRING: ws://api:3000
     restart: unless-stopped
     networks:
@@ -151,6 +153,7 @@ services:
       NODE_ENV: staging
       # LOG_LEVEL: debug
       WAIT_API: 1
+      METRICS: 1
       RPC_CONNECTION_STRING: ws://api:3000
     restart: unless-stopped
     scale: 2
@@ -165,6 +168,7 @@ services:
       NODE_ENV: staging
       # LOG_LEVEL: debug
       WAIT_API: 1
+      METRICS: 1
       RPC_CONNECTION_STRING: ws://api:3000
     restart: unless-stopped
     scale: 2

@@ -5,14 +5,19 @@ const cors = require('cors')
 const express = require('express')
 const log = require('loglevel')
 const morgan = require('morgan')
-const promMid = require('express-prometheus-middleware')
 const Prometheus = require('prom-client')
 
+const metrics = require('../metrics')
 const pubsub = require('../pubsub')
 const router = require('../rest/router')
 const RPCServer = require('../rpc/server')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
+
+const {
+  PORT = 3000,
+  METRICS = false
+} = process.env
 
 const executionCounter = new Prometheus.Counter({
   name: 'ifttt_api_executions_received',
@@ -58,11 +63,11 @@ async function main () {
   const server = http.createServer(app)
   const rpc = new RPCServer({ server })
 
-  app.use(promMid({
-    metricsPath: '/metrics',
-    collectDefaultMetrics: true,
-    prefix: 'ifttt_api_'
-  }))
+  if (METRICS) {
+    app.use(metrics.middleware({
+      prefix: 'ifttt_api_'
+    }))
+  }
   app.use(cors())
   app.use(express.json())
   app.use(morgan('combined'))
@@ -89,8 +94,8 @@ async function main () {
     }
   })
 
-  server.listen(3000, () => {
-    log.info('Listening on http://localhost:3000')
+  server.listen(PORT, () => {
+    log.info(`Listening on http://localhost:${PORT}`)
   })
 }
 
