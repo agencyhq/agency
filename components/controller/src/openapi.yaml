@@ -8,6 +8,7 @@ paths:
   /:
     get:
       operationId: root
+      x-security-scope: any
       responses:
         '200':
           description: welcome text
@@ -19,6 +20,8 @@ paths:
   /executions:
     get:
       operationId: executionList
+      x-security-scope:
+        - web
       responses:
         '200':
           description: list of executions
@@ -38,6 +41,9 @@ paths:
   /rules:
     get:
       operationId: ruleList
+      x-security-scope:
+        - web
+        - rule
       responses:
         '200':
           description: list of rules
@@ -55,6 +61,8 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       operationId: ruleCreate
+      x-security-scope:
+        - web
       requestBody:
         required: true
         content:
@@ -78,6 +86,9 @@ paths:
   /rules/{id}:
     get:
       operationId: ruleGet
+      x-security-scope:
+        - web
+        - rule
       parameters:
         - name: id
           in: path
@@ -99,6 +110,8 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       operationId: ruleDelete
+      x-security-scope:
+        - web
       parameters:
         - name: id
           in: path
@@ -115,6 +128,9 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+security:
+  - bearer: []
+
 components:
   schemas:
     Execution:
@@ -123,3 +139,8 @@ components:
       type: object
     Error:
       type: object
+
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer

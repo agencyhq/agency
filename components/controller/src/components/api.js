@@ -5,6 +5,8 @@ const cors = require('cors')
 const express = require('express')
 const log = require('loglevel')
 const morgan = require('morgan')
+const passport = require('passport')
+const bearer = require('passport-http-bearer')
 const Prometheus = require('prom-client')
 
 const metrics = require('../metrics')
@@ -18,6 +20,11 @@ const {
   PORT = 3000,
   METRICS = false
 } = process.env
+
+const USERS = {
+  alltoken: ['enykeev', { scope: 'all' }],
+  sometoken: ['someguy', { scope: 'web' }]
+}
 
 const executionCounter = new Prometheus.Counter({
   name: 'ifttt_api_executions_received',
@@ -63,14 +70,25 @@ async function main () {
   const server = http.createServer(app)
   const rpc = new RPCServer({ server })
 
+  passport.use(new bearer.Strategy(
+    (token, done) => {
+      if (USERS[token]) {
+        const [username, info] = USERS[token]
+        return done(null, username, info)
+      }
+      return done(null, false)
+    }
+  ))
+
   if (METRICS) {
     app.use(metrics.middleware({
       prefix: 'ifttt_api_'
     }))
   }
   app.use(cors())
-  app.use(express.json())
   app.use(morgan('combined'))
+  app.use(passport.authenticate('bearer', { session: false }))
+  app.use(express.json())
   app.use(router('../openapi.yaml'))
 
   rpc.registerSpec('../rpcapi.yaml')
