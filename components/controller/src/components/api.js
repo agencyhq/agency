@@ -1,15 +1,14 @@
 const http = require('http')
 const util = require('util')
 
+const metrics = require('@agencyhq/agency-metrics')
 const cors = require('cors')
 const express = require('express')
 const log = require('loglevel')
 const morgan = require('morgan')
 const passport = require('passport')
 const bearer = require('passport-http-bearer')
-const Prometheus = require('prom-client')
 
-const metrics = require('../metrics')
 const pubsub = require('../pubsub')
 const router = require('../rest/router')
 const RPCServer = require('../rpc/server')
@@ -26,39 +25,29 @@ const USERS = {
   sometoken: ['someguy', { scopes: ['web'] }]
 }
 
-const executionCounter = new Prometheus.Counter({
-  name: 'ifttt_api_executions_received',
-  help: 'Counter for number of executions received via mq from other nodes'
-})
-
 async function handleExecution (rpc, msg) {
-  const message = JSON.parse(msg.content.toString())
-  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(message))
-  executionCounter.inc()
+  const execution = JSON.parse(msg.content.toString())
+  metrics.countExecutions(execution)
+  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(execution))
 
-  rpc.notify('execution', message)
+  rpc.notify('execution', execution)
 
-  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
+  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, execution.id)
   pubsub.channel.ack(msg)
 }
 
-const triggerCounter = new Prometheus.Counter({
-  name: 'ifttt_api_triggers_received',
-  help: 'Counter for number of triggers received via mq from other nodes'
-})
-
 async function handleTrigger (rpc, msg) {
-  const message = JSON.parse(msg.content.toString())
-  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(message))
-  triggerCounter.inc()
+  const trigger = JSON.parse(msg.content.toString())
+  metrics.countTriggers(trigger)
+  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(trigger))
 
   if (rpc.hasSubscribers('trigger')) {
-    rpc.notify('trigger', message, { random: true })
+    rpc.notify('trigger', trigger, { random: true })
 
-    log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
+    log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, trigger.id)
     pubsub.channel.ack(msg)
   } else {
-    log.debug('reject reciving %s: %s', msg.fields.routingKey, message.id)
+    log.debug('reject reciving %s: %s', msg.fields.routingKey, trigger.id)
     pubsub.channel.nack(msg)
   }
 }

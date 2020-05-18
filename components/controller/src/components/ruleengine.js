@@ -1,11 +1,13 @@
+const metrics = require('@agencyhq/agency-metrics')
+const RPC = require('@agencyhq/jsonrpc-ws')
 const log = require('loglevel')
-const Prometheus = require('prom-client')
 const { VM, VMScript } = require('vm2')
 
-const metrics = require('../metrics')
-const rpc = require('../rpc/client')
-
 log.setLevel(process.env.LOG_LEVEL || 'info')
+
+const rpc = new RPC.Client(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
+
+metrics.instrumentRPCClient(rpc)
 
 const {
   PORT = 3000,
@@ -15,32 +17,6 @@ const {
 if (METRICS) {
   metrics.createServer(PORT)
 }
-
-const rulesRegisteredGauge = new Prometheus.Gauge({
-  name: 'ifttt_ruleengine_rules_registered',
-  help: 'Gauge for number of rules registered'
-})
-
-const ruleVMInitializationDuration = new Prometheus.Histogram({
-  name: 'ifttt_ruleengine_rule_vm_initialization_duration',
-  help: 'Time it takes to evaluate IF portion of the rule in seconds',
-  buckets: Prometheus.exponentialBuckets(Math.pow(10, -3), 10, 5),
-  labelNames: ['ruleId', 'result']
-})
-
-const ruleIfEvaluationDuration = new Prometheus.Histogram({
-  name: 'ifttt_ruleengine_rule_if_evaluation_duration',
-  help: 'Time it takes to evaluate IF portion of the rule in seconds',
-  buckets: Prometheus.exponentialBuckets(Math.pow(10, -3), 10, 5),
-  labelNames: ['ruleId', 'result']
-})
-
-const ruleThenEvaluationDuration = new Prometheus.Histogram({
-  name: 'ifttt_ruleengine_rule_then_evaluation_duration',
-  help: 'Time it takes to evaluate THEN portion of the rule in seconds',
-  buckets: Prometheus.exponentialBuckets(Math.pow(10, -3), 10, 5),
-  labelNames: ['ruleId']
-})
 
 async function main () {
   await rpc.connect()
@@ -56,29 +32,29 @@ async function main () {
     })
 
   log.info('registered %s rules', rules.length)
-  rulesRegisteredGauge.set(rules.length)
+  metrics.countRules(rules)
 
   await rpc.subscribe('trigger', trigger => {
     log.info('processing trigger: %s', trigger.id)
     rules.forEach(rule => {
-      const ruleVMInitializationDurationEnd = ruleVMInitializationDuration.startTimer({ ruleId: rule.id })
+      const initDuration = metrics.measureRuleInitDuration(rule)
       const vm = new VM({
         timeout: 1000,
         sandbox: {
           trigger
         }
       })
-      ruleVMInitializationDurationEnd()
+      initDuration.end()
 
-      const ruleIfEvaluationDurationEnd = ruleIfEvaluationDuration.startTimer({ ruleId: rule.id })
+      const ifDuration = metrics.measureRuleInitDuration(rule)
       const isTriggered = vm.run(rule.if)
-      ruleIfEvaluationDurationEnd({ result: isTriggered })
+      ifDuration.end({ result: isTriggered })
 
       if (isTriggered) {
         log.info('found match for trigger: %s', trigger.id)
-        const ruleThenEvaluationDurationEnd = ruleThenEvaluationDuration.startTimer({ ruleId: rule.id })
+        const thenDuration = metrics.measureRuleThenDuration(rule)
         const { action, parameters = {} } = vm.run(rule.then)
-        ruleThenEvaluationDurationEnd()
+        thenDuration.end()
         const execution = {
           triggered_by: trigger.id,
           action,

@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/enykeev/ifttt#readme",
   "dependencies": {
+    "@agencyhq/agency-metrics": "^0.0.0",
     "@agencyhq/jsonrpc-ws": "^0.0.0",
     "@apidevtools/openapi-schemas": "^2.0.3",
     "@babel/runtime": "^7.9.2",

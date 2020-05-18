@@ -1,13 +1,16 @@
 const crypto = require('crypto')
 
+const metrics = require('@agencyhq/agency-metrics')
+const RPC = require('@agencyhq/jsonrpc-ws')
 const express = require('express')
 const log = require('loglevel')
 const morgan = require('morgan')
 
-const metrics = require('../metrics')
-const rpc = require('../rpc/client')
-
 log.setLevel(process.env.LOG_LEVEL || 'info')
+
+const rpc = new RPC.Client(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
+
+metrics.instrumentRPCClient(rpc)
 
 const {
   PORT = 3001,

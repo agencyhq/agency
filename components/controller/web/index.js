@@ -1,8 +1,8 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 
+const RPCClient = require('@agencyhq/jsonrpc-ws/lib/client')
 const { Provider } = require('react-redux')
-const RPC = require('rpc-websockets')
 
 const store = require('./store')
 const Intro = require('./components/intro')
@@ -11,7 +11,7 @@ const Executions = require('./components/executions')
 require('./css/index.css')
 
 const socket = new Promise((resolve, reject) => {
-  const ws = window.ws = new RPC.Client(`ws://${location.hostname}:1234/api/`)
+  const ws = window.ws = new RPCClient(`ws://${location.hostname}:1234/api/`)
 
   ws.once('open', () => resolve(ws))
   ws.once('error', reject)

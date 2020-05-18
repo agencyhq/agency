@@ -1,0 +1,25 @@
+{
+  "name": "@agencyhq/agency-metrics",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "Kirill Enykeev <enykeev@mech.sh>",
+  "homepage": "https://github.com/agencyhq/agency#readme",
+  "license": "ISC",
+  "main": "lib/metrics.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agencyhq/agency.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/agencyhq/agency/issues"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-prometheus-middleware": "git+https://github.com/joao-fontenele/express-prometheus-middleware.git#d177e5834955404d5d38a5cd24d1db8f73f806e4",
+    "loglevel": "^1.6.7",
+    "prom-client": "^12.0.0"
+  }
+}
