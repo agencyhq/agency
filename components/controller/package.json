@@ -1,5 +1,5 @@
 {
-  "name": "ifttt",
+  "name": "@agencyhq/agency-controller",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
