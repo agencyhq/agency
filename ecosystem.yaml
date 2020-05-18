@@ -7,7 +7,7 @@ apps:
       - migrations
 
   - name: ifttt_webui
-    script: components/controller/dev.js
+    script: components/demo/dev.js
     autorestart: true
     watch:
       - components/controller/dev.js
