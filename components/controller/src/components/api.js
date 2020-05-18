@@ -22,8 +22,8 @@ const {
 } = process.env
 
 const USERS = {
-  alltoken: ['enykeev', { scope: 'all' }],
-  sometoken: ['someguy', { scope: 'web' }]
+  alltoken: ['enykeev', { scopes: ['all'] }],
+  sometoken: ['someguy', { scopes: ['web'] }]
 }
 
 const executionCounter = new Prometheus.Counter({
@@ -36,7 +36,7 @@ async function handleExecution (rpc, msg) {
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(message))
   executionCounter.inc()
 
-  rpc.emit('execution', message)
+  rpc.notify('execution', message)
 
   log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
   pubsub.channel.ack(msg)
@@ -52,8 +52,8 @@ async function handleTrigger (rpc, msg) {
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(message))
   triggerCounter.inc()
 
-  if (rpc.of('/rule').hasSubscribers('trigger')) {
-    rpc.of('/rule').emitRandomly('trigger', message)
+  if (rpc.hasSubscribers('trigger')) {
+    rpc.notify('trigger', message, { random: true })
 
     log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, message.id)
     pubsub.channel.ack(msg)
@@ -63,22 +63,39 @@ async function handleTrigger (rpc, msg) {
   }
 }
 
+async function auth (token) {
+  if (USERS[token]) {
+    const [username, info] = USERS[token]
+    return {
+      username,
+      info
+    }
+  }
+}
+
+passport.use(new bearer.Strategy(
+  (token, done) => {
+    auth(token)
+      .then(({ username, info } = {}) => done(null, username || false, info))
+      .catch(err => done(err))
+  }
+))
+
 async function main () {
   await pubsub.init()
 
+  const authenticate = async ({ token }) => {
+    const { username: user, info: { scopes } } = await auth(token)
+
+    return {
+      user,
+      scopes
+    }
+  }
+
   const app = express()
   const server = http.createServer(app)
-  const rpc = new RPCServer({ server })
-
-  passport.use(new bearer.Strategy(
-    (token, done) => {
-      if (USERS[token]) {
-        const [username, info] = USERS[token]
-        return done(null, username, info)
-      }
-      return done(null, false)
-    }
-  ))
+  const rpc = new RPCServer({ server, authenticate })
 
   if (METRICS) {
     app.use(metrics.middleware({
@@ -91,14 +108,12 @@ async function main () {
   app.use(express.json())
   app.use(router('../openapi.yaml'))
 
-  rpc.registerSpec('../rpcapi.yaml')
-
   pubsub.subscribe('execution', msg => handleExecution(rpc, msg), {
     name: false,
     exclusive: true
   })
 
-  rpc.of('/rule').register('ready', () => {
+  rpc.registerMethod('ready', () => {
     if (pubsub.isSubscribed('trigger')) {
       return
     }
@@ -107,7 +122,7 @@ async function main () {
   })
 
   rpc.on('disconnect', () => {
-    if (!rpc.of('/rule').hasSubscribers('trigger')) {
+    if (!rpc.hasSubscribers('trigger')) {
       pubsub.unsubscribe('trigger')
     }
   })

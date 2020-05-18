@@ -1,9 +1,16 @@
 const EventEmitter = require('events')
+const fs = require('fs')
 const http = require('http')
+const path = require('path')
 const url = require('url')
 const uuid = require('uuid')
 
+const Ajv = require('ajv')
 const WS = require('ws')
+const yaml = require('js-yaml')
+
+const ajv = new Ajv()
+const validateSpec = ajv.compile(require('./spec/v0'))
 
 class RPCServer extends EventEmitter {
   _defaultUsername = 'anonymous'
@@ -152,6 +159,51 @@ class RPCServer extends EventEmitter {
     }
 
     delete this.notifications[name]
+  }
+
+  registerSpec (filepath, methodDir) {
+    const content = fs.readFileSync(filepath, 'utf8')
+    const spec = yaml.safeLoad(content)
+
+    if (spec.version !== 0) {
+      throw new Error('unsupported version of rpc spec')
+    }
+
+    const valid = validateSpec(spec)
+    if (!valid) {
+      throw new Error('spec validation failed')
+    }
+
+    for (const method in spec.methods) {
+      const {
+        operationId
+        // TODO: start checking for parameters
+      } = spec.methods[method]
+
+      if (!operationId) {
+        continue
+      }
+
+      const operation = require(path.join(methodDir, operationId))
+
+      this.registerMethod(method, operation)
+    }
+
+    for (const event in spec.events) {
+      this.registerNotification(event)
+    }
+  }
+
+  hasSubscribers (name) {
+    if (typeof name !== 'string') {
+      throw new Error('expected name to be a string')
+    }
+
+    if (!this.notifications[name]) {
+      throw new Error('notification not registered')
+    }
+
+    return !!this.notifications[name].clients.size
   }
 
   async notify (name, params, { random } = {}) {
@@ -359,12 +411,12 @@ class RPCServer extends EventEmitter {
     }
   }
 
-  _rpcLogin (params, ws) {
+  async _rpcLogin (params, ws) {
     if (!params) {
       throw this._createError(-32604).error
     }
 
-    const client = this.authenticate(params)
+    const client = await this.authenticate(params)
 
     if (client) {
       const {

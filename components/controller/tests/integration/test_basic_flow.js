@@ -4,7 +4,10 @@ const express = require('express')
 
 describe('Server', () => {
   const client = axios.create({
-    baseURL: 'http://localhost:3000'
+    baseURL: 'http://localhost:3000',
+    headers: {
+      authorization: 'bearer alltoken'
+    }
   })
 
   describe('#/', () => {

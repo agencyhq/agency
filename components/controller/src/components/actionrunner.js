@@ -83,12 +83,13 @@ async function handleExecution (execution) {
 }
 
 async function main () {
-  await rpc.connect('/execution')
+  await rpc.connect()
+  await rpc.auth({ token: 'alltoken' })
 
-  rpc.on('execution', handleExecution)
-  await rpc.subscribe('execution')
+  await rpc.subscribe('execution', handleExecution)
 
   await rpc.notify('ready')
+  log.info('ready to handle executions')
 }
 
 main()

@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/**/test_*.js",
-    "lint": "eslint .",
     "build": "parcel build web/index.html",
     "start": "pm2 start ecosystem.yaml --no-daemon",
     "migrate": "knex migrate:latest && knex seed:run"
@@ -21,13 +20,13 @@
   },
   "homepage": "https://github.com/enykeev/ifttt#readme",
   "dependencies": {
+    "@agencyhq/jsonrpc-ws": "^0.0.0",
     "@apidevtools/openapi-schemas": "^2.0.3",
     "@babel/runtime": "^7.9.2",
     "ajv": "^6.12.2",
     "amqplib": "^0.5.5",
     "axios": "^0.19.2",
     "bookshelf": "^1.1.1",
-    "circular-json": "^0.5.9",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-prometheus-middleware": "git+https://github.com/joao-fontenele/express-prometheus-middleware.git#d177e5834955404d5d38a5cd24d1db8f73f806e4",
@@ -45,21 +44,11 @@
     "react-redux": "^7.2.0",
     "react-time-ago": "^5.0.7",
     "redux": "^4.0.5",
-    "rpc-websockets": "^5.1.1",
-    "vm2": "^3.9.1",
-    "ws": "^7.2.3"
+    "vm2": "^3.9.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/core": "^7.9.6",
     "chai": "^4.2.0",
-    "eslint": "^6.8.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.19.0",
-    "eslint-plugin-standard": "^4.0.1",
     "http-proxy-middleware": "^1.0.3",
     "mocha": "^7.1.1",
     "parcel-bundler": "^1.12.4",

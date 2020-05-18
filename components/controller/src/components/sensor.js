@@ -15,7 +15,8 @@ const {
 } = process.env
 
 async function main () {
-  await rpc.connect('/sensor')
+  await rpc.connect()
+  await rpc.auth({ token: 'alltoken' })
   await rpc.notify('ready')
 
   const app = express()

@@ -1,8 +1,6 @@
-const { URL } = require('url')
-
 const log = require('loglevel')
 const Prometheus = require('prom-client')
-const RPC = require('rpc-websockets')
+const RPC = require('@agencyhq/jsonrpc-ws')
 
 const rpcMessagesCounter = new Prometheus.Counter({
   name: 'ifttt_rpc_messages_received',
@@ -18,62 +16,28 @@ const rpcRequestDuration = new Prometheus.Histogram({
 
 class RPCClient extends RPC.Client {
   constructor () {
-    super(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/', {
-      autoconnect: false
-    })
+    super(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
   }
 
-  connect (namespace) {
-    if (namespace) {
-      this.address = new URL(namespace, this.address).toString()
-    }
-    log.debug('connecting to RPC server', this.address)
-    const p = new Promise((resolve, reject) => {
-      this.once('open', resolve)
-      this.once('error', reject)
-    })
-      .then(() => {
-        log.debug('connected to RPC server', this.address)
-      })
-      .catch(e => {
-        throw new Error(`error connecting to RPC server: ${e.message}`)
-      })
-    super.connect()
+  async connect (...args) {
+    await super.connect(...args)
 
-    function heartbeat () {
-      clearTimeout(this.pingTimeout)
-
-      this.pingTimeout = setTimeout(() => {
-        log.warn('missed heartbeat')
-        this.socket.terminate()
-      }, 30000 + 1000)
-    }
-
-    this.socket.on('open', heartbeat)
-    this.socket.on('ping', heartbeat)
-    this.socket.on('close', () => {
-      clearTimeout(this.pingTimeout)
-    })
-
-    this.socket.on('message', m => {
+    this.ws.on('message', m => {
       rpcMessagesCounter.inc()
-      log.debug('rpc message received:', m.data)
+      log.debug('rpc message received:', m)
     })
-
-    return p
   }
 
-  call (method, ...args) {
+  async call (method, ...args) {
     const rpcRequestDurationEnd = rpcRequestDuration.startTimer({ method })
-    return super.call(method, ...args)
-      .then(v => {
-        rpcRequestDurationEnd({ status: 'resolved' })
-        return v
-      })
-      .catch(e => {
-        rpcRequestDurationEnd({ status: 'rejected' })
-        throw e
-      })
+    try {
+      const v = await super.call(method, ...args)
+      rpcRequestDurationEnd({ status: 'resolved' })
+      return v
+    } catch (e) {
+      rpcRequestDurationEnd({ status: 'rejected' })
+      throw e
+    }
   }
 }
 

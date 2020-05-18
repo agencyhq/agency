@@ -43,7 +43,8 @@ const ruleThenEvaluationDuration = new Prometheus.Histogram({
 })
 
 async function main () {
-  await rpc.connect('/rule')
+  await rpc.connect()
+  await rpc.auth({ token: 'alltoken' })
 
   const rules = (await rpc.call('rule.list'))
     .map(rule => {
@@ -54,9 +55,10 @@ async function main () {
       }
     })
 
+  log.info('registered %s rules', rules.length)
   rulesRegisteredGauge.set(rules.length)
 
-  rpc.on('trigger', trigger => {
+  await rpc.subscribe('trigger', trigger => {
     log.info('processing trigger: %s', trigger.id)
     rules.forEach(rule => {
       const ruleVMInitializationDurationEnd = ruleVMInitializationDuration.startTimer({ ruleId: rule.id })
@@ -87,8 +89,8 @@ async function main () {
     })
   })
 
-  await rpc.subscribe('trigger')
   await rpc.notify('ready')
+  log.info('ready to handle triggers')
 }
 
 main()

@@ -68,10 +68,14 @@ class RPCClient extends EventEmitter {
     this.emit('disconnected')
   }
 
-  async auth () {
-    this.authenticated = true
-    this.scopes = ['mock']
-    this.emit('authenticated')
+  async _send (message) {
+    return new Promise((resolve, reject) => {
+      this.ws.send(JSON.stringify(message), {}, err => err ? reject(err) : resolve())
+    })
+  }
+
+  async auth (params) {
+    return await this.call('rpc.login', params)
   }
 
   async call (method, params, opts) {
@@ -96,14 +100,37 @@ class RPCClient extends EventEmitter {
       message.params = params
     }
 
-    this.ws.send(JSON.stringify(message), {}, err => err && reject(err))
+    try {
+      await this._send(message)
+    } catch (e) {
+      reject(e)
+    }
 
     const result = await promise
 
     return result
   }
 
+  async notify (method, params) {
+    if (!this.isConnected()) {
+      throw new Error('not connected')
+    }
+
+    const message = {
+      jsonrpc: '2.0',
+      method
+    }
+
+    if (params) {
+      message.params = params
+    }
+
+    await this._send(message)
+  }
+
   async subscribe (notification, fn) {
+    await this.call('rpc.on', [notification])
+
     if (!this.subscriptions[notification]) {
       this.subscriptions[notification] = []
     }
@@ -116,6 +143,8 @@ class RPCClient extends EventEmitter {
   }
 
   async unsubscribe (notification, fn) {
+    await this.call('rpc.off', [notification])
+
     if (!this.subscriptions[notification]) {
       return
     }
