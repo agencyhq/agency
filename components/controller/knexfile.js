@@ -1,3 +1,5 @@
+const path = require('path')
+
 module.exports = {
 
   development: {
@@ -11,7 +13,11 @@ module.exports = {
       max: 10
     },
     migrations: {
+      directory: path.join(__dirname, 'migrations'),
       tableName: 'knex_migrations'
+    },
+    seeds: {
+      directory: path.join(__dirname, 'seeds')
     }
   },
 
