@@ -14,7 +14,8 @@ app.use(
     changeOrigin: true,
     pathRewrite: {
       '^/api[/]*': ''
-    }
+    },
+    ws: true
   })
 )
 

@@ -2,6 +2,7 @@ const React = require('react')
 const ReactDOM = require('react-dom')
 
 const RPCClient = require('@agencyhq/jsonrpc-ws/lib/client')
+const WebSocket = require('x-platform-ws')
 const { Provider } = require('react-redux')
 
 const store = require('./store')
@@ -10,15 +11,14 @@ const Executions = require('./components/executions')
 
 require('./css/index.css')
 
-const socket = new Promise((resolve, reject) => {
-  const ws = window.ws = new RPCClient(`ws://${location.hostname}:1234/api/`)
+const ws = window.ws = new RPCClient(`ws://${location.hostname}:1234/api`, { WebSocket })
 
-  ws.once('open', () => resolve(ws))
-  ws.once('error', reject)
-})
+async function connect () {
+  await ws.connect()
+  await ws.auth({ token: 'alltoken' })
+}
 
 async function fetchExecutions () {
-  const ws = await socket
   store.dispatch({ type: 'EXECUTION_FETCH', status: 'pending' })
   try {
     const data = await ws.call('execution.list', { pageSize: 15 })
@@ -31,7 +31,8 @@ async function fetchExecutions () {
 
 function App () {
   React.useEffect(() => {
-    fetchExecutions()
+    connect()
+      .then(() => fetchExecutions())
   }, [])
 
   return <div className="page">

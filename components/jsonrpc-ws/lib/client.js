@@ -1,3 +1,4 @@
+const once = require('events.once')
 const EventEmitter = require('events')
 
 const WS = require('ws')
@@ -51,7 +52,7 @@ class RPCClient extends EventEmitter {
 
     this.ws.on('message', m => this._handleMessage(m))
 
-    await EventEmitter.once(this.ws, 'open')
+    await once(this.ws, 'open')
 
     this.emit('connected')
   }
@@ -63,7 +64,7 @@ class RPCClient extends EventEmitter {
 
     this.ws.close()
 
-    await EventEmitter.once(this.ws, 'close')
+    await once(this.ws, 'close')
 
     this.emit('disconnected')
   }
