@@ -17,6 +17,7 @@
     "ajv": "^6.12.2",
     "events.once": "^2.0.2",
     "js-yaml": "^3.13.1",
+    "uuid": "^8.0.0",
     "ws": "^7.2.3"
   },
   "devDependencies": {

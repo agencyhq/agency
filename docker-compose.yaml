@@ -14,7 +14,7 @@ services:
     image: prom/prometheus
     volumes:
       - prometheus:/prometheus
-      - ./contrib/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./components/metrics/contrib/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -36,9 +36,9 @@ services:
       - http
     volumes:
       - grafana:/var/lib/grafana
-      - ./contrib/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/rabbitmq.yaml
-      - ./contrib/grafana/datasources.yml:/etc/grafana/provisioning/datasources/prometheus.yaml
-      - ./contrib/grafana/dashboards:/dashboards
+      - ./components/metrics/contrib/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/rabbitmq.yaml
+      - ./components/metrics/contrib/grafana/datasources.yml:/etc/grafana/provisioning/datasources/prometheus.yaml
+      - ./components/metrics/contrib/grafana/dashboards:/dashboards
     environment:
       GF_INSTALL_PLUGINS: 'flant-statusmap-panel,grafana-piechart-panel'
       GF_SERVER_ROOT_URL: 'http://localhost:1234/grafana'
@@ -56,7 +56,7 @@ services:
       - 5432:5432
   mq:
     build:
-      context: contrib
+      context: ./components/metrics/contrib
       dockerfile: rabbitmq.Dockerfile
     image: enykeev/rabbitmq:3.8-prometheus
     networks:
@@ -85,10 +85,12 @@ services:
     networks:
       - http
     volumes:
-      - ./contrib/nginx.conf:/etc/nginx/nginx.conf
+      - ./components/metrics/contrib/nginx.conf:/etc/nginx/nginx.conf
 
   migration:
-    build: .
+    build:
+      context: .
+      dockerfile: ./components/controller/Dockerfile
     image: enykeev/ifttt:latest
     command: npm run migrate
     environment:
@@ -101,7 +103,9 @@ services:
       - db
 
   api:
-    build: .
+    build:
+      context: .
+      dockerfile: ./components/controller/Dockerfile
     image: enykeev/ifttt:latest
     command: node src/components/api.js
     environment:
@@ -129,7 +133,9 @@ services:
       - ifttt_2.proxy.websocket=
 
   sensor:
-    build: .
+    build:
+      context: .
+      dockerfile: ./components/controller/Dockerfile
     image: enykeev/ifttt:latest
     command: node src/components/sensor.js
     environment:
@@ -146,7 +152,9 @@ services:
       - ifttt.targetport=3001
 
   actionrunner:
-    build: .
+    build:
+      context: .
+      dockerfile: ./components/controller/Dockerfile
     image: enykeev/ifttt:latest
     command: node src/components/actionrunner.js
     environment:
@@ -161,7 +169,9 @@ services:
       - http
 
   ruleengine:
-    build: .
+    build:
+      context: .
+      dockerfile: ./components/controller/Dockerfile
     image: enykeev/ifttt:latest
     command: node src/components/ruleengine.js
     environment:

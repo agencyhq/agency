@@ -5,10 +5,14 @@ RUN npm install -g wait-on
 
 WORKDIR /app
 
-COPY package*.json /app/
-RUN npm ci
+COPY ./components/controller/package*.json /app/
+COPY ./components/*/*.tgz /packages/
 
-COPY . /app/
+RUN npm i || \
+  npm i /packages/*.tgz && \
+  rm -R /packages
+
+COPY ./components/controller /app/
 
 EXPOSE 3000 3001
 

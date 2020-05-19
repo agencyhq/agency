@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "migrate": "knex migrate:latest && knex seed:run",
+    "migrate": "npm --prefix components/controller run migrate",
     "start": "pm2 start ecosystem.yaml --no-daemon",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

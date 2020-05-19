@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha tests/**/test_*.js",
+    "migrate": "knex migrate:latest && knex seed:run",
     "build": "parcel build web/index.html"
   },
   "repository": {
@@ -27,7 +28,6 @@
     "bookshelf": "^1.1.1",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "express-prometheus-middleware": "git+https://github.com/joao-fontenele/express-prometheus-middleware.git#d177e5834955404d5d38a5cd24d1db8f73f806e4",
     "js-yaml": "^3.13.1",
     "knex": "^0.20.13",
     "loglevel": "^1.6.7",

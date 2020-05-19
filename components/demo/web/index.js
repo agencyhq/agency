@@ -13,12 +13,12 @@ require('./css/index.css')
 
 const ws = window.ws = new RPCClient(`ws://${location.hostname}:1234/api`, { WebSocket })
 
-async function connect () {
-  await ws.connect()
-  await ws.auth({ token: 'alltoken' })
-}
-
 async function fetchExecutions () {
+  if (!ws.isConnected()) {
+    await ws.connect()
+    await ws.auth({ token: 'alltoken' })
+  }
+
   store.dispatch({ type: 'EXECUTION_FETCH', status: 'pending' })
   try {
     const data = await ws.call('execution.list', { pageSize: 15 })
@@ -31,8 +31,7 @@ async function fetchExecutions () {
 
 function App () {
   React.useEffect(() => {
-    connect()
-      .then(() => fetchExecutions())
+    fetchExecutions()
   }, [])
 
   return <div className="page">

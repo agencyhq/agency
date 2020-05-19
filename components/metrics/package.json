@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
-    "express-prometheus-middleware": "git+https://github.com/joao-fontenele/express-prometheus-middleware.git#d177e5834955404d5d38a5cd24d1db8f73f806e4",
+    "express-prometheus-middleware": "^0.9.6",
     "loglevel": "^1.6.7",
     "prom-client": "^12.0.0"
   }
