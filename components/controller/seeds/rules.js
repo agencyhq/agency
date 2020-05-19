@@ -8,7 +8,7 @@ exports.seed = async knex => {
     id: crypto.randomBytes(16).toString('hex'),
     code: fs.readFileSync(path.join(__dirname, 'rules/http_e2e.js'))
   }, {
-    id: crypto.randomBytes(16).toString('hex'),
+    id: 'http-web',
     code: fs.readFileSync(path.join(__dirname, 'rules/http_web.js'))
   }, {
     id: crypto.randomBytes(16).toString('hex'),

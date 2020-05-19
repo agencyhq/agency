@@ -2,30 +2,44 @@ const { createStore } = require('redux')
 
 function rootReducer (state, action) {
   state = state || {
-    loading: false,
     executions: [],
-    newExecutions: 0
+    rules: [],
+    showIntro: true,
+    showAssignments: false
   }
+
+  const {
+    executions,
+    showIntro,
+    showAssignments
+  } = state
 
   switch (action.type) {
     case 'EXECUTION_FETCH':
       switch (action.status) {
-        case 'pending':
-          return {
-            ...state,
-            loading: true
-          }
         case 'success':
           return {
             ...state,
-            loading: false,
-            executions: action.data,
-            newExecutions: 0
+            executions: action.data
           }
         case 'error':
           return {
             ...state,
-            loading: false,
+            error: action.error
+          }
+        default:
+          return state
+      }
+    case 'RULE_FETCH':
+      switch (action.status) {
+        case 'success':
+          return {
+            ...state,
+            rules: action.data
+          }
+        case 'error':
+          return {
+            ...state,
             error: action.error
           }
         default:
@@ -34,7 +48,19 @@ function rootReducer (state, action) {
     case 'EXECUTION_ADD':
       return {
         ...state,
-        executions: [action.execution, ...state.executions]
+        executions: [action.execution, ...executions]
+      }
+
+    case 'TOGGLE_INTRO':
+      return {
+        ...state,
+        showIntro: !showIntro
+      }
+
+    case 'TOGGLE_ASSIGNMENTS':
+      return {
+        ...state,
+        showAssignments: !showAssignments
       }
     default:
       return state

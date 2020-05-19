@@ -13,7 +13,7 @@ function Execution ({ opts }) {
     result
   } = opts
 
-  return <div className='execution paper'>
+  return <div className='execution'>
     <div className='execution_name'>{ action }</div>
     <div className='execution_created'><ReactTimeAgo date={ new Date(createdAt) } /></div>
     <div className='execution_parameters selectable'>

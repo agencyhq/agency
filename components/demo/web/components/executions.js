@@ -11,6 +11,7 @@ function Executions () {
   const executionsToShow = executions.slice(0, 5)
 
   return <div className="executions">
+    <h5>Assignments</h5>
     {
       executionsToShow.map(e => {
         return <Execution key={e.id} opts={e} />

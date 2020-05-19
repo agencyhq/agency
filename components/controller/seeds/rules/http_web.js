@@ -1,5 +1,7 @@
 module.exports = {
-  if: trigger => trigger.type === 'http' && trigger.event.body.type === 'web',
+  if: trigger =>
+    trigger.type === 'http' &&
+    trigger.event.body.type === 'web',
   then: trigger => ({
     action: 'http',
     parameters: {

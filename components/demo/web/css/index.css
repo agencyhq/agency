@@ -3,15 +3,124 @@
 body {
   margin: 0;
   padding: 0;
+
+  font-family: 'PT Sans', sans-serif;
+}
+
+.map {
+  position: absolute;
+
+  fill: #333;
+  stroke-width: 1px;
+  stroke: #eee;
+
+  max-height: 100vh;
+
+  margin: 0 auto;
 }
 
 .page {
+  position: absolute;
+  z-index: 1;
+
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  padding: 10px;
+
   display: flex;
 }
 
-.intro {
+.menu {
+  width: 80px;
+  height: 100%;
+
+  margin-right: 10px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.menu .item {
+  width: 80px;
+  height: 80px;
+
+  margin: 5px 0;
+
+  color: #aaa;
+  border: 1px dashed #aaa;
+
+  cursor: pointer;
+}
+
+.menu .spacer {
+  flex: 1
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+
+  color: #aaa;
+  border: 1px dashed #aaa;
+
+  display: flex;
+}
+
+.logo:before {
+  content: '[logo]';
+
+  align-self: center;
+  text-align: center;
   flex: 1;
-  margin: 20px;
+}
+
+.intro {
+  position: relative;
+  width: 600px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  overflow: auto;
+
+  font-size: 1.2em;
+
+  background-color: #ffffffee;
+}
+
+.intro .signature {
+  text-align: right;
+  padding: 20px;
+}
+
+.intro button {
+  font-size: .8em;
+  padding: 10px 16px;
+  white-space: nowrap;
+  width: auto;
+}
+
+.intro .close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  width: 40px;
+  height: 40px;
+
+  cursor: pointer;
+
+  text-align: center;
+  font-size: 30px;
+}
+
+.intro .close:before {
+  content: '✖';
 }
 
 .trigger {
@@ -26,11 +135,17 @@ body {
 
 .executions {
   width: 500px;
+
+  padding: 0 10px;
 }
 
 .execution {
   position: relative;
-  margin: 20px;
+  margin: 5px 0 10px;
+
+  background-color: #fffffff5;
+
+  padding: 10px;
 }
 
 .execution_created {

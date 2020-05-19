@@ -31,7 +31,6 @@
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
   -webkit-touch-callout: none;
   cursor: default;
-  font-family: 'PT Sans', sans-serif;
   letter-spacing: 0; }
 
 .selectable, .selectable * {
