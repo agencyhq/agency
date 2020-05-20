@@ -7,7 +7,7 @@ const WebSocket = require('x-platform-ws')
 
 const store = require('./store')
 const Intro = require('./components/intro')
-const Executions = require('./components/executions')
+const Assignments = require('./components/assignments')
 const Map = require('./components/map')
 
 require('./css/index.css')
@@ -76,7 +76,7 @@ function App () {
     <div className="page">
       <Menu />
       { showIntro && <Intro /> }
-      { showAssignments && <Executions /> }
+      { showAssignments && <Assignments /> }
     </div>
   </div>
 }

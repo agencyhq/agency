@@ -14,6 +14,7 @@ body {
   stroke-width: 1px;
   stroke: #eee;
 
+  width: 100%;
   max-height: 100vh;
 
   margin: 0 auto;
@@ -133,13 +134,26 @@ body {
   margin: 2em 0;
 }
 
-.executions {
+.assignments {
   width: 500px;
 
   padding: 0 10px;
 }
 
-.execution {
+.assignments .header {
+  display: inline-block;
+
+  color: #eee;
+  background-color: #888e;
+  box-shadow: 0 0 0 1px #eee8;
+
+  margin: 5px 0 3px;
+  padding: 0px 8px 2px;
+
+  font-weight: bold;
+}
+
+.assignment {
   position: relative;
   margin: 5px 0 10px;
 
@@ -148,7 +162,7 @@ body {
   padding: 10px;
 }
 
-.execution_created {
+.assignment_created {
   position: absolute;
   top: 10px;
   right: 20px;
@@ -157,11 +171,11 @@ body {
   color: #aaa;
 }
 
-.execution_name {
+.assignment_name {
   font-weight: bold;
 }
 
-.execution_parameters {
+.assignment_parameters {
   font-family: 'PT Mono';
   font-size: .8em;
   line-height: 1.4em;

@@ -1,7 +1,7 @@
 const React = require('react')
 const PropTypes = require('prop-types')
 
-function Rule ({ model }) {
+function Protocol ({ model }) {
   const {
     code
   } = model
@@ -11,8 +11,8 @@ function Rule ({ model }) {
   </pre>
 }
 
-Rule.propTypes = {
+Protocol.propTypes = {
   model: PropTypes.object.isRequired
 }
 
-module.exports = Rule
+module.exports = Protocol

@@ -1,7 +1,7 @@
 const React = require('react')
 const { useDispatch, useSelector, shallowEqual } = require('react-redux')
 
-const Rule = require('./rule')
+const Protocol = require('./protocol')
 
 const exampleEvent = {
   type: 'web',
@@ -24,8 +24,8 @@ function emitEvent () {
 }
 
 function Intro () {
-  const rule = useSelector(state => {
-    return state.rules.find(rule => rule.id === 'http-web')
+  const protocol = useSelector(state => {
+    return state.protocols.find(proto => proto.id === 'http-web')
   }, shallowEqual)
 
   const dispatch = useDispatch()
@@ -45,7 +45,7 @@ function Intro () {
       Your main responsibility as a Director is to came up with the set of protocols to protect the world and the Agency from all kinds of threats, foreign and domestic. In compliance with government recommendations, our IT contractors decided not to invent another DSL and instead use popular and proven scripting language, ECMA-262, also known as JavaScript.
     </p>
     {
-      rule && <Rule model={rule} />
+      protocol && <Protocol model={protocol} />
     }
     <p>
       For the purpose of demonstration, clicking on the button will send a POST request to our mole who in turn will promptly report this incident to HQ. Another way to contact the mole is via <b>curl</b>.

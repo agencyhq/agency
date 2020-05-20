@@ -2,14 +2,14 @@ const { createStore } = require('redux')
 
 function rootReducer (state, action) {
   state = state || {
-    executions: [],
-    rules: [],
+    assignments: [],
+    protocols: [],
     showIntro: true,
     showAssignments: false
   }
 
   const {
-    executions,
+    assignments,
     showIntro,
     showAssignments
   } = state
@@ -20,7 +20,7 @@ function rootReducer (state, action) {
         case 'success':
           return {
             ...state,
-            executions: action.data
+            assignments: action.data
           }
         case 'error':
           return {
@@ -35,7 +35,7 @@ function rootReducer (state, action) {
         case 'success':
           return {
             ...state,
-            rules: action.data
+            protocols: action.data
           }
         case 'error':
           return {
@@ -48,7 +48,7 @@ function rootReducer (state, action) {
     case 'EXECUTION_ADD':
       return {
         ...state,
-        executions: [action.execution, ...executions]
+        assignments: [action.execution, ...assignments]
       }
 
     case 'TOGGLE_INTRO':

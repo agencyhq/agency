@@ -5,7 +5,7 @@ const JavascriptTimeAgo = require('javascript-time-ago').default
 
 JavascriptTimeAgo.locale(require('javascript-time-ago/locale/en'))
 
-function Execution ({ opts }) {
+function Assignment ({ opts }) {
   const {
     created_at: createdAt,
     action,
@@ -13,20 +13,20 @@ function Execution ({ opts }) {
     result
   } = opts
 
-  return <div className='execution'>
-    <div className='execution_name'>{ action }</div>
-    <div className='execution_created'><ReactTimeAgo date={ new Date(createdAt) } /></div>
-    <div className='execution_parameters selectable'>
+  return <div className='assignment'>
+    <div className='assignment_name'>{ action }</div>
+    <div className='assignment_created'><ReactTimeAgo date={ new Date(createdAt) } /></div>
+    <div className='assignment_parameters selectable'>
       { JSON.stringify(parameters, null, 2) }
     </div>
-    <div className='execution_parameters selectable'>
+    <div className='assignment_parameters selectable'>
       { JSON.stringify(result, null, 2) }
     </div>
   </div>
 }
 
-Execution.propTypes = {
+Assignment.propTypes = {
   opts: PropTypes.object.isRequired
 }
 
-module.exports = Execution
+module.exports = Assignment
