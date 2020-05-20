@@ -2,7 +2,7 @@ const axios = require('axios').default
 const expect = require('chai').expect
 const express = require('express')
 
-describe('Server', () => {
+describe('API', () => {
   const client = axios.create({
     baseURL: 'http://localhost:3000',
     headers: {
@@ -16,6 +16,14 @@ describe('Server', () => {
       expect(resp.data).to.equal('Hello World')
     })
   })
+
+  it.skip('should have every method in openapi.yaml registered', () => {
+    throw new Error('not implemented')
+  })
+
+  it.skip('should have every method in rpcapi.yaml registered', () => {
+    throw new Error('not implemented')
+  })
 })
 
 describe('Sensor', () => {
@@ -28,6 +36,22 @@ describe('Sensor', () => {
       const resp = await client.post('/http', { a: 'b' })
       expect(resp.data).to.equal('OK')
     })
+
+    it.skip('should notify api of new trigger', () => {
+      throw new Error('not implemented')
+    })
+  })
+})
+
+describe('Ruleengine', () => {
+  it.skip('should pull a list of rules', () => {
+    throw new Error('not implemented')
+  })
+})
+
+describe('Actionrunner', () => {
+  it.skip('should listen for new executions', () => {
+    throw new Error('not implemented')
   })
 })
 
@@ -68,4 +92,6 @@ describe('E2E', () => {
     const req = await mock
     expect(req.body).to.deep.equal({ a: 'b' })
   })
+
+  it.skip('should test anything but the happiest of paths')
 })
