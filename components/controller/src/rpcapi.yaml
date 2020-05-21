@@ -36,6 +36,36 @@ methods:
       items:
         type: object
         # Rule component
+  rule.create:
+    operationId: ruleCreate
+    namespaces:
+      - /
+      - /rule
+    parameters:
+      - name: rule
+        schema:
+          type: object
+          # Rule create component
+  rule.update:
+    operationId: ruleUpdate
+    namespaces:
+      - /
+      - /rule
+    parameters:
+      - name: rule
+        schema:
+          type: object
+          # Rule create component
+  rule.delete:
+    operationId: ruleDelete
+    namespaces:
+      - /
+      - /rule
+    parameters:
+      - name: rule
+        schema:
+          type: object
+          # Rule delete component
   execution.list:
     operationId: executionList
     namespaces:
@@ -107,3 +137,9 @@ events:
     response:
       type: object
       # Execution component
+  rule:
+    namespaces:
+      - /rule
+    response:
+      type: object
+      # Rule component

@@ -17,7 +17,8 @@ parserOptions:
   ecmaVersion: 2018
 plugins:
   - react
-rules: {}
+rules:
+  no-unused-expressions: 'off'
 settings:
   react:
     version: detect

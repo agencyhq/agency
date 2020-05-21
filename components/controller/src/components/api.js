@@ -52,6 +52,17 @@ async function handleTrigger (rpc, msg) {
   }
 }
 
+async function handleRule (rpc, msg) {
+  const rule = JSON.parse(msg.content.toString())
+  // metrics.countTriggers(trigger)
+  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(rule))
+
+  rpc.notify('rule', rule)
+
+  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, rule.id)
+  pubsub.channel.ack(msg)
+}
+
 async function auth (token) {
   if (USERS[token]) {
     const [username, info] = USERS[token]
@@ -98,6 +109,11 @@ async function main () {
   app.use(router('../openapi.yaml'))
 
   pubsub.subscribe('execution', msg => handleExecution(rpc, msg), {
+    name: false,
+    exclusive: true
+  })
+
+  pubsub.subscribe('rule', msg => handleRule(rpc, msg), {
     name: false,
     exclusive: true
   })

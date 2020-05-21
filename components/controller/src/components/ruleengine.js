@@ -18,49 +18,72 @@ if (METRICS) {
   metrics.createServer(PORT)
 }
 
+const rules = []
+
+function initializeRule (rule) {
+  const initDuration = metrics.measureRuleInitDuration(rule)
+  const vm = new VM({
+    timeout: 1000,
+    sandbox: {}
+  })
+  vm.run('module = { exports: {} }')
+
+  const res = {
+    ...rule,
+    vm,
+    errors: []
+  }
+
+  try {
+    vm.run(rule.code)
+  } catch (err) {
+    res.errors.push(err.toString())
+  }
+
+  const { exports } = vm.sandbox.module
+
+  if (!exports.if || typeof exports.if !== 'function') {
+    res.errors.push("expect rule to export function 'if'")
+  } else {
+    res.if = exports.if
+  }
+
+  if (!exports.then || typeof exports.then !== 'function') {
+    res.errors.push("expect rule to export function 'then'")
+  } else {
+    res.then = exports.then
+  }
+
+  initDuration.end()
+
+  return res
+}
+
 async function main () {
   await rpc.connect()
   await rpc.auth({ token: 'alltoken' })
 
-  const rules = (await rpc.call('rule.list'))
-    .map(rule => {
-      const initDuration = metrics.measureRuleInitDuration(rule)
-      const vm = new VM({
-        timeout: 1000,
-        sandbox: {}
-      })
-      vm.run('module = { exports: {} }')
+  const req = await rpc.call('rule.list')
 
-      const res = {
-        ...rule,
-        vm,
-        errors: []
-      }
+  for (const rule of req) {
+    rules.push(initializeRule(rule))
+  }
 
-      try {
-        vm.run(rule.code)
-      } catch (err) {
-        res.errors.push(err.toString())
-      }
-
-      const { exports } = vm.sandbox.module
-
-      if (!exports.if || typeof exports.if !== 'function') {
-        res.errors.push("expect rule to export function 'if'")
+  await rpc.subscribe('rule', (rule) => {
+    const index = rules.findIndex(r => r.id === rule.id)
+    if (index === -1) {
+      rules.push(initializeRule(rule))
+    } else {
+      if (rule.deleted) {
+        rules.splice(index, 1)
       } else {
-        res.if = exports.if
+        rules[index] = initializeRule(rule)
       }
+    }
 
-      if (!exports.then || typeof exports.then !== 'function') {
-        res.errors.push("expect rule to export function 'then'")
-      } else {
-        res.then = exports.then
-      }
-
-      initDuration.end()
-
-      return res
-    })
+    log.info('registered %s rules', rules.length)
+    metrics.countRules(rules)
+  })
 
   log.info('registered %s rules', rules.length)
   metrics.countRules(rules)
