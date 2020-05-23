@@ -10,7 +10,7 @@ function Assignments () {
 
   const assignmentsToShow = assignments.slice(0, 5)
 
-  return <div className="executions">
+  return <div className="assignments">
     <h5 className="header" >Assignments</h5>
     {
       assignmentsToShow.map(e => {

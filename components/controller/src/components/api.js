@@ -132,6 +132,10 @@ async function main () {
       return
     }
 
+    if (!rpc.hasSubscribers('trigger')) {
+      return
+    }
+
     pubsub.subscribe('trigger', msg => handleTrigger(rpc, msg))
   }, {
     scopes: ['any']

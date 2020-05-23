@@ -8,8 +8,9 @@ function rootReducer (state, action) {
     showAssignments: false
   }
 
-  const {
+  let {
     assignments,
+    protocols,
     showIntro,
     showAssignments
   } = state
@@ -45,22 +46,54 @@ function rootReducer (state, action) {
         default:
           return state
       }
-    case 'EXECUTION_ADD':
-      return {
-        ...state,
-        assignments: [action.execution, ...assignments]
+    case 'EXECUTION_UPDATED': {
+      const index = assignments.findIndex(a => a.id === action.data.id)
+
+      if (index !== -1) {
+        assignments[index] = action.data
+      } else {
+        assignments = [action.data, ...assignments]
       }
 
-    case 'TOGGLE_INTRO':
       return {
         ...state,
-        showIntro: !showIntro
+        assignments
+      }
+    }
+    case 'RULE_UPDATED':
+      return {
+        ...state,
+        protocols: protocols
+          .map(p => {
+            if (p.id === action.data.id) {
+              return action.data
+            } else {
+              return p
+            }
+          })
+      }
+    case 'TOGGLE_INTRO':
+      if (action.state !== undefined) {
+        showIntro = action.state
+      } else {
+        showIntro = !showIntro
+      }
+
+      return {
+        ...state,
+        showIntro
       }
 
     case 'TOGGLE_ASSIGNMENTS':
+      if (action.state !== undefined) {
+        showAssignments = action.state
+      } else {
+        showAssignments = !showAssignments
+      }
+
       return {
         ...state,
-        showAssignments: !showAssignments
+        showAssignments
       }
     default:
       return state

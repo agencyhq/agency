@@ -1,9 +1,49 @@
 const React = require('react')
+const PropTypes = require('prop-types')
+const { UnControlled: CodeMirror } = require('react-codemirror2')
 const { useDispatch, useSelector, shallowEqual } = require('react-redux')
 
-const Protocol = require('./protocol')
+const ws = require('../lib/ws')
 
-const exampleEvent = {
+require('codemirror/lib/codemirror.css')
+require('codemirror/mode/javascript/javascript')
+
+function Button ({ children, className = '', onClick, ...rest }) {
+  const initialClasses = className.split(' ')
+  const [classNames, setClassNames] = React.useState(initialClasses)
+
+  async function onClickHandler () {
+    if (!onClick) {
+      return
+    }
+
+    try {
+      await onClick()
+      setClassNames([...new Set(classNames).add('succeeded')])
+    } catch (e) {
+      setClassNames([...new Set(classNames).add('error')])
+    }
+  }
+
+  function tansitionEndHandler () {
+    setClassNames(initialClasses)
+  }
+
+  return <button
+    className={['button', ...classNames].join(' ')}
+    onClick={onClickHandler}
+    onTransitionEnd={tansitionEndHandler}
+    { ...rest }
+  >{ children }</button>
+}
+
+Button.propTypes = {
+  children: PropTypes.node,
+  className: PropTypes.string,
+  onClick: PropTypes.func
+}
+
+const defaultEvent = {
   type: 'web',
   url: 'https://httpbin.org/post',
   payload: {
@@ -11,15 +51,17 @@ const exampleEvent = {
   }
 }
 
-const snippetCurl = `curl -X POST ${location.origin}/sensor/http -H Content-Type:application/json -d '${JSON.stringify(exampleEvent)}'`
+async function saveProtocol (code) {
+  await ws.call('rule.update', { id: 'http-web', code })
+}
 
-function emitEvent () {
-  return fetch('/sensor/http', {
+async function emitEvent (body) {
+  await fetch('/sensor/http', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(exampleEvent)
+    body
   })
 }
 
@@ -29,6 +71,11 @@ function Intro () {
   }, shallowEqual)
 
   const dispatch = useDispatch()
+
+  const [exampleEvent, setExampleEvent] = React.useState(JSON.stringify(defaultEvent, null, 2))
+  const [protocolCandidate, setProtocolCandidate] = React.useState()
+
+  const protocolChanged = protocol && protocolCandidate && protocol.code !== protocolCandidate
 
   return <div className="intro">
     <div className="close" onClick={() => dispatch({ type: 'TOGGLE_INTRO' })}/>
@@ -45,16 +92,43 @@ function Intro () {
       Your main responsibility as a Director is to came up with the set of protocols to protect the world and the Agency from all kinds of threats, foreign and domestic. In compliance with government recommendations, our IT contractors decided not to invent another DSL and instead use popular and proven scripting language, ECMA-262, also known as JavaScript.
     </p>
     {
-      protocol && <Protocol model={protocol} />
+      protocol &&
+        <CodeMirror
+          value={protocol.code}
+          options={{
+            lineNumbers: true
+          }}
+          onChange={editor => setProtocolCandidate(editor.getValue())}
+        />
     }
+    <div className="trigger" >
+      {
+        <Button
+          onClick={async () => saveProtocol(protocolCandidate)}
+          disabled={!protocolChanged ? 'disabled' : ''}
+        >
+          update protocol
+        </Button>
+      }
+    </div>
     <p>
       For the purpose of demonstration, clicking on the button will send a POST request to our mole who in turn will promptly report this incident to HQ. Another way to contact the mole is via <b>curl</b>.
     </p>
+    <CodeMirror
+      value={exampleEvent}
+      options={{
+        lineNumbers: true
+      }}
+      onBlur={editor => setExampleEvent(editor.getValue())}
+    />
     <div className="trigger">
-      <button className="green-button" onClick={() => emitEvent()}>emit an event</button>
+      <Button className="green-button" onClick={async () => {
+        await emitEvent(exampleEvent)
+        dispatch({ type: 'TOGGLE_ASSIGNMENTS', state: true })
+      }}>emit an event</Button>
     </div>
     <pre className="snippet">
-      { snippetCurl }
+      {`curl -X POST ${location.origin}/sensor/http -d '${exampleEvent}' -H Content-Type:application/json`}
     </pre>
     <p>
       Every reported incident is assigned to one of our analysts for evaluation. Whether or not the incident deserves the response is decided by the <b>if</b> portion of the protocol. If this condition ends up truthful, analyst would have to evaluate <b>then</b> portion of the protocol to came up with an appropriate action and a set of parameters and inform HQ of his recommendations in form of an assignment (execution).

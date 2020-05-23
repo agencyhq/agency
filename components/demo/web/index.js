@@ -1,10 +1,9 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 
-const RPCClient = require('@agencyhq/jsonrpc-ws/lib/client')
 const { useDispatch, useSelector, Provider } = require('react-redux')
-const WebSocket = require('x-platform-ws')
 
+const ws = require('./lib/ws')
 const store = require('./store')
 const Intro = require('./components/intro')
 const Assignments = require('./components/assignments')
@@ -25,8 +24,6 @@ function Menu () {
     <div className="item">settings</div>
   </div>
 }
-
-const ws = window.ws = new RPCClient(`ws://${location.hostname}:1234/api`, { WebSocket })
 
 async function fetchExecutions () {
   store.dispatch({ type: 'EXECUTION_FETCH', status: 'pending' })
@@ -50,6 +47,18 @@ async function fetchRules () {
   }
 }
 
+async function subscribeRules () {
+  await ws.subscribe('rule', data => {
+    store.dispatch({ type: 'RULE_UPDATED', data })
+  })
+}
+
+async function subscribeExecutions () {
+  await ws.subscribe('execution', data => {
+    store.dispatch({ type: 'EXECUTION_UPDATED', data })
+  })
+}
+
 function App () {
   React.useEffect(() => {
     (async () => {
@@ -60,6 +69,9 @@ function App () {
 
       fetchExecutions()
       fetchRules()
+
+      subscribeRules()
+      subscribeExecutions()
     })()
   }, [])
 
