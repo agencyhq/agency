@@ -60,6 +60,7 @@ pre, code {
 }
 
 .menu {
+  min-width: 80px;
   width: 80px;
   height: 100%;
 
@@ -117,6 +118,7 @@ pre, code {
 
 .intro {
   position: relative;
+  min-width: 600px;
   width: 600px;
 
   padding: 20px;
@@ -192,6 +194,7 @@ pre, code {
 }
 
 .assignments {
+  min-width: 500px;
   width: 500px;
 
   padding: 0 10px;
