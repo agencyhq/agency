@@ -176,7 +176,8 @@ class RPCServer extends EventEmitter {
 
     for (const method in spec.methods) {
       const {
-        operationId
+        operationId,
+        scopes
         // TODO: start checking for parameters
       } = spec.methods[method]
 
@@ -186,11 +187,19 @@ class RPCServer extends EventEmitter {
 
       const operation = require(path.join(methodDir, operationId))
 
-      this.registerMethod(method, operation)
+      this.registerMethod(method, operation, {
+        scopes: new Set(scopes || [])
+      })
     }
 
     for (const event in spec.events) {
-      this.registerNotification(event)
+      const {
+        scopes
+      } = spec.events[event]
+
+      this.registerNotification(event, {
+        scopes: new Set(scopes || [])
+      })
     }
   }
 
@@ -242,6 +251,8 @@ class RPCServer extends EventEmitter {
   }
 
   async _handleRPC (ws, client, data) {
+    this.emit('message', ws, client, data)
+
     const opts = {}
 
     if (data instanceof ArrayBuffer) {
@@ -418,15 +429,17 @@ class RPCServer extends EventEmitter {
 
     const client = await this.authenticate(params)
 
-    if (client) {
-      const {
-        user = this._defaultUsername,
-        scopes = []
-      } = client
-
-      ws._user = user + ''
-      ws._scopes = new Set(scopes)
+    if (!client) {
+      throw new Error('authentication failed')
     }
+
+    const {
+      user = this._defaultUsername,
+      scopes = []
+    } = client
+
+    ws._user = user + ''
+    ws._scopes = new Set(scopes)
 
     return client
   }

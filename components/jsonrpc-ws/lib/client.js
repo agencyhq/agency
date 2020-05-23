@@ -76,7 +76,16 @@ class RPCClient extends EventEmitter {
   }
 
   async auth (params) {
-    return await this.call('rpc.login', params)
+    const identity = await this.call('rpc.login', params)
+
+    if (identity) {
+      this.authenticated = true
+      this.user = identity.user
+      this.scopes = new Set(identity.scopes || [])
+      this.emit('authenticated', identity)
+    }
+
+    return identity
   }
 
   async call (method, params, opts) {
@@ -85,11 +94,11 @@ class RPCClient extends EventEmitter {
     }
 
     const {
-      timeout = this.opts.callTimeout
+      timeout
     } = opts || {}
     const id = this.generateId(method, params, opts)
 
-    const { reject, promise } = this.queue[id] = deferred(timeout)
+    const { reject, promise } = this.queue[id] = deferred(timeout || this.opts.callTimeout)
 
     const message = {
       jsonrpc: '2.0',
@@ -130,7 +139,11 @@ class RPCClient extends EventEmitter {
   }
 
   async subscribe (notification, fn) {
-    await this.call('rpc.on', [notification])
+    const res = await this.call('rpc.on', [notification])
+
+    if (res[notification] !== 'ok') {
+      throw new Error(`error subscribing: ${res[notification]}`)
+    }
 
     if (!this.subscriptions[notification]) {
       this.subscriptions[notification] = []
@@ -141,10 +154,12 @@ class RPCClient extends EventEmitter {
     if (index === -1) {
       this.subscriptions[notification] = this.subscriptions[notification].concat(fn)
     }
+
+    return res
   }
 
   async unsubscribe (notification, fn) {
-    await this.call('rpc.off', [notification])
+    const res = await this.call('rpc.off', [notification])
 
     if (!this.subscriptions[notification]) {
       return
@@ -155,6 +170,8 @@ class RPCClient extends EventEmitter {
     if (index !== -1) {
       this.subscriptions[notification].splice(index, 1)
     }
+
+    return res
   }
 
   generateId (method, params, opts) {

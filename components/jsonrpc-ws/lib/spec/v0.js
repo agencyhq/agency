@@ -31,7 +31,7 @@ module.exports = {
             operationId: {
               type: 'string'
             },
-            namespaces: {
+            scopes: {
               type: 'array',
               items: {
                 type: 'string'
@@ -60,7 +60,7 @@ module.exports = {
         '^[A-Za-z.]+$': {
           type: 'object',
           properties: {
-            namespaces: {
+            scopes: {
               type: 'array',
               items: {
                 type: 'string'

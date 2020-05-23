@@ -19,7 +19,7 @@ const {
 
 async function main () {
   await rpc.connect()
-  await rpc.auth({ token: 'alltoken' })
+  await rpc.auth({ token: 'sensortoken' })
   await rpc.notify('ready')
 
   const app = express()

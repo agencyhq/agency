@@ -22,6 +22,9 @@ const {
 
 const USERS = {
   alltoken: ['enykeev', { scopes: ['all'] }],
+  sensortoken: ['enykeev', { scopes: ['sensor'] }],
+  ruletoken: ['enykeev', { scopes: ['rule'] }],
+  executiontoken: ['enykeev', { scopes: ['execution'] }],
   sometoken: ['someguy', { scopes: ['web'] }]
 }
 
@@ -85,7 +88,13 @@ async function main () {
   await pubsub.init()
 
   const authenticate = async ({ token }) => {
-    const { username: user, info: { scopes } } = await auth(token)
+    const identity = await auth(token)
+
+    if (!identity) {
+      return false
+    }
+
+    const { username: user, info: { scopes } } = identity
 
     return {
       user,
@@ -124,6 +133,8 @@ async function main () {
     }
 
     pubsub.subscribe('trigger', msg => handleTrigger(rpc, msg))
+  }, {
+    scopes: ['any']
   })
 
   rpc.on('disconnect', () => {

@@ -70,7 +70,7 @@ async function handleExecution (execution) {
 
 async function main () {
   await rpc.connect()
-  await rpc.auth({ token: 'alltoken' })
+  await rpc.auth({ token: 'executiontoken' })
 
   await rpc.subscribe('execution', handleExecution)
 

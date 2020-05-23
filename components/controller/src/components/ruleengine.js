@@ -61,7 +61,7 @@ function initializeRule (rule) {
 
 async function main () {
   await rpc.connect()
-  await rpc.auth({ token: 'alltoken' })
+  await rpc.auth({ token: 'ruletoken' })
 
   const req = await rpc.call('rule.list')
 
@@ -72,7 +72,9 @@ async function main () {
   await rpc.subscribe('rule', (rule) => {
     const index = rules.findIndex(r => r.id === rule.id)
     if (index === -1) {
-      rules.push(initializeRule(rule))
+      if (!rule.deleted) {
+        rules.push(initializeRule(rule))
+      }
     } else {
       if (rule.deleted) {
         rules.splice(index, 1)

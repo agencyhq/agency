@@ -16,6 +16,16 @@ chai.use(require('sinon-chai'))
 
 const MOCK_TOKEN = 'deadbeef'
 
+function promiseCalledMatching (match) {
+  const fn = sinon.stub()
+
+  fn.promise = new Promise(resolve => {
+    fn.callsFake((...args) => { match(...args) && resolve() })
+  })
+
+  return fn
+}
+
 describe('RPC Client', () => {
   let client
 
@@ -134,6 +144,27 @@ describe('RPC Client', () => {
   })
 
   describe('#auth()', () => {
+    beforeEach(async () => {
+      const promise = client.connect()
+      client.ws.emit('open')
+
+      await expect(promise).to.eventually.be.fulfilled
+      expect(client.isConnected()).to.be.true
+
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
+        const { id } = JSON.parse(json)
+        client.ws.emit('message', JSON.stringify({
+          jsonrpc: '2.0',
+          id: id,
+          result: {
+            user: 'test',
+            scopes: ['mock']
+          }
+        }))
+      })
+    })
+
     it('should have be unauthorized initially', () => {
       expect(client).to.have.property('authenticated', false)
     })
@@ -143,17 +174,18 @@ describe('RPC Client', () => {
     })
 
     it('authenticates client using provided token', async () => {
-      await client.auth(MOCK_TOKEN)
+      await client.auth({ token: MOCK_TOKEN })
 
       expect(client).to.have.property('authenticated', true)
-      expect(client).to.have.property('scopes').that.has.members(['mock'])
+      expect(client).to.have.property('scopes')
+      expect([...client.scopes]).to.have.members(['mock'])
     })
 
     it('emits authenticated event', async () => {
       const fn = sinon.fake()
       client.on('authenticated', fn)
 
-      await client.auth(MOCK_TOKEN)
+      await client.auth({ token: MOCK_TOKEN })
 
       expect(fn).to.be.calledOnce
     })
@@ -166,10 +198,15 @@ describe('RPC Client', () => {
 
       await expect(promise).to.eventually.be.fulfilled
       expect(client.isConnected()).to.be.true
+
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
+      })
     })
 
     it('makes a procedure call and returns a promise of the result', async () => {
-      client.ws.send = sinon.spy(() => {
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
         client.ws.emit('message', JSON.stringify({
           jsonrpc: '2.0',
           id: 1,
@@ -190,7 +227,8 @@ describe('RPC Client', () => {
     })
 
     it('does not send params when there is none provided', () => {
-      client.ws.send = sinon.spy(() => {
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
         client.ws.emit('message', JSON.stringify({
           jsonrpc: '2.0',
           id: 1,
@@ -223,7 +261,8 @@ describe('RPC Client', () => {
     }).slow(1500)
 
     it('rejects promise on zero timeout', async () => {
-      client.ws.send = sinon.spy(() => {
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
         client.ws.emit('message', JSON.stringify({
           jsonrpc: '2.0',
           id: 1,
@@ -241,7 +280,8 @@ describe('RPC Client', () => {
     }).slow(3000)
 
     it('rejects promise of the result on error', async () => {
-      client.ws.send = sinon.spy(() => {
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
         client.ws.emit('message', JSON.stringify({
           jsonrpc: '2.0',
           id: 1,
@@ -283,6 +323,18 @@ describe('RPC Client', () => {
 
       await expect(promise).to.eventually.be.fulfilled
       expect(client.isConnected()).to.be.true
+
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        const req = JSON.parse(json)
+        fn()
+        client.ws.emit('message', JSON.stringify({
+          jsonrpc: '2.0',
+          id: req.id,
+          result: {
+            test: 'ok'
+          }
+        }))
+      })
     })
 
     it('should have no subscriptions', () => {
@@ -290,8 +342,8 @@ describe('RPC Client', () => {
     })
 
     it('subscribes to a notification', async () => {
-      const fn = sinon.fake()
-      const p = client.subscribe('test', fn)
+      const fn = promiseCalledMatching(() => true)
+      const res = await client.subscribe('test', fn)
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
@@ -299,14 +351,16 @@ describe('RPC Client', () => {
         params: 'some notification'
       }))
 
-      expect(p).to.be.a('promise')
-      await expect(p).to.eventually.be.undefined
+      await fn.promise
+
+      expect(res).to.be.deep.equal({ test: 'ok' })
+      await expect(fn.promise).to.eventually.be.fulfilled
       expect(fn).to.be.calledOnceWith('some notification')
     })
 
     it('properly handle notification of multiple arguments', async () => {
-      const fn = sinon.fake()
-      const p = client.subscribe('test', fn)
+      const fn = promiseCalledMatching(() => true)
+      const res = await client.subscribe('test', fn)
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
@@ -314,53 +368,64 @@ describe('RPC Client', () => {
         params: [1, 2, 3]
       }))
 
-      expect(p).to.be.a('promise')
-      await expect(p).to.eventually.be.undefined
+      await fn.promise
+
+      expect(res).to.be.deep.equal({ test: 'ok' })
+      await expect(fn.promise).to.eventually.be.fulfilled
       expect(fn).to.be.calledOnceWith(1, 2, 3)
     })
 
     it('subscribes to a notification multiple times', async () => {
-      const fn1 = sinon.fake()
-      const fn2 = sinon.fake()
-      client.subscribe('test', fn1)
-      client.subscribe('test', fn2)
+      const fn1 = promiseCalledMatching(() => true)
+      const fn2 = promiseCalledMatching(() => true)
+      await client.subscribe('test', fn1)
+      await client.subscribe('test', fn2)
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
         notification: 'test',
         params: 'some notification'
       }))
+
+      await Promise.all([
+        fn1.promise,
+        fn2.promise
+      ])
 
       expect(fn1).to.be.calledOnceWith('some notification')
       expect(fn2).to.be.calledOnceWith('some notification')
     })
 
     it('subscribes to a notification repeatetly with the same handler', async () => {
-      const fn = sinon.fake()
-      client.subscribe('test', fn)
-      client.subscribe('test', fn)
+      const fn = promiseCalledMatching(() => true)
+      await client.subscribe('test', fn)
+      await client.subscribe('test', fn)
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
         notification: 'test',
         params: 'some notification'
       }))
+
+      await fn.promise
 
       // handler gets called only once
       expect(fn).to.be.calledOnceWith('some notification')
     })
 
     it('resubscribes to a notification', async () => {
-      const fn = sinon.fake()
-      client.subscribe('test', fn)
-      client.unsubscribe('test', fn)
-      client.subscribe('test', fn)
+      const fn = promiseCalledMatching(() => true)
+      await client.subscribe('test', fn)
+      await client.unsubscribe('test', fn)
+      await client.subscribe('test', fn)
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
         notification: 'test',
         params: 'some notification'
       }))
+
+      await fn.promise
 
       // handler gets called only once
       expect(fn).to.be.calledOnceWith('some notification')
@@ -370,22 +435,43 @@ describe('RPC Client', () => {
   describe('#unsubscribe()', () => {
     const testfn = () => {}
 
+    beforeEach(async () => {
+      const promise = client.connect()
+      client.ws.emit('open')
+
+      await expect(promise).to.eventually.be.fulfilled
+      expect(client.isConnected()).to.be.true
+
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        const req = JSON.parse(json)
+        fn()
+        client.ws.emit('message', JSON.stringify({
+          jsonrpc: '2.0',
+          id: req.id,
+          result: {
+            test: 'ok'
+          }
+        }))
+      })
+    })
+
     it('unsubscribes from a notification', async () => {
       await client.subscribe('test', testfn)
 
-      const p = client.unsubscribe('test', testfn)
+      const res = await client.unsubscribe('test', testfn)
 
-      expect(p).to.be.a('promise')
-      await expect(p).to.eventually.be.undefined
+      expect(res).to.be.deep.equal({ test: 'ok' })
       expect(client.subscriptions.test).to.be.empty
     })
 
     it('unsubscribes from a notification repeatedly', async () => {
       await client.subscribe('test', testfn)
 
-      client.unsubscribe('test', testfn)
-      client.unsubscribe('test', testfn)
+      const res1 = await client.unsubscribe('test', testfn)
+      const res2 = await client.unsubscribe('test', testfn)
 
+      expect(res1).to.be.deep.equal({ test: 'ok' })
+      expect(res2).to.be.deep.equal({ test: 'ok' })
       expect(client.subscriptions.test).to.be.empty
     })
 
