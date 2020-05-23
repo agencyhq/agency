@@ -2,17 +2,17 @@ const { createStore } = require('redux')
 
 function rootReducer (state, action) {
   state = state || {
+    tabs: {
+      intro: true
+    },
     assignments: [],
-    protocols: [],
-    showIntro: true,
-    showAssignments: false
+    protocols: []
   }
 
   let {
     assignments,
     protocols,
-    showIntro,
-    showAssignments
+    tabs
   } = state
 
   switch (action.type) {
@@ -72,29 +72,23 @@ function rootReducer (state, action) {
             }
           })
       }
-    case 'TOGGLE_INTRO':
-      if (action.state !== undefined) {
-        showIntro = action.state
+    case 'TOGGLE_TAB': {
+      const { name, state: toState } = action
+
+      if (toState !== undefined) {
+        tabs[name] = toState
       } else {
-        showIntro = !showIntro
+        tabs[name] = !tabs[name]
       }
 
       return {
         ...state,
-        showIntro
+        tabs: {
+          ...tabs
+        }
       }
+    }
 
-    case 'TOGGLE_ASSIGNMENTS':
-      if (action.state !== undefined) {
-        showAssignments = action.state
-      } else {
-        showAssignments = !showAssignments
-      }
-
-      return {
-        ...state,
-        showAssignments
-      }
     default:
       return state
   }

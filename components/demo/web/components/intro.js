@@ -78,7 +78,7 @@ function Intro () {
   const protocolChanged = protocol && protocolCandidate && protocol.code !== protocolCandidate
 
   return <div className="intro">
-    <div className="close" onClick={() => dispatch({ type: 'TOGGLE_INTRO' })}/>
+    <div className="close" onClick={() => dispatch({ type: 'TOGGLE_TAB', name: 'intro' })}/>
     <h5>
       Welcome to the Agency, Director.
     </h5>
@@ -124,7 +124,7 @@ function Intro () {
     <div className="trigger">
       <Button className="green-button" onClick={async () => {
         await emitEvent(exampleEvent)
-        dispatch({ type: 'TOGGLE_ASSIGNMENTS', state: true })
+        dispatch({ type: 'TOGGLE_TAB', name: 'assignments', state: true })
       }}>emit an event</Button>
     </div>
     <pre className="snippet">

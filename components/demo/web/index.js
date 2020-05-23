@@ -1,29 +1,16 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 
-const { useDispatch, useSelector, Provider } = require('react-redux')
+const { useSelector, Provider } = require('react-redux')
 
 const ws = require('./lib/ws')
 const store = require('./store')
 const Intro = require('./components/intro')
 const Assignments = require('./components/assignments')
 const Map = require('./components/map')
+const Menu = require('./components/menu')
 
 require('./css/index.css')
-
-function Menu () {
-  const dispatch = useDispatch()
-
-  return <div className="menu">
-    <div className="logo" />
-
-    <div className="item" onClick={() => dispatch({ type: 'TOGGLE_ASSIGNMENTS' })}>assignments</div>
-    <div className="item">protocols</div>
-    <div className="spacer" />
-    <div className="item" onClick={() => dispatch({ type: 'TOGGLE_INTRO' })}>intro</div>
-    <div className="item">settings</div>
-  </div>
-}
 
 async function fetchExecutions () {
   store.dispatch({ type: 'EXECUTION_FETCH', status: 'pending' })
@@ -76,11 +63,11 @@ function App () {
   }, [])
 
   const showIntro = useSelector(state => {
-    return state.showIntro
+    return state.tabs.intro
   })
 
   const showAssignments = useSelector(state => {
-    return state.showAssignments
+    return state.tabs.assignments
   })
 
   return <div className="app">
