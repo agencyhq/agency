@@ -12,6 +12,7 @@ const bearer = require('passport-http-bearer')
 const pubsub = require('../pubsub')
 const router = require('../rest/router')
 const RPCServer = require('../rpc/server')
+const models = require('../models')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
@@ -19,14 +20,6 @@ const {
   PORT = 3000,
   METRICS = false
 } = process.env
-
-const USERS = {
-  alltoken: ['enykeev', { scopes: ['all'] }],
-  sensortoken: ['enykeev', { scopes: ['sensor'] }],
-  ruletoken: ['enykeev', { scopes: ['rule'] }],
-  executiontoken: ['enykeev', { scopes: ['execution'] }],
-  sometoken: ['someguy', { scopes: ['web'] }]
-}
 
 async function handleExecution (rpc, msg) {
   const execution = JSON.parse(msg.content.toString())
@@ -67,19 +60,33 @@ async function handleRule (rpc, msg) {
 }
 
 async function auth (token) {
-  if (USERS[token]) {
-    const [username, info] = USERS[token]
+  const identity = await models.Tokens
+    .forge({ id: token })
+    .fetch()
+    .then(model => model.toJSON())
+
+  const {
+    id,
+    user,
+    meta: {
+      scopes
+    }
+  } = identity
+
+  if (id === token) {
     return {
-      username,
-      info
+      user,
+      scopes
     }
   }
+
+  return false
 }
 
 passport.use(new bearer.Strategy(
   (token, done) => {
     auth(token)
-      .then(({ username, info } = {}) => done(null, username || false, info))
+      .then(({ user, scopes } = {}) => done(null, user || false, { scopes }))
       .catch(err => done(err))
   }
 ))
@@ -94,7 +101,10 @@ async function main () {
       return false
     }
 
-    const { username: user, info: { scopes } } = identity
+    const {
+      user,
+      scopes
+    } = identity
 
     return {
       user,

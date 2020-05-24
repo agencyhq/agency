@@ -19,6 +19,11 @@ exports.up = (knex) => {
       t.text('code')
       t.timestamps(false, true)
     })
+    .createTable('tokens', t => {
+      t.string('id').primary()
+      t.string('user')
+      t.jsonb('meta')
+    })
 }
 
 exports.down = (knex) => {
@@ -26,4 +31,5 @@ exports.down = (knex) => {
     .dropTable('executions')
     .dropTable('results')
     .dropTable('rules')
+    .dropTable('tokens')
 }
