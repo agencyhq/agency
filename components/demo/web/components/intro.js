@@ -43,6 +43,25 @@ Button.propTypes = {
   onClick: PropTypes.func
 }
 
+function selectText (el) {
+  const selection = window.getSelection()
+  const range = document.createRange()
+  range.selectNodeContents(el)
+  selection.removeAllRanges()
+  selection.addRange(range)
+}
+
+function CodeSnippet ({ children }) {
+  const ref = React.useRef(null)
+  return <pre ref={ref} className="snippet" onDoubleClick={() => selectText(ref.current)}>
+    { children }
+  </pre>
+}
+
+CodeSnippet.propTypes = {
+  children: PropTypes.node
+}
+
 const defaultEvent = {
   type: 'web',
   url: 'https://httpbin.org/post',
@@ -127,9 +146,9 @@ function Intro () {
         dispatch({ type: 'TOGGLE_TAB', name: 'assignments', state: true })
       }}>emit an event</Button>
     </div>
-    <pre className="snippet">
+    <CodeSnippet>
       {`curl -X POST ${location.origin}/sensor/http -d '${exampleEvent}' -H Content-Type:application/json`}
-    </pre>
+    </CodeSnippet>
     <p>
       Every reported incident is assigned to one of our analysts for evaluation. Whether or not the incident deserves the response is decided by the <b>if</b> portion of the protocol. If this condition ends up truthful, analyst would have to evaluate <b>then</b> portion of the protocol to came up with an appropriate action and a set of parameters and inform HQ of his recommendations in form of an assignment (execution).
     </p>
