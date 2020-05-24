@@ -9,6 +9,7 @@ const Intro = require('./components/intro')
 const Assignments = require('./components/assignments')
 const Map = require('./components/map')
 const Menu = require('./components/menu')
+const Protocols = require('./components/protocols')
 
 require('./css/index.css')
 
@@ -62,20 +63,17 @@ function App () {
     })()
   }, [])
 
-  const showIntro = useSelector(state => {
-    return state.tabs.intro
-  })
-
-  const showAssignments = useSelector(state => {
-    return state.tabs.assignments
+  const tabs = useSelector(state => {
+    return state.tabs
   })
 
   return <div className="app">
     <Map threats={new Set(['ru', 'gb'])} />
     <div className="page">
       <Menu />
-      { showIntro && <Intro /> }
-      { showAssignments && <Assignments /> }
+      { tabs.intro && <Intro /> }
+      { tabs.protocols && <Protocols /> }
+      { tabs.assignments && <Assignments /> }
     </div>
   </div>
 }

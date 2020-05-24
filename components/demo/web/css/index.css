@@ -32,6 +32,31 @@ pre, code {
   overflow: auto;
 }
 
+button {
+  font-size: .8em;
+  padding: 10px 16px;
+  white-space: nowrap;
+  width: auto;
+
+  border: 0;
+
+  cursor: pointer;
+
+  background-color: white;
+}
+
+button::-moz-focus-inner {
+  border: 0;
+}
+
+button:hover {
+  background-color: #eee;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .map {
   position: absolute;
 
@@ -137,13 +162,6 @@ pre, code {
   padding: 20px;
 }
 
-.intro button {
-  font-size: .8em;
-  padding: 10px 16px;
-  white-space: nowrap;
-  width: auto;
-}
-
 .intro .close {
   position: absolute;
   top: 10px;
@@ -165,22 +183,15 @@ pre, code {
 .intro .button {
   background-color: white;
 
-  border: 0;
   box-shadow:
     0 0 0 2px white,
     0px 0 0 3px #aaa;
-
-  cursor: pointer;
 
   transition: background-color .5s;
 }
 
 .intro .button.succeeded {
   background-color: #3a35;
-}
-
-.intro .button::-moz-focus-inner {
-  border: 0;
 }
 
 .trigger {
@@ -190,7 +201,26 @@ pre, code {
 .snippet {
   white-space: pre-wrap;
   overflow: auto;
-  margin: 2em 0;
+}
+
+.protocols {
+  min-width: 500px;
+  width: 500px;
+
+  padding: 0 10px;
+}
+
+.protocols .header {
+  display: inline-block;
+
+  color: #eee;
+  background-color: #888e;
+  box-shadow: 0 0 0 1px #eee8;
+
+  margin: 5px 0 3px;
+  padding: 0px 8px 2px;
+
+  font-weight: bold;
 }
 
 .assignments {
