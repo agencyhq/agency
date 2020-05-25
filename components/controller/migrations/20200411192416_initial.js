@@ -8,16 +8,19 @@ exports.up = (knex) => {
       t.jsonb('parameters')
       t.timestamps(false, true)
       t.enum('status', ['requested', 'claimed', 'running', 'completed'])
+      t.string('user')
     })
     .createTable('results', t => {
       t.string('id').primary()
       t.jsonb('result')
       t.enum('status', ['succeeded', 'failed', 'timeout'])
+      t.string('user')
     })
     .createTable('rules', t => {
       t.string('id').primary()
       t.text('code')
       t.timestamps(false, true)
+      t.string('user')
     })
     .createTable('tokens', t => {
       t.string('id').primary()

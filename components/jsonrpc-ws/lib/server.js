@@ -16,6 +16,7 @@ class RPCServer extends EventEmitter {
   _defaultUsername = 'anonymous'
   _anyScope = 'any'
   _allScope = 'all'
+  _serviceScope = 'service'
 
   constructor (opts) {
     super()
@@ -43,7 +44,6 @@ class RPCServer extends EventEmitter {
       const requestURL = new url.URL(req.url, this.getAddress())
 
       ws._id = (requestURL.query || {}).socket_id || uuid.v1()
-      ws._id = uuid.v1()
       ws._user = user + ''
       ws._scopes = new Set(scopes)
 
@@ -54,14 +54,6 @@ class RPCServer extends EventEmitter {
 
     this.server.on('listening', () => this.emit('listening'))
     this.server.on('upgrade', (req, socket, head) => {
-      // const client = this._authenticate(req)
-
-      // if (!client) {
-      //   socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n')
-      //   socket.destroy()
-      //   return
-      // }
-
       this.wss.handleUpgrade(req, socket, head, (ws) => {
         this.wss.emit('connection', ws, req)
       })
@@ -342,18 +334,25 @@ class RPCServer extends EventEmitter {
       }
     }
 
+    const context = {
+      ws,
+      user: ws._user,
+      scopes: ws._scopes,
+      service: ws._scopes.has(this._serviceScope)
+    }
+
     const methods = {
       ...this.methods,
       'rpc.login': {
-        fn: params => this._rpcLogin(params, ws),
+        fn: params => this._rpcLogin(params, context),
         scopes: new Set(['any'])
       },
       'rpc.on': {
-        fn: params => this._rpcSubscribe(params, ws),
+        fn: params => this._rpcSubscribe(params, context),
         scopes: new Set(['any'])
       },
       'rpc.off': {
-        fn: params => this._rpcUnsubscribe(params, ws),
+        fn: params => this._rpcUnsubscribe(params, context),
         scopes: new Set(['any'])
       }
     }
@@ -373,7 +372,7 @@ class RPCServer extends EventEmitter {
     }
 
     try {
-      const result = await methods[method].fn(params, ws)
+      const result = await methods[method].fn(params, context)
 
       return id && {
         jsonrpc: '2.0',
@@ -422,7 +421,7 @@ class RPCServer extends EventEmitter {
     }
   }
 
-  async _rpcLogin (params, ws) {
+  async _rpcLogin (params, { ws }) {
     if (!params) {
       throw this._createError(-32604).error
     }
@@ -444,7 +443,7 @@ class RPCServer extends EventEmitter {
     return client
   }
 
-  _rpcSubscribe (params, ws) {
+  _rpcSubscribe (params, { ws }) {
     if (!params) {
       throw this._createError(-32000).error
     }
@@ -470,7 +469,7 @@ class RPCServer extends EventEmitter {
     return results
   }
 
-  _rpcUnsubscribe (params, ws) {
+  _rpcUnsubscribe (params, { ws }) {
     if (!params) {
       throw this._createError(-32000).error
     }

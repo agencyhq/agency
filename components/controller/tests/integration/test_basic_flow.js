@@ -83,7 +83,7 @@ describe.only('RPC', () => {
 
       expect(rules).to.be.an('array')
       expect(rules[0]).to.be.an('object')
-        .and.have.all.keys('id', 'code', 'created_at', 'updated_at')
+        .and.have.all.keys('id', 'code', 'created_at', 'updated_at', 'user')
     })
   })
 
