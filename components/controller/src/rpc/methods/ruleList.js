@@ -1,15 +1,13 @@
 const models = require('../../models')
 
-module.exports = async (query, { user, service }) => {
+module.exports = async (query, { user }) => {
   const model = await models.Rules
 
   if (!query) {
     query = {}
   }
 
-  if (!service) {
-    query.user = user
-  }
+  query.user = user
 
   if (!query.limit && !query.pageSize) {
     return model.fetchAll(query)

@@ -13,7 +13,9 @@ class RPCServer extends RPC.Server {
   constructor (...args) {
     super(...args)
 
-    this.registerSpec(path.join(__dirname, '../rpcapi.yaml'), path.join(__dirname, './methods'))
+    this.registerSpec(path.join(__dirname, '../rpcapi.yaml'), opId => {
+      return require(path.join(__dirname, './methods', opId))
+    })
 
     this.wss.on('connection', (ws, req) => {
       log.debug('client connected to rpc: %s', ws._id)

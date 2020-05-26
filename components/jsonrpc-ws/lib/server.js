@@ -1,7 +1,6 @@
 const EventEmitter = require('events')
 const fs = require('fs')
 const http = require('http')
-const path = require('path')
 const url = require('url')
 const uuid = require('uuid')
 
@@ -13,10 +12,10 @@ const ajv = new Ajv()
 const validateSpec = ajv.compile(require('./spec/v0'))
 
 class RPCServer extends EventEmitter {
-  _defaultUsername = 'anonymous'
-  _anyScope = 'any'
-  _allScope = 'all'
-  _serviceScope = 'service'
+  static _defaultUsername = 'anonymous'
+  static _anyScope = 'any'
+  static _allScope = 'all'
+  static _serviceScope = 'service'
 
   constructor (opts) {
     super()
@@ -153,7 +152,7 @@ class RPCServer extends EventEmitter {
     delete this.notifications[name]
   }
 
-  registerSpec (filepath, methodDir) {
+  registerSpec (filepath, resolver) {
     const content = fs.readFileSync(filepath, 'utf8')
     const spec = yaml.safeLoad(content)
 
@@ -177,7 +176,7 @@ class RPCServer extends EventEmitter {
         continue
       }
 
-      const operation = require(path.join(methodDir, operationId))
+      const operation = resolver(operationId)
 
       this.registerMethod(method, operation, {
         scopes: new Set(scopes || [])
@@ -303,7 +302,8 @@ class RPCServer extends EventEmitter {
       jsonrpc,
       method,
       params,
-      id
+      id,
+      'x-agency-become': become
     } = message
 
     if (jsonrpc !== '2.0') {
@@ -338,7 +338,7 @@ class RPCServer extends EventEmitter {
       ws,
       user: ws._user,
       scopes: ws._scopes,
-      service: ws._scopes.has(this._serviceScope)
+      service: ws._scopes.has(this.constructor._serviceScope)
     }
 
     const methods = {
@@ -371,6 +371,17 @@ class RPCServer extends EventEmitter {
       }
     }
 
+    if (become) {
+      if (!context.service) {
+        return {
+          ...this._createError(-29001),
+          id
+        }
+      } else {
+        context.user = become
+      }
+    }
+
     try {
       const result = await methods[method].fn(params, context)
 
@@ -396,6 +407,7 @@ class RPCServer extends EventEmitter {
 
   _createError (code, details) {
     const errors = new Map([
+      [-29001, 'Becoming is forbidden'],
       [-32000, 'Event not provided'],
       [-32600, 'Invalid Request'],
       [-32601, 'Method not found'],
@@ -495,8 +507,8 @@ class RPCServer extends EventEmitter {
       scopes = new Set()
     } = entity
 
-    const permissions = [this._allScope, ...scopes]
-      .filter(x => new Set([...ws._scopes, this._anyScope]).has(x))
+    const permissions = [this.constructor._allScope, ...scopes]
+      .filter(x => new Set([...ws._scopes, this.constructor._anyScope]).has(x))
 
     return !!permissions.length
   }

@@ -67,7 +67,7 @@ describe('RESTful', () => {
   })
 })
 
-describe.only('RPC', () => {
+describe('RPC', () => {
   let rpc
 
   before(async () => {

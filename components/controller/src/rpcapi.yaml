@@ -12,7 +12,7 @@ methods:
   trigger.emit:
     operationId: triggerEmit
     scopes:
-      - 'sensor'
+      - sensor
     parameters:
       - name: trigger
         schema:
@@ -29,8 +29,7 @@ methods:
     response:
       type: array
       items:
-        type: object
-        # Rule component
+        $ref: '#/definitions/Rule'
   rule.create:
     operationId: ruleCreate
     scopes:
@@ -40,6 +39,8 @@ methods:
         schema:
           type: object
           # Rule create component
+    response:
+      $ref: '#/definitions/Rule'
   rule.update:
     operationId: ruleUpdate
     scopes:
@@ -49,6 +50,8 @@ methods:
         schema:
           type: object
           # Rule create component
+    response:
+      $ref: '#/definitions/Rule'
   rule.delete:
     operationId: ruleDelete
     scopes:
@@ -58,6 +61,8 @@ methods:
         schema:
           type: object
           # Rule delete component
+    response:
+      $ref: '#/definitions/RuleDeleted'
   execution.list:
     operationId: executionList
     scopes:
@@ -69,8 +74,7 @@ methods:
     response:
       type: array
       items:
-        type: object
-        # Rule component
+        $ref: '#/definitions/Execution'
   execution.request:
     operationId: executionRequest
     scopes:
@@ -80,6 +84,8 @@ methods:
         schema:
           type: object
           # Execution request component
+    response:
+      $ref: '#/definitions/Execution'
   execution.claim:
     operationId: executionClaim
     scopes:
@@ -110,23 +116,154 @@ methods:
         schema:
           type: object
           # Result component
+    response:
+      $ref: '#/definitions/Execution'
 
 events:
   trigger:
     scopes:
       - rule
     response:
-      type: object
-      # Trigger component
+      $ref: '#/definitions/Trigger'
   execution:
     scopes:
       - execution
     response:
-      type: object
-      # Execution component
+      $ref: '#/definitions/Execution'
   rule:
     scopes:
       - rule
     response:
-      type: object
-      # Rule component
+      $ref: '#/definitions/Rule'
+
+definitions:
+  TriggerRequest:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      event:
+        type: object
+      user:
+        type: string
+    additionalProperties: false
+    required:
+      - type
+      - event
+  Trigger:
+    type: object
+    properties:
+      id:
+        type: string
+      type:
+        type: string
+      event:
+        type: object
+      user:
+        type: string
+    additionalProperties: false
+    required:
+      - id
+      - type
+      - event
+      - user
+  Rule:
+    type: object
+    properties:
+      id:
+        type: string
+      code:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      user:
+        type: string
+    additionalProperties: false
+    required:
+      - id
+      - code
+      - created_at
+      - user
+  RuleDeleted:
+    type: object
+    properties:
+      id:
+        type: string
+      deleted:
+        const: true
+  Execution:
+    type: object
+    properties:
+      id:
+        type: string
+      triggered_by:
+        type: string
+      action:
+        type: string
+      parameters:
+        type: object
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      status:
+        enum:
+          - requested
+          - claimed
+          - running
+          - completed
+      user:
+        type: string
+    additionalProperties: false
+    required:
+      - id
+      - triggered_by
+      - action
+      - parameters
+      - created_at
+      - status
+      - user
+  Results:
+    type: object
+    properties:
+      id:
+        type: string
+      result:
+        type: object
+      status:
+        enum:
+          - succeeded
+          - failed
+          - timeout
+      user:
+        type: string
+    additionalProperties: false
+    required:
+      - id
+      - result
+      - status
+  Tokens:
+    type: object
+    properties:
+      id:
+        type: string
+      user:
+        type: string
+      meta:
+        type: object
+        properties:
+          scopes:
+            type: string
+    additionalProperties: false
+    required:
+      - id
+      - user
+      - meta

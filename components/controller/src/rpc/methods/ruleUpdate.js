@@ -1,12 +1,10 @@
 const models = require('../../models')
 const pubsub = require('../../pubsub')
 
-module.exports = async (query, { user: requestingUser, service }) => {
+module.exports = async (query, { user }) => {
   // TODO: makes sense to attempt to prevalidate code before saving it
 
-  if (!service) {
-    query.user = requestingUser
-  }
+  query.user = user
 
   const mod = models.Rules.forge(query)
   const rule = await mod.save({

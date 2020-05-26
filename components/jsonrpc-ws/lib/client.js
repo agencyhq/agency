@@ -94,7 +94,8 @@ class RPCClient extends EventEmitter {
     }
 
     const {
-      timeout
+      timeout,
+      become
     } = opts || {}
     const id = this.generateId(method, params, opts)
 
@@ -108,6 +109,10 @@ class RPCClient extends EventEmitter {
 
     if (params) {
       message.params = params
+    }
+
+    if (become) {
+      message['x-agency-become'] = become
     }
 
     try {
