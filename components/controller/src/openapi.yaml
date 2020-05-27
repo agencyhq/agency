@@ -8,7 +8,8 @@ paths:
   /:
     get:
       operationId: root
-      x-security-scope: any
+      x-security-scopes:
+        - any
       responses:
         '200':
           description: welcome text
@@ -20,8 +21,8 @@ paths:
   /executions:
     get:
       operationId: executionList
-      x-security-scope:
-        - web
+      x-security-scopes:
+        - operator
       responses:
         '200':
           description: list of executions
@@ -41,8 +42,8 @@ paths:
   /rules:
     get:
       operationId: ruleList
-      x-security-scope:
-        - web
+      x-security-scopes:
+        - operator
         - rule
       responses:
         '200':
@@ -61,8 +62,8 @@ paths:
                 $ref: "#/components/schemas/Error"
     post:
       operationId: ruleCreate
-      x-security-scope:
-        - web
+      x-security-scopes:
+        - operator
       requestBody:
         required: true
         content:
@@ -86,8 +87,8 @@ paths:
   /rules/{id}:
     get:
       operationId: ruleGet
-      x-security-scope:
-        - web
+      x-security-scopes:
+        - operator
         - rule
       parameters:
         - name: id
@@ -110,8 +111,8 @@ paths:
                 $ref: "#/components/schemas/Error"
     delete:
       operationId: ruleDelete
-      x-security-scope:
-        - web
+      x-security-scopes:
+        - operator
       parameters:
         - name: id
           in: path

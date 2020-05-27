@@ -243,13 +243,15 @@ describe('RPC', () => {
       })
     })
 
-    describe('#tokenDelete', async () => {
-      const identity = await rpc.call('token.create', { user: 'test', meta: { scopes: [] } })
+    describe('#tokenDelete', () => {
+      it('should delete a token', async () => {
+        const identity = await rpc.call('token.create', { user: 'test', meta: { scopes: [] } })
 
-      const res = await rpc.call('token.delete', identity)
+        const res = await rpc.call('token.delete', identity)
 
-      expect(res).to.have.property('id', identity.id)
-      expect(res).to.have.property('deleted', true)
+        expect(res).to.have.property('id', identity.id)
+        expect(res).to.have.property('deleted', true)
+      })
     })
   })
 

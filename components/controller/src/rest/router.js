@@ -13,10 +13,16 @@ const validateSpec = ajv
   .addMetaSchema(require('ajv/lib/refs/json-schema-draft-04.json'))
   .compile(openapi.v3)
 
-function authorizeFactory (securityScope) {
+function authorizeFactory (operationScopes) {
   return (req, res, next) => {
-    const { scope } = req.authInfo
-    if (securityScope === 'any' || scope === 'all' || securityScope.indexOf(scope) !== -1) {
+    const {
+      scopes: requestScopes
+    } = req.authInfo
+    if (
+      new Set(requestScopes || []).has('all') ||
+      operationScopes.has('any') ||
+      requestScopes.some(s => operationScopes.has(s))
+    ) {
       return next()
     }
 
@@ -25,7 +31,7 @@ function authorizeFactory (securityScope) {
   }
 }
 
-function routerFactory (filename) {
+function routerFactory (filename, resolver) {
   const content = fs.readFileSync(path.join(__dirname, filename), 'utf8')
   const spec = yaml.safeLoad(content)
 
@@ -41,11 +47,11 @@ function routerFactory (filename) {
     for (const method in spec.paths[path]) {
       const {
         operationId: opId,
-        'x-security-scope': securityScope
+        'x-security-scopes': securityScope
       } = spec.paths[path][method]
 
-      const authorize = authorizeFactory(securityScope)
-      const operation = require(`./methods/${opId}`)
+      const authorize = authorizeFactory(new Set(securityScope || []))
+      const operation = resolver(opId)
 
       router[method](path, authorize, operation)
     }

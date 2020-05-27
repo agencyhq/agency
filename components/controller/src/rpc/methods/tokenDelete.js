@@ -6,5 +6,5 @@ module.exports = async ({ id }) => {
   const mod = models.Tokens.forge(query)
   await mod.destroy()
 
-  return { id }
+  return { id, deleted: true }
 }

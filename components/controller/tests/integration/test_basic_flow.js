@@ -19,10 +19,6 @@ describe('RESTful', () => {
       expect(resp.data).to.equal('Hello World')
     })
   })
-
-  it.skip('should have every method in openapi.yaml registered', () => {
-    throw new Error('not implemented')
-  })
 })
 
 describe('Sensor', () => {

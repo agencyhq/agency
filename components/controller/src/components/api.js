@@ -125,7 +125,9 @@ async function main () {
   app.use(morgan('combined'))
   app.use(passport.authenticate('bearer', { session: false }))
   app.use(express.json())
-  app.use(router('../openapi.yaml'))
+  app.use(router('../openapi.yaml', opId => {
+    return require(`../rest/methods/${opId}`)
+  }))
 
   pubsub.subscribe('execution', msg => handleExecution(rpc, msg), {
     name: false,
