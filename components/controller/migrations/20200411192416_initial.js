@@ -24,8 +24,10 @@ exports.up = (knex) => {
     })
     .createTable('tokens', t => {
       t.string('id').primary()
-      t.string('user')
+      t.string('user').notNullable()
       t.jsonb('meta')
+      t.timestamp('created_at').defaultTo(knex.fn.now())
+      t.string('created_by').notNullable()
     })
 }
 

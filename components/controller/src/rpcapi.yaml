@@ -62,7 +62,7 @@ methods:
           type: object
           # Rule delete component
     response:
-      $ref: '#/definitions/RuleDeleted'
+      $ref: '#/definitions/Deleted'
   execution.list:
     operationId: executionList
     scopes:
@@ -118,6 +118,43 @@ methods:
           # Result component
     response:
       $ref: '#/definitions/Execution'
+  token.create:
+    operationId: tokenCreate
+    scopes:
+      - identity
+    parameters:
+      - name: identity
+        schema:
+          $ref: '#/definitions/TokenRequest'
+    response:
+      $ref: '#/definitions/Token'
+  token.list:
+    operationId: tokenList
+    scopes:
+      - identity
+    parameters:
+      - name: query
+        schema:
+          type: object
+    response:
+      type: array
+      items:
+        $ref: '#/definitions/Token'
+  token.delete:
+    operationId: tokenDelete
+    scopes:
+      - identity
+    parameters:
+      - name: token
+        schema:
+          type: object
+          parameters:
+            id:
+              type: string
+          required:
+            - id
+    response:
+      $ref: '#/definitions/Deleted'
 
 events:
   trigger:
@@ -137,6 +174,13 @@ events:
       $ref: '#/definitions/Rule'
 
 definitions:
+  Deleted:
+    type: object
+    properties:
+      id:
+        type: string
+      deleted:
+        const: true
   TriggerRequest:
     type: object
     properties:
@@ -190,13 +234,6 @@ definitions:
       - code
       - created_at
       - user
-  RuleDeleted:
-    type: object
-    properties:
-      id:
-        type: string
-      deleted:
-        const: true
   Execution:
     type: object
     properties:
@@ -250,7 +287,23 @@ definitions:
       - id
       - result
       - status
-  Tokens:
+  TokenRequest:
+    type: object
+    properties:
+      id:
+        type: string
+      user:
+        type: string
+      meta:
+        type: object
+        properties:
+          scopes:
+            type: string
+    additionalProperties: false
+    required:
+      - user
+      - meta
+  Token:
     type: object
     properties:
       id:
