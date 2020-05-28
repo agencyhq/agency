@@ -59,6 +59,61 @@ function initializeRule (rule) {
   return res
 }
 
+async function evaluateRule (rule, trigger) {
+  const ifDuration = metrics.measureRuleInitDuration(rule)
+  const isTriggered = (() => {
+    try {
+      return rule.if(trigger)
+    } catch (e) {
+      rpc.notify('trigger.evaluationError', e)
+      log.debug('trigger evaluation error: %s', e.toString())
+      return false
+    }
+  })()
+
+  ifDuration.end({ result: isTriggered })
+
+  if (!isTriggered) {
+    return
+  }
+
+  log.debug('found match for trigger: %s', trigger.id)
+
+  let execution
+  try {
+    execution = await rpc.call('execution.request', {
+      triggered_by: trigger.id,
+      matched_to: rule.id
+    })
+    log.debug('granted claim for trigger %s matching rule %s', trigger.id, rule.id)
+  } catch (e) {
+    log.debug('denied claim for trigger %s matching rule %s', trigger.id, rule.id)
+    return
+  }
+
+  const thenDuration = metrics.measureRuleThenDuration(rule)
+  try {
+    const {
+      action,
+      parameters = {}
+    } = rule.then(trigger)
+
+    if (!action) {
+      throw new Error('rule produced no action')
+    }
+
+    execution.action = action
+    execution.parameters = parameters
+  } catch (e) {
+    rpc.notify('trigger.evaluationError', e)
+    log.debug('trigger evaluation error: %s', e.toString())
+    return {}
+  }
+  thenDuration.end()
+
+  await rpc.call('execution.schedule', execution)
+}
+
 async function main () {
   await rpc.connect()
   await rpc.auth({ token: 'ruletoken' })
@@ -90,48 +145,18 @@ async function main () {
   log.info('registered %s rules', rules.length)
   metrics.countRules(rules)
 
-  await rpc.subscribe('trigger', trigger => {
+  await rpc.subscribe('trigger', async trigger => {
     log.info('processing trigger: %s', trigger.id)
-    rules.forEach(rule => {
-      const ifDuration = metrics.measureRuleInitDuration(rule)
-      const isTriggered = (() => {
-        try {
-          return rule.if(trigger)
-        } catch (e) {
-          rpc.notify('trigger.evaluationError', e)
-          log.debug('trigger evaluation error: %s', e.toString())
-          return false
-        }
-      })()
+    const evaluations = rules.map(rule =>
+      evaluateRule(rule, trigger)
+        .catch(e => {
+          console.log(e)
+          throw e
+        })
+    )
 
-      ifDuration.end({ result: isTriggered })
-
-      if (isTriggered) {
-        log.info('found match for trigger: %s', trigger.id)
-        const thenDuration = metrics.measureRuleThenDuration(rule)
-        const { action, parameters = {} } = (() => {
-          try {
-            return rule.then(trigger)
-          } catch (e) {
-            rpc.notify('trigger.evaluationError', e)
-            log.debug('trigger evaluation error: %s', e.toString())
-            return {}
-          }
-        })()
-        thenDuration.end()
-
-        if (!action) {
-          return
-        }
-
-        const execution = {
-          triggered_by: trigger.id,
-          action,
-          parameters
-        }
-        rpc.call('execution.request', execution)
-      }
-    })
+    await Promise.allSettled(evaluations)
+    log.info('processed all rules for the trigger: %s', trigger.id)
   })
 
   await rpc.notify('ready')

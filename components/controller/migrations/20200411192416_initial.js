@@ -4,10 +4,12 @@ exports.up = (knex) => {
     .createTable('executions', t => {
       t.string('id').primary()
       t.string('triggered_by')
+      t.string('matched_to')
+      t.unique(['triggered_by', 'matched_to'])
       t.string('action')
       t.jsonb('parameters')
       t.timestamps(false, true)
-      t.enum('status', ['requested', 'claimed', 'running', 'completed'])
+      t.enum('status', ['requested', 'scheduled', 'claimed', 'running', 'completed'])
       t.string('user')
     })
     .createTable('results', t => {

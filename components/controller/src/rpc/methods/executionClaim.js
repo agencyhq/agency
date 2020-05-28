@@ -4,7 +4,7 @@ const models = require('../../models')
 module.exports = async ({ id }) => {
   try {
     await models.Executions.forge({ id })
-      .where('status', 'requested')
+      .where('status', 'scheduled')
       .save({
         status: 'claimed'
       })

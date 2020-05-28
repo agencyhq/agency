@@ -86,6 +86,17 @@ methods:
           # Execution request component
     response:
       $ref: '#/definitions/Execution'
+  execution.schedule:
+    operationId: executionSchedule
+    scopes:
+      - rule
+    parameters:
+      - name: execution
+        schema:
+          type: object
+          # Execution request component
+    response:
+      $ref: '#/definitions/Execution'
   execution.claim:
     operationId: executionClaim
     scopes:

@@ -26,7 +26,7 @@ async function handleExecution (rpc, msg) {
   metrics.countExecutions(execution)
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(execution))
 
-  rpc.notify('execution', execution)
+  await rpc.notify('execution', execution)
 
   log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, execution.id)
   pubsub.channel.ack(msg)
@@ -37,15 +37,10 @@ async function handleTrigger (rpc, msg) {
   metrics.countTriggers(trigger)
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(trigger))
 
-  if (rpc.hasSubscribers('trigger')) {
-    rpc.notify('trigger', trigger, { random: true })
+  await rpc.notify('trigger', trigger, { random: true })
 
-    log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, trigger.id)
-    pubsub.channel.ack(msg)
-  } else {
-    log.debug('reject reciving %s: %s', msg.fields.routingKey, trigger.id)
-    pubsub.channel.nack(msg)
-  }
+  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, trigger.id)
+  pubsub.channel.ack(msg)
 }
 
 async function handleRule (rpc, msg) {
@@ -53,7 +48,7 @@ async function handleRule (rpc, msg) {
   // metrics.countTriggers(trigger)
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(rule))
 
-  rpc.notify('rule', rule)
+  await rpc.notify('rule', rule)
 
   log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, rule.id)
   pubsub.channel.ack(msg)
@@ -139,19 +134,12 @@ async function main () {
     exclusive: true
   })
 
-  rpc.registerMethod('ready', () => {
-    if (pubsub.isSubscribed('trigger')) {
-      return
-    }
-
-    if (!rpc.hasSubscribers('trigger')) {
-      return
-    }
-
-    pubsub.subscribe('trigger', msg => handleTrigger(rpc, msg))
-  }, {
-    scopes: ['any']
+  pubsub.subscribe('trigger', msg => handleTrigger(rpc, msg), {
+    name: false,
+    exclusive: true
   })
+
+  rpc.registerMethod('ready', () => {}, { scopes: ['any'] })
 
   rpc.on('disconnect', () => {
     if (!rpc.hasSubscribers('trigger')) {
