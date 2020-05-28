@@ -188,9 +188,7 @@ class RPCServer extends EventEmitter {
         scopes
       } = spec.events[event]
 
-      this.registerNotification(event, {
-        scopes: new Set(scopes || [])
-      })
+      this.registerNotification(event, { scopes })
     }
   }
 
@@ -217,7 +215,14 @@ class RPCServer extends EventEmitter {
 
     let clients = [...this.notifications[name].clients]
 
-    if (random) {
+    if (params.user) {
+      clients = clients.filter(c =>
+        c._user === params.user ||
+        c._scopes.has(this.constructor._serviceScope)
+      )
+    }
+
+    if (random && clients.length) {
       const index = Math.floor(Math.random() * clients.length)
       clients = [clients[index]]
     }
@@ -230,11 +235,11 @@ class RPCServer extends EventEmitter {
           jsonrpc: '2.0',
           notification: name,
           params
-        }), {}, () => resolve())
+        }), {}, () => resolve(ws))
       }))
     }
 
-    await Promise.all(promises)
+    return await Promise.all(promises)
   }
 
   authenticate () {

@@ -53,6 +53,89 @@ describe('RPCAPI Spec', () => {
   const filepath = path.join(__dirname, '../../src/rpcapi.yaml')
   const spec = loadSpec(filepath)
 
+  let server
+  let client
+
+  class HTTPServer extends EventEmitter {
+    address () {
+      return {
+        address: 'localhost',
+        port: 8080
+      }
+    }
+  }
+
+  class WebSocketServer extends EventEmitter {
+    send (message, opts, fn) {
+      this._client.emit('message', message)
+      if (fn) {
+        fn()
+      }
+    }
+  }
+
+  class WebSocketClient extends EventEmitter {
+    constructor () {
+      super()
+
+      this.readyState = WS.CONNECTING
+
+      this.on('open', () => {
+        this.readyState = WS.OPEN
+      })
+
+      this.on('close', () => {
+        this.readyState = WS.CLOSED
+      })
+
+      setImmediate(() => {
+        this._fakeWS = new WebSocketServer()
+        this._fakeWS._client = this
+        server.wss.emit('connection', this._fakeWS, { url: '/' })
+        this.emit('open')
+      })
+    }
+
+    close () {
+      setImmediate(() => {
+        this.emit('close')
+      })
+    }
+
+    send (message, opts, fn) {
+      this._fakeWS.emit('message', message)
+      if (fn) {
+        fn()
+      }
+    }
+  }
+
+  const allScopes = getScopes(spec)
+  allScopes.add('not-existing-scope')
+
+  const tokens = {}
+
+  for (const scope of allScopes) {
+    tokens[`testuser@${scope}`] = {
+      user: 'testuser',
+      scopes: [scope]
+    }
+  }
+
+  for (const scope of allScopes) {
+    tokens[`otheruser@${scope}`] = {
+      user: 'otheruser',
+      scopes: [scope]
+    }
+  }
+
+  for (const scope of allScopes) {
+    tokens[`serviceuser@${scope}`] = {
+      user: 'serviceuser',
+      scopes: [RPCServer._serviceScope, scope]
+    }
+  }
+
   it('should load', () => {
     expect(spec).to.be.an('object')
   })
@@ -65,92 +148,17 @@ describe('RPCAPI Spec', () => {
     expect(validateSpec(spec)).to.be.true
   })
 
-  // TODO: do the same for events
   describe('methods', () => {
     for (const methodName in spec.methods) {
       describe(`#${methodName}()`, () => {
         const method = spec.methods[methodName]
-        const allScopes = getScopes(spec)
-        allScopes.add('not-existing-scope')
-
-        let server
-        let client
 
         let methodFn
-
-        class HTTPServer extends EventEmitter {
-          address () {
-            return {
-              address: 'localhost',
-              port: 8080
-            }
-          }
-        }
-
-        class WebSocketServer extends EventEmitter {
-          send (message, opts, fn) {
-            client.ws.emit('message', message)
-            if (fn) {
-              fn()
-            }
-          }
-        }
-
-        class WebSocketClient extends EventEmitter {
-          constructor () {
-            super()
-
-            this.readyState = WS.CONNECTING
-
-            this.on('open', () => {
-              this.readyState = WS.OPEN
-            })
-
-            this.on('close', () => {
-              this.readyState = WS.CLOSED
-            })
-
-            setImmediate(() => {
-              this._fakeWS = new WebSocketServer()
-              server.wss.emit('connection', this._fakeWS, { url: '/' })
-              this.emit('open')
-            })
-          }
-
-          close () {
-            setImmediate(() => {
-              this.emit('close')
-            })
-          }
-
-          send (message, opts, fn) {
-            this._fakeWS.emit('message', message)
-            if (fn) {
-              fn()
-            }
-          }
-        }
-
-        const tokens = {}
 
         const authorizedScopes = new Set([
           ...method.scopes,
           RPCServer._allScope
         ])
-
-        for (const scope of allScopes) {
-          tokens[`testuser@${scope}`] = {
-            user: 'testuser',
-            scopes: [scope]
-          }
-        }
-
-        for (const scope of allScopes) {
-          tokens[`serviceuser@${scope}`] = {
-            user: 'serviceuser',
-            scopes: [RPCServer._serviceScope, scope]
-          }
-        }
 
         beforeEach(async () => {
           server = new RPCServer({
@@ -185,7 +193,7 @@ describe('RPCAPI Spec', () => {
             })
 
             if (isAuthorized) {
-              it('should should be allowed', async () => {
+              it('should be allowed', async () => {
                 await expect(client.call(methodName, {})).to.eventually.be.fulfilled
                 expect(methodFn).to.be.calledOnce
 
@@ -216,6 +224,117 @@ describe('RPCAPI Spec', () => {
                 await expect(client.call(methodName, {}))
                   .to.eventually.be.rejectedWith('Method forbidden')
                 expect(methodFn).to.not.be.called
+              })
+            }
+          })
+        }
+      })
+    }
+  })
+
+  describe('events', () => {
+    for (const eventName in spec.events) {
+      describe(`#${eventName}`, () => {
+        const event = spec.events[eventName]
+
+        const authorizedScopes = new Set([
+          ...event.scopes,
+          RPCServer._allScope
+        ])
+
+        beforeEach(async () => {
+          server = new RPCServer({
+            server: new HTTPServer(),
+            authenticate: ({ token }) => tokens[token] || false
+          })
+          server.registerSpec(filepath, opId => sinon.fake())
+          server.registerMethod('ready', sinon.fake())
+        })
+
+        it('should be registered', () => {
+          expect(server.notifications[eventName].scopes).to.be.deep.equal(new Set(event.scopes))
+        })
+
+        for (const token in tokens) {
+          const {
+            user,
+            scopes
+          } = tokens[token]
+
+          const isAuthorized = scopes.some(s => authorizedScopes.has(s))
+          const isService = new Set(scopes).has('service')
+
+          describe(`subscribing with token ${token}`, () => {
+            beforeEach(async () => {
+              client = new RPCClient('http://example.com', { WebSocket: WebSocketClient })
+              await client.connect()
+
+              await client.auth({ token })
+            })
+
+            if (isAuthorized) {
+              it('should be allowed', async () => {
+                await expect(client.subscribe(eventName, () => {})).to.eventually.be.fulfilled
+              })
+
+              it('should result in notifications being delivered', async () => {
+                const fn = sinon.fake()
+
+                await client.subscribe(eventName, fn)
+
+                await server.notify(eventName, 'some')
+
+                expect(fn).to.be.calledOnceWith('some')
+              })
+
+              if (isService) {
+                it('should deliver notifications for every user', async () => {
+                  const fn = sinon.fake()
+
+                  await client.subscribe(eventName, fn)
+
+                  await server.notify(eventName, { user: 'testuser' })
+                  await server.notify(eventName, { user: 'otheruser' })
+
+                  expect(fn).to.be.calledTwice
+                  expect(fn).to.be.calledWith({ user: 'testuser' })
+                  expect(fn).to.be.calledWith({ user: 'otheruser' })
+                })
+              } else {
+                it('should only deliver notifications for this user', async () => {
+                  const fn1 = sinon.fake()
+                  const fn2 = sinon.fake()
+
+                  await client.subscribe(eventName, fn1)
+
+                  const otherclient = new RPCClient('http://example.com', {
+                    WebSocket: WebSocketClient
+                  })
+                  await otherclient.connect()
+                  await otherclient.auth({
+                    token: user === 'testuser'
+                      ? `otheruser@${scopes[0]}`
+                      : `testuser@${scopes[0]}`
+                  })
+
+                  await otherclient.subscribe(eventName, fn2)
+
+                  await server.notify(eventName, { user: 'testuser' })
+                  await server.notify(eventName, { user: 'otheruser' })
+
+                  try {
+                    expect(fn1).to.be.calledOnceWith({ user: 'testuser' })
+                    expect(fn2).to.be.calledOnceWith({ user: 'otheruser' })
+                  } catch (e) {
+                    expect(fn1).to.be.calledOnceWith({ user: 'otheruser' })
+                    expect(fn2).to.be.calledOnceWith({ user: 'testuser' })
+                  }
+                })
+              }
+            } else {
+              it('should be prevented', async () => {
+                await expect(client.subscribe(eventName, {}))
+                  .to.eventually.be.rejectedWith('notification forbidden')
               })
             }
           })

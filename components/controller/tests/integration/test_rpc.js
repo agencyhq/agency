@@ -110,6 +110,7 @@ describe('RPC', () => {
 
       try {
         expect(res).to.have.property('code', rule.code)
+        expect(res).to.have.property('user', 'testrunner')
         expect(fn).to.be.calledOnceWith(sinon.match(res))
       } finally {
         await rpc.unsubscribe('rule', fn)
@@ -166,6 +167,7 @@ describe('RPC', () => {
 
       try {
         expect(res).to.have.property('code', update.code)
+        expect(res).to.have.property('user', 'testrunner')
         expect(fn).to.be.calledOnceWith(sinon.match(res))
       } finally {
         await rpc.unsubscribe('rule', fn)
@@ -192,6 +194,7 @@ describe('RPC', () => {
       const res = await rpc.call('rule.delete', rule)
 
       expect(res).to.have.property('deleted', true)
+      expect(res).to.have.property('user', 'testrunner')
       expect(res).to.have.property('id', rule.id)
     })
 

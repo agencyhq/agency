@@ -9,6 +9,7 @@ module.exports = async ({ id }, { user }) => {
 
   const rule = {
     id,
+    user,
     deleted: true
   }
 

@@ -284,14 +284,17 @@ describe('RPC Server', () => {
       server.registerNotification('test')
 
       ws = new WS()
+      ws._user = 'testuser'
+      ws._scopes = new Set()
 
       // mock subscriptions
       server.notifications.test.clients.add(ws)
     })
 
     it('sends notification to client', async () => {
-      await server.notify('test', 'some notification')
+      const res = await server.notify('test', 'some notification')
 
+      expect(res).to.have.length(1)
       expect(ws.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
         notification: 'test',
@@ -303,8 +306,9 @@ describe('RPC Server', () => {
       const ws2 = new WS()
       server.notifications.test.clients.add(ws2)
 
-      await server.notify('test', 'some notification')
+      const res = await server.notify('test', 'some notification')
 
+      expect(res).to.have.length(2)
       expect(ws.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
         notification: 'test',
@@ -323,8 +327,9 @@ describe('RPC Server', () => {
       server.registerNotification('another')
       server.notifications.another.clients.add(ws2)
 
-      await server.notify('test', 'some notification')
+      const res = await server.notify('test', 'some notification')
 
+      expect(res).to.have.length(1)
       expect(ws.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
         notification: 'test',
@@ -337,8 +342,9 @@ describe('RPC Server', () => {
       const ws2 = new WS()
       server.notifications.test.clients.add(ws2)
 
-      await server.notify('test', 'some notification', { random: true })
+      const res = await server.notify('test', 'some notification', { random: true })
 
+      expect(res).to.have.length(1)
       try {
         expect(ws.send).to.be.calledOnceWith(JSON.stringify({
           jsonrpc: '2.0',
@@ -354,6 +360,51 @@ describe('RPC Server', () => {
           params: 'some notification'
         }))
       }
+    })
+
+    it('sends notification to specific users if notification mentions a user', async () => {
+      const ws2 = new WS()
+      ws2._user = 'some'
+      ws2._scopes = new Set()
+      server.notifications.test.clients.add(ws2)
+
+      const res = await server.notify('test', { user: 'some' })
+
+      expect(res).to.have.length(1)
+      expect(ws.send).to.not.be.called
+      expect(ws2.send).to.be.calledOnceWith(JSON.stringify({
+        jsonrpc: '2.0',
+        notification: 'test',
+        params: {
+          user: 'some'
+        }
+      }))
+    })
+
+    it('sends notification to service users if notification mentions a user', async () => {
+      const ws2 = new WS()
+      ws2._user = 'testuser'
+      ws2._scopes = new Set([RPCServer._serviceScope])
+      server.notifications.test.clients.add(ws2)
+
+      const res = await server.notify('test', { user: 'some' })
+
+      expect(res).to.have.length(1)
+      expect(ws.send).to.not.be.called
+      expect(ws2.send).to.be.calledOnceWith(JSON.stringify({
+        jsonrpc: '2.0',
+        notification: 'test',
+        params: {
+          user: 'some'
+        }
+      }))
+    })
+
+    it('returns empty array if no users match notification user', async () => {
+      const res = await server.notify('test', { user: 'some' })
+
+      expect(res).to.have.length(0)
+      expect(ws.send).to.not.be.called
     })
 
     it('throws an error if no notifications name is provided', async () => {
