@@ -30,7 +30,11 @@ async function main () {
     }))
   }
   app.use(express.json())
-  app.use(morgan('combined'))
+  app.use(morgan('short', {
+    stream: {
+      write: str => log.debug(str)
+    }
+  }))
 
   app.post('*', async (req, res) => {
     const trigger = {

@@ -9,13 +9,13 @@ module.exports = async ({ id }) => {
         status: 'claimed'
       })
   } catch (e) {
-    log.info(`claim denied: ${id}`)
+    log.debug(`claim denied: ${id}`)
     return {
       granted: false
     }
   }
 
-  log.info(`claim granted: ${id}`)
+  log.debug(`claim granted: ${id}`)
   return {
     granted: true
   }

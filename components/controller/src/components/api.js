@@ -117,7 +117,11 @@ async function main () {
     }))
   }
   app.use(cors())
-  app.use(morgan('combined'))
+  app.use(morgan('short', {
+    stream: {
+      write: str => log.debug(str)
+    }
+  }))
   app.use(passport.authenticate('bearer', { session: false }))
   app.use(express.json())
   app.use(router('../openapi.yaml', opId => {

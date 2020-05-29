@@ -29,7 +29,7 @@ const ACTIONS = {
 
 async function handleExecution (execution) {
   const { id } = execution
-  log.info('processing execution: %s', id)
+  log.debug('processing execution: %s', id)
 
   const action = ACTIONS[execution.action]
   if (!action) {
@@ -40,11 +40,15 @@ async function handleExecution (execution) {
   metrics.countClaims(claim)
 
   if (!claim.granted) {
+    log.debug(`claim denied: ${id}`)
     return
   }
 
+  log.debug(`claim granted: ${id}`)
+
   const promise = action(execution)
   metrics.measureExecutionDuration(execution, promise)
+  log.info('execution started: %s', id)
   rpc.notify('execution.started', { id })
 
   try {

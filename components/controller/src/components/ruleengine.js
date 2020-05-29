@@ -146,7 +146,7 @@ async function main () {
   metrics.countRules(rules)
 
   await rpc.subscribe('trigger', async trigger => {
-    log.info('processing trigger: %s', trigger.id)
+    log.debug('processing trigger: %s', trigger.id)
     const evaluations = rules.map(rule =>
       evaluateRule(rule, trigger)
         .catch(e => {
