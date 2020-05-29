@@ -11,7 +11,7 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text mocha"
+    "test": "nyc --reporter=lcov --reporter=text mocha --reporter=dot"
   },
   "dependencies": {
     "ajv": "^6.12.2",
