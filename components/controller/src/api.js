@@ -9,10 +9,10 @@ const morgan = require('morgan')
 const passport = require('passport')
 const bearer = require('passport-http-bearer')
 
-const pubsub = require('../pubsub')
-const router = require('../rest/router')
-const RPCServer = require('../rpc/server')
-const models = require('../models')
+const pubsub = require('./pubsub')
+const router = require('./rest/router')
+const RPCServer = require('./rpc/server')
+const models = require('./models')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
@@ -37,7 +37,7 @@ async function handleTrigger (rpc, msg) {
   metrics.countTriggers(trigger)
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(trigger))
 
-  await rpc.notify('trigger', trigger, { random: true })
+  await rpc.notify('trigger', trigger)
 
   log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, trigger.id)
   pubsub.channel.ack(msg)
@@ -125,7 +125,7 @@ async function main () {
   app.use(passport.authenticate('bearer', { session: false }))
   app.use(express.json())
   app.use(router('../openapi.yaml', opId => {
-    return require(`../rest/methods/${opId}`)
+    return require(`./rest/methods/${opId}`)
   }))
 
   pubsub.subscribe('execution', msg => handleExecution(rpc, msg), {
