@@ -107,7 +107,7 @@ services:
       context: .
       dockerfile: ./components/controller/Dockerfile
     image: enykeev/ifttt:latest
-    command: node src/components/api.js
+    command: node src/api.js
     environment:
       NODE_ENV: staging
       # LOG_LEVEL: debug

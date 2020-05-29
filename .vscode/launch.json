@@ -51,7 +51,7 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/components/controller/src/components/api.js"
+      "program": "${workspaceFolder}/components/controller/src/api.js"
     }
   ]
 }

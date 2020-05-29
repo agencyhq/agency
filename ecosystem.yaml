@@ -40,7 +40,7 @@ apps:
     max_memory_restart: 1G
 
   - name: ifttt_api
-    script: components/controller/src/components/api.js
+    script: components/controller/src/api.js
     instances: 2
     autorestart: true
     restart_delay: 10000
