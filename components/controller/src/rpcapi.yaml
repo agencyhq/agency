@@ -1,7 +1,7 @@
 version: 0
 
 info:
-  title: IFTTT RPC API
+  title: Agency RPC API
   description: Spec for intercomponent communication
   version: 0.0.1
 

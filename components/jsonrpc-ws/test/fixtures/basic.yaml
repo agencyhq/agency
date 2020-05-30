@@ -1,0 +1,51 @@
+version: 0
+
+info:
+  title: Agency RPC API
+  description: Spec for intercomponent communication
+  version: 0.0.1
+
+methods:
+  ready: {}
+  rule.list:
+    operationId: ruleList
+    scopes:
+      - rule
+    parameters:
+      - name: query
+        schema:
+          type: object
+    response:
+      type: array
+      items:
+        $ref: '#/definitions/Rule'
+
+events:
+  rule:
+    scopes:
+      - rule
+    response:
+      $ref: '#/definitions/Rule'
+
+definitions:
+  Rule:
+    type: object
+    properties:
+      id:
+        type: string
+      code:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+      user:
+        type: string
+    additionalProperties: false
+    required:
+      - id
+      - code
+      - created_at
+      - user

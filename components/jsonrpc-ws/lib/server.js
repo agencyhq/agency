@@ -172,11 +172,11 @@ class RPCServer extends EventEmitter {
         // TODO: start checking for parameters
       } = spec.methods[method]
 
-      if (!operationId) {
-        continue
-      }
-
       const operation = resolver(operationId)
+
+      if (typeof operation !== 'function') {
+        throw new Error('operationId should resolve to a function')
+      }
 
       this.registerMethod(method, operation, {
         scopes: new Set(scopes || [])

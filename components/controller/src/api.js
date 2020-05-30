@@ -125,6 +125,12 @@ async function main () {
   app.use(passport.authenticate('bearer', { session: false }))
   app.use(express.json())
   app.use(router('../openapi.yaml', opId => {
+    if (!opId) {
+      return () => {
+        throw new Error('not implemented')
+      }
+    }
+
     return require(`./rest/methods/${opId}`)
   }))
 

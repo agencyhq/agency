@@ -26,39 +26,40 @@ function promiseCalledMatching (match) {
   return fn
 }
 
+class WebSocket extends EventEmitter {
+  constructor () {
+    super()
+
+    this.readyState = WS.CONNECTING
+
+    this.on('open', () => {
+      this.readyState = WS.OPEN
+    })
+
+    this.on('close', () => {
+      this.readyState = WS.CLOSED
+    })
+
+    setImmediate(() => {
+      this.emit('open')
+    })
+  }
+
+  close () {
+    setImmediate(() => {
+      this.emit('close')
+    })
+  }
+
+  send (json, opts, fn) {
+    fn()
+  }
+}
+
 describe('RPC Client', () => {
   let client
 
   beforeEach(() => {
-    class WebSocket extends EventEmitter {
-      constructor () {
-        super()
-
-        this.readyState = WS.CONNECTING
-
-        this.on('open', () => {
-          this.readyState = WS.OPEN
-        })
-
-        this.on('close', () => {
-          this.readyState = WS.CLOSED
-        })
-
-        setImmediate(() => {
-          this.emit('open')
-        })
-      }
-
-      close () {
-        setImmediate(() => {
-          this.emit('close')
-        })
-      }
-
-      send () {
-
-      }
-    }
     client = new RPCClient('http://example.com', { WebSocket })
   })
 
@@ -70,6 +71,20 @@ describe('RPC Client', () => {
     it('instantiates an object', () => {
       expect(client).to.be.an('object')
     })
+
+    it('allows rewriting default callTimeout', async () => {
+      client = new RPCClient('http://example.com', { WebSocket, callTimeout: 0 })
+      await client.connect()
+
+      const call = client.call('method')
+      const timeout = util.wait(2000)
+
+      await Promise.race([call, timeout])
+
+      expect(call).not.to.be.fulfilled
+      expect(call).not.to.be.rejected
+      expect(timeout).to.be.fulfilled
+    }).timeout(3000).slow(6000)
   })
 
   describe('#isConnected()', () => {
@@ -189,6 +204,42 @@ describe('RPC Client', () => {
 
       expect(fn).to.be.calledOnce
     })
+
+    it('gracefully handles authentication as nonexitent user', async () => {
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
+        const { id } = JSON.parse(json)
+        client.ws.emit('message', JSON.stringify({
+          jsonrpc: '2.0',
+          id: id,
+          result: false
+        }))
+      })
+
+      await client.auth({ token: 'nonexitent' })
+
+      expect(client).to.have.property('authenticated', false)
+    })
+
+    it('gracefully handles authentication as scopeless user', async () => {
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
+        const { id } = JSON.parse(json)
+        client.ws.emit('message', JSON.stringify({
+          jsonrpc: '2.0',
+          id: id,
+          result: {
+            user: 'test'
+          }
+        }))
+      })
+
+      await client.auth({ token: MOCK_TOKEN })
+
+      expect(client).to.have.property('authenticated', true)
+      expect(client).to.have.property('scopes')
+      expect([...client.scopes]).not.to.have.members
+    })
   })
 
   describe('#call()', () => {
@@ -223,6 +274,29 @@ describe('RPC Client', () => {
         method: 'method',
         id: 1,
         params: 'argument'
+      }))
+    })
+
+    it('allows to request procedure on behalf of other user', async () => {
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
+        client.ws.emit('message', JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          result: 'some result'
+        }))
+      })
+
+      const p = client.call('method', 'argument', { become: 'otheruser' })
+
+      expect(p).to.be.a('promise')
+      await expect(p).to.eventually.be.equal('some result')
+      expect(client.ws.send).to.be.calledOnceWith(JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'method',
+        id: 1,
+        params: 'argument',
+        'x-agency-become': 'otheruser'
       }))
     })
 
@@ -261,6 +335,7 @@ describe('RPC Client', () => {
     }).slow(1500)
 
     it('rejects promise on zero timeout', async () => {
+      client.opts.callTimeout = 0
       client.ws.send = sinon.spy((json, opts, fn) => {
         fn()
         client.ws.emit('message', JSON.stringify({
@@ -316,6 +391,49 @@ describe('RPC Client', () => {
     })
   })
 
+  describe('#notify()', () => {
+    beforeEach(async () => {
+      const promise = client.connect()
+      client.ws.emit('open')
+
+      await expect(promise).to.eventually.be.fulfilled
+      expect(client.isConnected()).to.be.true
+
+      client.ws.send = sinon.spy((json, opts, fn) => {
+        fn()
+      })
+    })
+
+    it('makes a notification', async () => {
+      const p = client.notify('method', 'argument')
+
+      expect(p).to.be.a('promise')
+      await expect(p).to.eventually.be.fulfilled
+      expect(client.ws.send).to.be.calledOnceWith(JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'method',
+        params: 'argument'
+      }))
+    })
+
+    it('makes a notification without params', async () => {
+      const p = client.notify('method')
+
+      expect(p).to.be.a('promise')
+      await expect(p).to.eventually.be.fulfilled
+      expect(client.ws.send).to.be.calledOnceWith(JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'method'
+      }))
+    })
+
+    it('rejects if called on disconnected client', async () => {
+      await client.close()
+
+      await expect(client.notify('method', 'argument')).to.be.rejectedWith('not connected')
+    })
+  })
+
   describe('#subscribe()', () => {
     beforeEach(async () => {
       const promise = client.connect()
@@ -331,7 +449,8 @@ describe('RPC Client', () => {
           jsonrpc: '2.0',
           id: req.id,
           result: {
-            test: 'ok'
+            test: 'ok',
+            nonexistent: 'like really not ok mate'
           }
         }))
       })
@@ -353,7 +472,7 @@ describe('RPC Client', () => {
 
       await fn.promise
 
-      expect(res).to.be.deep.equal({ test: 'ok' })
+      expect(res).to.have.property('test', 'ok')
       await expect(fn.promise).to.eventually.be.fulfilled
       expect(fn).to.be.calledOnceWith('some notification')
     })
@@ -370,7 +489,7 @@ describe('RPC Client', () => {
 
       await fn.promise
 
-      expect(res).to.be.deep.equal({ test: 'ok' })
+      expect(res).to.have.property('test', 'ok')
       await expect(fn.promise).to.eventually.be.fulfilled
       expect(fn).to.be.calledOnceWith(1, 2, 3)
     })
@@ -429,6 +548,13 @@ describe('RPC Client', () => {
 
       // handler gets called only once
       expect(fn).to.be.calledOnceWith('some notification')
+    })
+
+    it('should throw if unable to subscribe to notification', async () => {
+      const fn = promiseCalledMatching(() => true)
+      const promise = client.subscribe('nonexistent', fn)
+
+      expect(promise).to.be.rejectedWith('like really not ok mate')
     })
   })
 

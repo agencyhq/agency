@@ -14,6 +14,12 @@ class RPCServer extends RPC.Server {
     super(...args)
 
     this.registerSpec(path.join(__dirname, '../rpcapi.yaml'), opId => {
+      if (!opId) {
+        return () => {
+          throw new Error('Not implemented')
+        }
+      }
+
       return require(path.join(__dirname, './methods', opId))
     })
 

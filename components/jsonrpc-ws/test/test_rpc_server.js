@@ -2,6 +2,7 @@
 
 const http = require('http')
 const EventEmitter = require('events')
+const path = require('path')
 
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
@@ -274,6 +275,100 @@ describe('RPC Server', () => {
 
     it('throws an error if no method name is provided', () => {
       expect(() => server.deregisterNotification(undefined)).to.throw('expected name to be a string')
+    })
+  })
+
+  describe('#registerSpec()', () => {
+    it('loads the spec file and registers all the methods and events from it', () => {
+      const operations = {
+        ruleList: () => {}
+      }
+
+      server.registerSpec(
+        path.join(__dirname, 'fixtures/basic.yaml'),
+        opId => operations[opId] || (() => {})
+      )
+
+      expect(server.methods).to.have.property('rule.list')
+      expect(server.methods['rule.list']).to.have.property('fn', operations.ruleList)
+      expect(server.methods['rule.list']).to.have.deep.property('scopes', new Set(['rule']))
+
+      expect(server.notifications).to.have.property('rule')
+      expect(server.notifications.rule).to.have.deep.property('scopes', new Set(['rule']))
+    })
+
+    it('should try to resolve operation even when no operationId is provided', () => {
+      const resolver = sinon.stub().returns(() => {})
+
+      server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), resolver)
+
+      expect(server.methods).to.have.property('ready')
+      expect(server.methods).to.have.property('rule.list')
+
+      expect(resolver).to.be.calledTwice
+      expect(resolver).to.be.calledWith(undefined)
+      expect(resolver).to.be.calledWith('ruleList')
+    })
+
+    it('should throw if operation is not a function', () => {
+      const fn = () =>
+        server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), () => {})
+
+      expect(fn).to.throw('operationId should resolve to a function')
+    })
+
+    it('should throw when parsing unsupported version of the spec', () => {
+      const fn = () =>
+        server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
+
+      expect(fn).to.throw('unsupported version of rpc spec')
+    })
+
+    it('should throw when parsing unsupported version of the spec', () => {
+      const fn = () =>
+        server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
+
+      expect(fn).to.throw('unsupported version of rpc spec')
+    })
+
+    it('should throw when parsing invalid spec', () => {
+      const fn = () =>
+        server.registerSpec(path.join(__dirname, 'fixtures/invalid.yaml'), () => {})
+
+      expect(fn).to.throw('spec validation failed')
+    })
+  })
+
+  describe('#hasSubscribers()', () => {
+    it('should return false if no one subscribed to the notification', () => {
+      server.registerNotification('test')
+
+      expect(server.hasSubscribers('test')).to.be.false
+    })
+
+    it('should return true if notification has subscribers', () => {
+      server.registerNotification('test')
+
+      server.notifications.test.clients.add('somebody')
+
+      expect(server.hasSubscribers('test')).to.be.true
+    })
+
+    it('should return false if everyone unsubscribed from the notification', () => {
+      server.registerNotification('test')
+
+      server.notifications.test.clients.add('somebody')
+      server.notifications.test.clients.delete('somebody')
+
+      expect(server.hasSubscribers('test')).to.be.false
+    })
+
+    it('should throw if notification name is not a string', () => {
+      expect(() => server.hasSubscribers(1)).to.throw('expected name to be a string')
+    })
+
+    it('should throw if notification is not registered', () => {
+      expect(() => server.hasSubscribers('test')).to.throw('notification not registered')
     })
   })
 
@@ -902,6 +997,59 @@ describe('RPC Server', () => {
         jsonrpc: '2.0',
         result: {
           secure: 'notification forbidden'
+        },
+        id: 1
+      }))
+    })
+
+    it('allows service user to make a request on behalf of other user', async () => {
+      const handler = sinon.spy(server, '_handleRPC')
+
+      ws._user = 'original'
+      ws._scopes = new Set(['all', 'service'])
+
+      ws.emit('message', JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'test',
+        params: ['some params'],
+        'x-agency-become': 'otheruser',
+        id: 1
+      }))
+
+      expect(handler).to.be.calledOnce
+      await expect(handler.returnValues[0]).to.be.a('promise').fulfilled
+      expect(method).to.be.calledOnce
+      expect(method.getCall(0).args[0]).to.be.deep.equal(['some params'])
+      expect(method.getCall(0).args[1]).to.have.property('user', 'otheruser')
+      expect(ws.send).to.be.calledOnceWith(JSON.stringify({
+        jsonrpc: '2.0',
+        result: 'passed',
+        id: 1
+      }))
+    })
+
+    it('prevents common users from spoofing username', async () => {
+      const handler = sinon.spy(server, '_handleRPC')
+
+      ws._user = 'original'
+      ws._scopes = new Set(['all'])
+
+      ws.emit('message', JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'test',
+        params: ['some params'],
+        'x-agency-become': 'otheruser',
+        id: 1
+      }))
+
+      expect(handler).to.be.calledOnce
+      await expect(handler.returnValues[0]).to.be.a('promise').fulfilled
+      expect(method).not.to.be.calledOnce
+      expect(ws.send).to.be.calledOnceWith(JSON.stringify({
+        jsonrpc: '2.0',
+        error: {
+          code: -29001,
+          message: 'Becoming is forbidden'
         },
         id: 1
       }))
