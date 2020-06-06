@@ -1,3 +1,4 @@
 {
-  "eslint.enable": true
+  "eslint.enable": true,
+  "python.pythonPath": "/home/enykeev/.local/share/virtualenvs/python-ruleengine-51LSgVuW/bin/python"
 }
