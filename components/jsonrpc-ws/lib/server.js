@@ -233,7 +233,7 @@ class RPCServer extends EventEmitter {
       promises.push(new Promise((resolve, reject) => {
         ws.send(JSON.stringify({
           jsonrpc: '2.0',
-          notification: name,
+          method: name,
           params
         }), {}, () => resolve(ws))
       }))

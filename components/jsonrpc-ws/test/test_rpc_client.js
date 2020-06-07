@@ -466,7 +466,7 @@ describe('RPC Client', () => {
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
 
@@ -483,7 +483,7 @@ describe('RPC Client', () => {
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: [1, 2, 3]
       }))
 
@@ -502,7 +502,7 @@ describe('RPC Client', () => {
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
 
@@ -522,7 +522,7 @@ describe('RPC Client', () => {
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
 
@@ -540,7 +540,7 @@ describe('RPC Client', () => {
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
 
@@ -645,9 +645,8 @@ describe('RPC Client', () => {
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
-        id: 1,
-        method: 'test',
-        params: 'some params'
+        id: 99,
+        result: 'some params'
       }))
 
       expect(fn).to.be.calledOnce.and.returned(undefined)
@@ -658,7 +657,7 @@ describe('RPC Client', () => {
 
       client.ws.emit('message', JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
 

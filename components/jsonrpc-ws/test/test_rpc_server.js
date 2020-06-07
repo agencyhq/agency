@@ -392,7 +392,7 @@ describe('RPC Server', () => {
       expect(res).to.have.length(1)
       expect(ws.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
     })
@@ -406,12 +406,12 @@ describe('RPC Server', () => {
       expect(res).to.have.length(2)
       expect(ws.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
       expect(ws2.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
     })
@@ -427,7 +427,7 @@ describe('RPC Server', () => {
       expect(res).to.have.length(1)
       expect(ws.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: 'some notification'
       }))
       expect(ws2.send).to.not.be.called
@@ -443,7 +443,7 @@ describe('RPC Server', () => {
       try {
         expect(ws.send).to.be.calledOnceWith(JSON.stringify({
           jsonrpc: '2.0',
-          notification: 'test',
+          method: 'test',
           params: 'some notification'
         }))
         expect(ws2.send).to.not.be.called
@@ -451,7 +451,7 @@ describe('RPC Server', () => {
         expect(ws.send).to.not.be.called
         expect(ws2.send).to.be.calledOnceWith(JSON.stringify({
           jsonrpc: '2.0',
-          notification: 'test',
+          method: 'test',
           params: 'some notification'
         }))
       }
@@ -469,7 +469,7 @@ describe('RPC Server', () => {
       expect(ws.send).to.not.be.called
       expect(ws2.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: {
           user: 'some'
         }
@@ -488,7 +488,7 @@ describe('RPC Server', () => {
       expect(ws.send).to.not.be.called
       expect(ws2.send).to.be.calledOnceWith(JSON.stringify({
         jsonrpc: '2.0',
-        notification: 'test',
+        method: 'test',
         params: {
           user: 'some'
         }

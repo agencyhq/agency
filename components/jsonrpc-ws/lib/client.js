@@ -143,37 +143,37 @@ class RPCClient extends EventEmitter {
     await this._send(message)
   }
 
-  async subscribe (notification, fn) {
-    const res = await this.call('rpc.on', [notification])
+  async subscribe (method, fn) {
+    const res = await this.call('rpc.on', [method])
 
-    if (res[notification] !== 'ok') {
-      throw new Error(`error subscribing: ${res[notification]}`)
+    if (res[method] !== 'ok') {
+      throw new Error(`error subscribing: ${res[method]}`)
     }
 
-    if (!this.subscriptions[notification]) {
-      this.subscriptions[notification] = []
+    if (!this.subscriptions[method]) {
+      this.subscriptions[method] = []
     }
 
-    const index = this.subscriptions[notification].indexOf(fn)
+    const index = this.subscriptions[method].indexOf(fn)
 
     if (index === -1) {
-      this.subscriptions[notification] = this.subscriptions[notification].concat(fn)
+      this.subscriptions[method] = this.subscriptions[method].concat(fn)
     }
 
     return res
   }
 
-  async unsubscribe (notification, fn) {
-    const res = await this.call('rpc.off', [notification])
+  async unsubscribe (method, fn) {
+    const res = await this.call('rpc.off', [method])
 
-    if (!this.subscriptions[notification]) {
+    if (!this.subscriptions[method]) {
       return
     }
 
-    const index = this.subscriptions[notification].indexOf(fn)
+    const index = this.subscriptions[method].indexOf(fn)
 
     if (index !== -1) {
-      this.subscriptions[notification].splice(index, 1)
+      this.subscriptions[method].splice(index, 1)
     }
 
     return res
@@ -198,7 +198,7 @@ class RPCClient extends EventEmitter {
       jsonrpc,
       id,
       params,
-      notification,
+      method,
       result,
       error
     } = message
@@ -207,9 +207,9 @@ class RPCClient extends EventEmitter {
       return
     }
 
-    if (notification) {
+    if (method) {
       const args = Array.isArray(params) ? params : [params]
-      const subscriptions = this.subscriptions[notification] || []
+      const subscriptions = this.subscriptions[method] || []
 
       for (const sub of subscriptions) {
         sub(...args)
