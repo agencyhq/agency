@@ -147,13 +147,7 @@ async function main () {
 
   await rpc.subscribe('trigger', async trigger => {
     log.debug('processing trigger: %s', trigger.id)
-    const evaluations = rules.map(rule =>
-      evaluateRule(rule, trigger)
-        .catch(e => {
-          console.log(e)
-          throw e
-        })
-    )
+    const evaluations = rules.map(rule => evaluateRule(rule, trigger))
 
     await Promise.allSettled(evaluations)
     log.info('processed all rules for the trigger: %s', trigger.id)
