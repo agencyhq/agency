@@ -48,7 +48,8 @@ async function main () {
       }
     }
 
-    rpc.call('trigger.emit', trigger)
+    await rpc.call('trigger.emit', trigger)
+      .catch(e => console.log(e))
     res.send('OK')
   })
 

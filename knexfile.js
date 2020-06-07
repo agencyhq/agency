@@ -1,1 +1,1 @@
-module.exports = require('./components/controller/knexfile')
+module.exports = require('./components/core/knexfile')

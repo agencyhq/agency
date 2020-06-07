@@ -10,40 +10,40 @@ apps:
     script: components/demo/dev.js
     autorestart: true
     watch:
-      - components/controller/dev.js
+      - components/core/dev.js
 
   - name: ifttt_sensor_http
-    script: components/controller/src/components/sensor.js
+    script: components/core/src/components/sensor.js
     instances: 1
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/controller/src
+      - components/core/src
     max_memory_restart: 1G
 
   - name: ifttt_ruleengine
-    script: components/controller/src/components/ruleengine.js
+    script: components/core/src/components/ruleengine.js
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/controller/src
+      - components/core/src
     max_memory_restart: 1G
 
   - name: ifttt_actionrunner_http
-    script: components/controller/src/components/actionrunner.js
+    script: components/core/src/components/actionrunner.js
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/controller/src
+      - components/core/src
     max_memory_restart: 1G
 
   - name: ifttt_api
-    script: components/controller/src/api.js
+    script: components/core/src/api.js
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/controller/src
+      - components/core/src
     max_memory_restart: 1G
