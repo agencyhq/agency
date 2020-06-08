@@ -1,9 +1,9 @@
 const log = require('loglevel')
 const models = require('../../models')
 
-module.exports = async ({ id }) => {
+module.exports = async ({ id }, { user }) => {
   try {
-    await models.Executions.forge({ id })
+    await models.Executions.forge({ id, user })
       .where('status', 'scheduled')
       .save({
         status: 'claimed'

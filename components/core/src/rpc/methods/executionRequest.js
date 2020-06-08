@@ -4,13 +4,14 @@ const log = require('loglevel')
 
 const models = require('../../models')
 
-module.exports = async ({ triggered_by, matched_to }) => {
+module.exports = async ({ triggered_by, matched_to }, { user }) => {
   const mod = models.Executions.forge({
     id: crypto.randomBytes(16).toString('hex'),
     created_at: new Date().toISOString(),
     status: 'requested',
     triggered_by,
-    matched_to
+    matched_to,
+    user
   })
   const res = await mod.save(null, { method: 'insert' })
   log.debug(
@@ -19,5 +20,5 @@ module.exports = async ({ triggered_by, matched_to }) => {
     matched_to,
     res.id
   )
-  return res
+  return res.toJSON()
 }

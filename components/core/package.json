@@ -4,9 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text mocha tests/**/test_*.js --reporter dot",
+    "test": "nyc mocha tests/**/test_*.js --reporter dot",
     "migrate": "knex migrate:latest && knex seed:run",
     "build": "parcel build web/index.html"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage",
+      "dist",
+      "tests"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true
   },
   "repository": {
     "type": "git",
@@ -43,6 +55,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "mocha": "^7.1.1",
+    "mock-knex": "^0.4.9",
     "nyc": "^15.0.1",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0"

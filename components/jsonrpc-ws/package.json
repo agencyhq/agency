@@ -11,7 +11,19 @@
   "license": "ISC",
   "main": "index.js",
   "scripts": {
-    "test": "nyc --reporter=lcov --reporter=text mocha --reporter=dot"
+    "test": "nyc mocha --reporter=dot"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage",
+      "dist",
+      "test"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true
   },
   "dependencies": {
     "ajv": "^6.12.2",

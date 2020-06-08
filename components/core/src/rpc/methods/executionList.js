@@ -1,7 +1,10 @@
 const models = require('../../models')
 
-module.exports = async query => {
-  return await models.Executions.forge()
+module.exports = async (query, { user }) => {
+  const res = await models.Executions.forge()
+    .where({ user })
     .orderBy('created_at', 'DESC')
     .fetchPage(query)
+
+  return res.toJSON()
 }

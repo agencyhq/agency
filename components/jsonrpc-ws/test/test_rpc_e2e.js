@@ -6,8 +6,7 @@ const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 const WS = require('ws')
 
-const RPCClient = require('../lib/client')
-const RPCServer = require('../lib/server')
+const RPC = require('..')
 
 const { expect } = chai
 chai.use(chaiAsPromised)
@@ -18,10 +17,10 @@ describe('E2E', () => {
   let server
 
   beforeEach(async () => {
-    server = new RPCServer()
+    server = new RPC.Server()
     const { address, port } = (await server.listen()).address()
 
-    client = new RPCClient(`http://[${address}]:${port}`)
+    client = new RPC.Client(`http://[${address}]:${port}`)
     await client.connect()
   })
 
