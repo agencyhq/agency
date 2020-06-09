@@ -34,6 +34,8 @@
     "@agencyhq/agency-metrics": "^0.0.0",
     "@agencyhq/jsonrpc-ws": "^0.0.0",
     "@apidevtools/openapi-schemas": "^2.0.3",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.1",
     "ajv": "^6.12.2",
     "amqplib": "^0.5.5",
     "axios": "^0.19.2",
@@ -51,7 +53,6 @@
     "vm2": "^3.9.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.6",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "mocha": "^7.1.1",

@@ -51,7 +51,15 @@
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/components/controller/src/api.js"
+      "program": "${workspaceFolder}/components/core/src/api.js"
+    }, {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch Ruleengine component",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/components/core/src/components/ruleengine.js"
     }
   ]
 }

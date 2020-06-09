@@ -2,6 +2,7 @@ const metrics = require('@agencyhq/agency-metrics')
 const RPC = require('@agencyhq/jsonrpc-ws')
 const log = require('loglevel')
 const { VM } = require('vm2')
+const babel = require('@babel/core')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
@@ -26,7 +27,7 @@ function initializeRule (rule) {
     timeout: 1000,
     sandbox: {}
   })
-  vm.run('module = { exports: {} }')
+  vm.run('exports = {}; module = { exports }')
 
   const res = {
     ...rule,
@@ -34,13 +35,24 @@ function initializeRule (rule) {
     errors: []
   }
 
+  const transpile = babel.transform(rule.code, {
+    plugins: [
+      require('@babel/plugin-transform-modules-commonjs')
+    ],
+    sourceType: 'module'
+  })
+
   try {
-    vm.run(rule.code)
+    vm.run(transpile.code)
   } catch (err) {
     res.errors.push(err.toString())
   }
 
-  const { exports } = vm.sandbox.module
+  const exports = vm.sandbox.module.exports || vm.sandbox.exports
+
+  if (exports.condition && !exports.if) {
+    exports.if = exports.condition
+  }
 
   if (!exports.if || typeof exports.if !== 'function') {
     res.errors.push("expect rule to export function 'if'")
