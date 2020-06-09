@@ -16,5 +16,9 @@ exports.seed = async knex => {
     id: crypto.randomBytes(16).toString('hex'),
     code: fs.readFileSync(path.join(__dirname, 'rules/converge.js')),
     user: 'enykeev'
+  }, {
+    id: crypto.randomBytes(16).toString('hex'),
+    code: fs.readFileSync(path.join(__dirname, 'rules/telegram_echo.js')),
+    user: 'enykeev'
   }])
 }
