@@ -17,10 +17,24 @@ class RPCServer extends EventEmitter {
   static _allScope = 'all'
   static _serviceScope = 'service'
 
-  constructor (opts) {
+  /**
+   * Creates an instance of RPCServer.
+   * @param {object} [opts]
+   * @param {number} [opts.pingInterval]
+   * @param {http.Server} [opts.server]
+   * @param {(context: object) => bool} [opts.authenticate]
+   *
+   * @memberof RPCServer
+   */
+  constructor (opts = {}) {
     super()
 
-    const { server, authenticate, ...restOpts } = opts || {}
+    this.opts = {
+      pingInterval: 25000,
+      ...opts
+    }
+
+    const { server, authenticate, ...restOpts } = opts
 
     this.server = server || http.createServer()
     this.authenticate = authenticate || this.authenticate
@@ -47,11 +61,34 @@ class RPCServer extends EventEmitter {
       ws._scopes = new Set(scopes)
 
       ws.on('message', data => this._handleRPC(ws, client, data))
+
+      ws.isAlive = true
+      ws.on('pong', () => {
+        ws.isAlive = true
+      })
     })
 
     this.wss.on('error', (error) => this.emit('error', error))
 
-    this.server.on('listening', () => this.emit('listening'))
+    this.server.on('listening', () => {
+      this.emit('listening')
+
+      const pingInterval = setInterval(() => {
+        this.wss.clients.forEach(ws => {
+          if (ws.isAlive === false) {
+            return ws.terminate()
+          }
+
+          ws.isAlive = false
+          ws.ping(() => {})
+        })
+      }, this.opts.pingInterval)
+
+      this.wss.on('close', () => {
+        clearInterval(pingInterval)
+      })
+    })
+
     this.server.on('upgrade', (req, socket, head) => {
       this.wss.handleUpgrade(req, socket, head, (ws) => {
         this.wss.emit('connection', ws, req)
@@ -69,8 +106,8 @@ class RPCServer extends EventEmitter {
     }
   }
 
-  async listen (fn) {
-    this.server.listen()
+  async listen (port, fn) {
+    this.server.listen(port)
 
     await EventEmitter.once(this.server, 'listening')
 

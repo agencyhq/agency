@@ -4,6 +4,7 @@ const EventEmitter = require('events')
 
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
+const sinon = require('sinon')
 const WS = require('ws')
 
 const RPC = require('..')
@@ -50,6 +51,49 @@ describe('E2E', () => {
     await EventEmitter.once(client.ws, 'close')
     expect(client.isConnected()).to.be.false
   })
+
+  it('sends ping to connected clients', async () => {
+    const server = new RPC.Server({ pingInterval: 400 })
+    const { address, port } = (await server.listen()).address()
+
+    const client = new RPC.Client(`http://[${address}]:${port}`)
+    await client.connect()
+
+    const fn = sinon.spy()
+    client.ws.on('ping', fn)
+
+    await EventEmitter.once(client.ws, 'ping')
+    await EventEmitter.once(client.ws, 'ping')
+
+    try {
+      expect(fn).to.be.calledTwice
+    } finally {
+      await client.close().catch(() => {})
+      await server.close().catch(() => {})
+    }
+  }).slow(1700)
+
+  it('disconnects clients who did not answer to ping', async () => {
+    const server = new RPC.Server({ pingInterval: 400 })
+    const { address, port } = (await server.listen()).address()
+
+    const client = new RPC.Client(`http://[${address}]:${port}`)
+    await client.connect()
+
+    client.ws.pong = () => {}
+
+    try {
+      expect(client.isConnected()).to.be.true
+
+      await EventEmitter.once(client.ws, 'ping')
+      await EventEmitter.once(client.ws, 'close')
+
+      expect(client.isConnected()).to.be.false
+    } finally {
+      await client.close().catch(() => {})
+      await server.close().catch(() => {})
+    }
+  }).slow(1700)
 
   describe('Authentication', () => {
     it('allows to authenticate via rpc.login method', async () => {

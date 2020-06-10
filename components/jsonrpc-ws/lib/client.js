@@ -21,6 +21,15 @@ function deferred (timeout) {
 }
 
 class RPCClient extends EventEmitter {
+  /**
+   * @param {string} address
+   * @param {object} [opts]
+   * @param {number} [opts.heartbeatTimeout]
+   * @param {number} [opts.callTimeout]
+   *
+   * @memberof RPCClient
+   */
+
   constructor (address, opts) {
     super()
 
@@ -32,6 +41,7 @@ class RPCClient extends EventEmitter {
 
     this.address = address
     this.opts = {
+      heartbeatTimeout: 30000,
       callTimeout: 1000,
       ...opts
     }
@@ -46,9 +56,32 @@ class RPCClient extends EventEmitter {
       throw new Error('websocket already instantiated')
     }
 
-    const { WebSocket = WS, opts } = this.opts
+    const {
+      WebSocket = WS,
+      heartbeatTimeout,
+      wsOpts
+    } = this.opts
 
-    this.ws = new WebSocket(this.address, opts)
+    this.ws = new WebSocket(this.address, wsOpts)
+
+    const heartbeat = () => {
+      clearTimeout(this.pingTimeout)
+
+      this.pingTimeout = setTimeout(async () => {
+        this.emit('heartbeat-missed')
+        await this.ws.terminate()
+      }, heartbeatTimeout)
+    }
+
+    this.ws.on('open', heartbeat)
+    this.ws.on('ping', heartbeat)
+    this.ws.on('close', () => {
+      clearTimeout(this.pingTimeout)
+
+      this.emit('disconnected')
+
+      this.ws = null
+    })
 
     this.ws.on('message', m => this._handleMessage(m))
 
@@ -65,8 +98,6 @@ class RPCClient extends EventEmitter {
     this.ws.close()
 
     await once(this.ws, 'close')
-
-    this.emit('disconnected')
   }
 
   async _send (message) {

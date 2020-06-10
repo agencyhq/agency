@@ -63,6 +63,12 @@ describe('RPCAPI Spec', () => {
         port: 8080
       }
     }
+
+    close (fn) {
+      if (fn) {
+        fn()
+      }
+    }
   }
 
   class WebSocketServer extends EventEmitter {
@@ -171,6 +177,10 @@ describe('RPCAPI Spec', () => {
           methodFn = server.methods[methodName].fn
         })
 
+        afterEach(async () => {
+          await server.close()
+        })
+
         it('should be registered', () => {
           expect(server.methods[methodName]).to.have.nested.property('fn.isSinonProxy', true)
         })
@@ -190,6 +200,10 @@ describe('RPCAPI Spec', () => {
               await client.connect()
 
               await client.auth({ token })
+            })
+
+            afterEach(async () => {
+              await client.close()
             })
 
             if (isAuthorized) {
@@ -251,6 +265,10 @@ describe('RPCAPI Spec', () => {
           server.registerMethod('ready', sinon.fake())
         })
 
+        afterEach(async () => {
+          await server.close()
+        })
+
         it('should be registered', () => {
           expect(server.notifications[eventName].scopes).to.be.deep.equal(new Set(event.scopes))
         })
@@ -270,6 +288,10 @@ describe('RPCAPI Spec', () => {
               await client.connect()
 
               await client.auth({ token })
+            })
+
+            afterEach(async () => {
+              await client.close()
             })
 
             if (isAuthorized) {
@@ -328,6 +350,8 @@ describe('RPCAPI Spec', () => {
                   } catch (e) {
                     expect(fn1).to.be.calledOnceWith({ user: 'otheruser' })
                     expect(fn2).to.be.calledOnceWith({ user: 'testuser' })
+                  } finally {
+                    await otherclient.close()
                   }
                 })
               }

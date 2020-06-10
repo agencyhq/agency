@@ -30,9 +30,12 @@ if (METRICS) {
 }
 
 async function main () {
+  rpc.on('disconnected', () => {
+    process.exit(1)
+  })
+
   await rpc.connect()
   await rpc.auth({ token: AGENCY_TOKEN })
-  await rpc.notify('ready')
 
   const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, {
     polling: true,
@@ -80,6 +83,8 @@ async function main () {
 
     bot.sendMessage(chatId, text)
   })
+
+  await rpc.notify('ready')
 }
 
 main()

@@ -51,6 +51,10 @@ class WebSocket extends EventEmitter {
     })
   }
 
+  terminate () {
+    this.emit('close')
+  }
+
   send (json, opts, fn) {
     fn()
   }
@@ -125,6 +129,17 @@ describe('RPC Client', () => {
 
       expect(fn).to.be.calledOnce
     })
+
+    it('terminates the connection on ping timeout', async () => {
+      const client = new RPCClient('http://example.com', { WebSocket, heartbeatTimeout: 500 })
+
+      await client.connect()
+
+      expect(client.isConnected()).to.be.true
+      await EventEmitter.once(client, 'heartbeat-missed')
+
+      expect(client.isConnected()).to.be.false
+    }).slow(1500)
 
     it('rejects when called on client that is already connected', async () => {
       await client.connect()

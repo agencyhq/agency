@@ -18,6 +18,10 @@ const {
 } = process.env
 
 async function main () {
+  rpc.on('disconnected', () => {
+    process.exit(1)
+  })
+
   await rpc.connect()
   await rpc.auth({ token: 'sensortoken' })
   await rpc.notify('ready')

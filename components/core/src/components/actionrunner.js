@@ -73,6 +73,10 @@ async function handleExecution (execution) {
 }
 
 async function main () {
+  rpc.on('disconnected', () => {
+    process.exit(1)
+  })
+
   await rpc.connect()
   await rpc.auth({ token: 'executiontoken' })
 

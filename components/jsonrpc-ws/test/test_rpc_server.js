@@ -30,7 +30,8 @@ describe('RPC Server', () => {
   })
 
   afterEach(() => {
-    return server.close().catch(() => {})
+    return server.close()
+      .catch(() => {})
   })
 
   describe('#constructor', () => {
@@ -98,7 +99,7 @@ describe('RPC Server', () => {
 
   describe('#listen()', () => {
     it('instructs server to start lisening for new connections', async () => {
-      const p = server.listen()
+      const p = server.listen(2999)
 
       expect(p).to.be.a('promise')
       await expect(p).to.eventually.be.instanceOf(http.Server)
@@ -107,7 +108,7 @@ describe('RPC Server', () => {
     it('calls function when server is ready to listen', async () => {
       const fn = sinon.fake()
 
-      await server.listen(fn)
+      await server.listen(2999, fn)
 
       expect(fn).to.be.calledOnce
         .and.to.have.nested.property('firstCall.args[0]')
@@ -118,7 +119,7 @@ describe('RPC Server', () => {
       const fn = sinon.fake()
       server.on('listening', fn)
 
-      await server.listen()
+      await server.listen(2999)
 
       expect(fn).to.be.calledOnceWith()
     })
@@ -126,7 +127,7 @@ describe('RPC Server', () => {
 
   describe('#close()', () => {
     beforeEach(async () => {
-      await server.listen()
+      await server.listen(2999)
     })
 
     it('instructs server to stop handling new connections', async () => {
