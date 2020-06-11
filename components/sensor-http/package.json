@@ -1,17 +1,16 @@
 {
-  "name": "@agencyhq/agency-core",
+  "name": "@agencyhq/agency-sensor-http",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/sensor.js",
   "scripts": {
-    "test": "nyc mocha tests/**/test_*.js --reporter dot",
-    "migrate": "knex migrate:latest && knex seed:run"
+    "test": "nyc mocha --reporter dot"
   },
   "nyc": {
     "exclude": [
       "coverage",
       "dist",
-      "tests"
+      "test"
     ],
     "reporter": [
       "lcov",
@@ -32,33 +31,17 @@
   "dependencies": {
     "@agencyhq/agency-metrics": "^0.0.0",
     "@agencyhq/jsonrpc-ws": "^0.0.0",
-    "@apidevtools/openapi-schemas": "^2.0.3",
-    "@babel/core": "^7.9.6",
-    "@babel/plugin-transform-modules-commonjs": "^7.10.1",
-    "ajv": "^6.12.2",
-    "amqplib": "^0.5.5",
-    "axios": "^0.19.2",
-    "bookshelf": "^1.1.1",
-    "cors": "^2.8.5",
     "express": "^4.17.1",
-    "js-yaml": "^3.13.1",
-    "knex": "^0.20.13",
     "loglevel": "^1.6.7",
-    "morgan": "^1.10.0",
-    "passport": "^0.4.1",
-    "passport-http-bearer": "^1.0.1",
-    "pg": "^8.0.2",
-    "prom-client": "^12.0.0",
-    "vm2": "^3.9.1"
+    "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "axios": "^0.19.2",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "mocha": "^7.1.1",
-    "mock-knex": "^0.4.9",
     "nyc": "^15.0.1",
     "sinon": "^9.0.2",
-    "sinon-chai": "^3.5.0",
-    "ws": "^7.2.3"
+    "sinon-chai": "^3.5.0"
   }
 }

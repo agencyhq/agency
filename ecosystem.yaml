@@ -13,30 +13,30 @@ apps:
       - components/core/dev.js
 
   - name: ifttt_sensor_http
-    script: components/core/src/components/sensor.js
+    script: components/sensor-http/src/sensor.js
     instances: 1
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/core/src
+      - components/sensor-http/src
     max_memory_restart: 1G
 
   - name: ifttt_ruleengine
-    script: components/core/src/components/ruleengine.js
+    script: components/ruleengine-vm2/src/ruleengine.js
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/core/src
+      - components/ruleengine-vm2/src
     max_memory_restart: 1G
 
   - name: ifttt_actionrunner_http
-    script: components/core/src/components/actionrunner.js
+    script: components/actionrunner-http/src/actionrunner.js
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/core/src
+      - components/actionrunner-http/src
     max_memory_restart: 1G
 
   - name: ifttt_api
