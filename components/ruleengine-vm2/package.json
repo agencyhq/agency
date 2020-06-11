@@ -31,16 +31,16 @@
   "dependencies": {
     "@agencyhq/agency-metrics": "^0.0.0",
     "@agencyhq/jsonrpc-ws": "^0.0.0",
-    "@babel/core": "^7.9.6",
+    "@babel/core": "^7.10.2",
     "@babel/plugin-transform-modules-commonjs": "^7.10.1",
-    "loglevel": "^1.6.7",
-    "vm2": "^3.9.1"
+    "loglevel": "^1.6.8",
+    "vm2": "^3.9.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^7.1.1",
-    "nyc": "^15.0.1",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0"
   }

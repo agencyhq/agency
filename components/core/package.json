@@ -33,32 +33,32 @@
     "@agencyhq/agency-metrics": "^0.0.0",
     "@agencyhq/jsonrpc-ws": "^0.0.0",
     "@apidevtools/openapi-schemas": "^2.0.3",
-    "@babel/core": "^7.9.6",
+    "@babel/core": "^7.10.2",
     "@babel/plugin-transform-modules-commonjs": "^7.10.1",
     "ajv": "^6.12.2",
-    "amqplib": "^0.5.5",
+    "amqplib": "^0.5.6",
     "axios": "^0.19.2",
-    "bookshelf": "^1.1.1",
+    "bookshelf": "^1.2.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "js-yaml": "^3.13.1",
-    "knex": "^0.20.13",
-    "loglevel": "^1.6.7",
+    "js-yaml": "^3.14.0",
+    "knex": "^0.21.1",
+    "loglevel": "^1.6.8",
     "morgan": "^1.10.0",
     "passport": "^0.4.1",
     "passport-http-bearer": "^1.0.1",
-    "pg": "^8.0.2",
+    "pg": "^8.2.1",
     "prom-client": "^12.0.0",
-    "vm2": "^3.9.1"
+    "vm2": "^3.9.2"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^7.1.1",
+    "mocha": "^8.0.1",
     "mock-knex": "^0.4.9",
-    "nyc": "^15.0.1",
+    "nyc": "^15.1.0",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0",
-    "ws": "^7.2.3"
+    "ws": "^7.3.0"
   }
 }

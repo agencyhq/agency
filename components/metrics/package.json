@@ -19,7 +19,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-prometheus-middleware": "^0.9.6",
-    "loglevel": "^1.6.7",
+    "loglevel": "^1.6.8",
     "prom-client": "^12.0.0"
   }
 }
