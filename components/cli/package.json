@@ -1,0 +1,23 @@
+{
+  "name": "@agencyhq/agency-cli",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@agencyhq/agency-metrics": "^0.0.0",
+    "@agencyhq/jsonrpc-ws": "^0.0.0",
+    "dotenv": "^8.2.0",
+    "loglevel": "^1.6.8",
+    "node-telegram-bot-api": "^0.50.0",
+    "socks5-https-client": "^1.2.1",
+    "table": "^5.4.6",
+    "yargs": "^15.3.1"
+  }
+}
