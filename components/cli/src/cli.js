@@ -41,7 +41,7 @@ function formatRule (rule) {
         width: 10
       },
       1: {
-        width: process.stdout.columns - 10 - 7
+        width: (process.stdout.columns || 80) - 10 - 7
       }
     },
     drawHorizontalLine: (index, size) => {
