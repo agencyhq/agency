@@ -40,8 +40,7 @@ async function main () {
         month: date.getMonth(),
         year: date.getFullYear(),
         hours: date.getHours(),
-        minutes: date.getMinutes(),
-        seconds: date.getSeconds()
+        minutes: date.getMinutes()
       }
     }
 
