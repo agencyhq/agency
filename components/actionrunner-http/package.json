@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/actionrunner.js",
   "scripts": {
+    "start": "node .",
     "test": "nyc mocha --reporter dot"
   },
   "nyc": {

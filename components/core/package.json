@@ -2,8 +2,9 @@
   "name": "@agencyhq/agency-core",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/api.js",
   "scripts": {
+    "start": "node .",
     "test": "nyc mocha tests/**/test_*.js --reporter dot",
     "migrate": "knex migrate:latest && knex seed:run"
   },

@@ -1,1 +1,1 @@
-module.exports = require('./components/core/knexfile')
+module.exports = require('./deployments/default/knexfile')

@@ -7,43 +7,48 @@ apps:
       - migrations
 
   - name: ifttt_webui
-    script: components/demo/dev.js
+    cwd: components/demo
+    script: dev.js
     autorestart: true
     watch:
-      - components/core/dev.js
+      - dev.js
 
   - name: ifttt_sensor_http
-    script: components/sensor-http/src/sensor.js
+    cwd: components/sensor-http
+    script: npm start --silent
     instances: 1
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/sensor-http/src
+      - src
     max_memory_restart: 1G
 
   - name: ifttt_ruleengine
-    script: components/ruleengine-vm2/src/ruleengine.js
+    cwd: components/ruleengine-vm2
+    script: npm start --silent
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/ruleengine-vm2/src
+      - src
     max_memory_restart: 1G
 
   - name: ifttt_actionrunner_http
-    script: components/actionrunner-http/src/actionrunner.js
+    cwd: components/actionrunner-http
+    script: npm start --silent
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/actionrunner-http/src
+      - src
     max_memory_restart: 1G
 
   - name: ifttt_api
-    script: components/core/src/api.js
+    cwd: components/core
+    script: src/api.js
     instances: 2
     autorestart: true
     restart_delay: 10000
     watch:
-      - components/core/src
+      - src
     max_memory_restart: 1G

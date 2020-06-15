@@ -13,8 +13,11 @@ module.exports = {
       max: 10
     },
     migrations: {
-      directory: path.join(__dirname, 'migrations'),
+      directory: path.join(__dirname, '../../components/core/migrations'),
       tableName: 'knex_migrations'
+    },
+    seeds: {
+      directory: path.join(__dirname, 'seeds')
     }
   },
 

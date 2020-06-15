@@ -7,7 +7,7 @@
     "lint": "eslint .",
     "migrate": "knex migrate:latest && knex seed:run",
     "depcheck": "depcheck; lerna exec --no-bail --stream depcheck",
-    "start": "pm2 start ecosystem.yaml --no-daemon",
+    "start": "pm2 start deployments/default/ecosystem.yaml --no-daemon",
     "test": "lerna exec --no-bail --concurrency 1 -- npm run test"
   },
   "keywords": [],

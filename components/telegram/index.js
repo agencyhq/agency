@@ -85,6 +85,8 @@ async function main () {
   })
 
   await rpc.notify('ready')
+
+  log.info('ready to handle executions and emit triggers')
 }
 
 main()
