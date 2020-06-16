@@ -3,20 +3,9 @@ const RPC = require('@agencyhq/jsonrpc-ws')
 const axios = require('axios').default
 const log = require('loglevel')
 
-log.setLevel(process.env.LOG_LEVEL || 'info')
-
 const rpc = new RPC.Client(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
-
-const {
-  PORT = 3000,
-  METRICS = false
-} = process.env
-
-if (METRICS) {
-  metrics.createServer(PORT)
-}
 
 function httpAction (execution) {
   const { url, payload } = execution.parameters
@@ -73,6 +62,15 @@ async function handleExecution (execution) {
 }
 
 async function main () {
+  const {
+    PORT = 3000,
+    METRICS = false
+  } = process.env
+
+  if (METRICS) {
+    metrics.createServer(PORT)
+  }
+
   rpc.on('disconnected', () => {
     process.exit(1)
   })
@@ -83,11 +81,11 @@ async function main () {
   await rpc.subscribe('execution', handleExecution)
 
   await rpc.notify('ready')
-  log.info('ready to handle executions')
 }
 
-main()
-  .catch(e => {
-    log.error(e)
-    process.exit(1)
-  })
+module.exports = {
+  rpc,
+  main,
+  handleExecution,
+  ACTIONS
+}
