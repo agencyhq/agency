@@ -25,7 +25,14 @@ function initializeRule (rule) {
   const initDuration = metrics.measureRuleInitDuration(rule)
   const vm = new VM({
     timeout: 1000,
-    sandbox: {}
+    sandbox: {
+      console: {
+        log: (...args) => {
+          rpc.notify('rule.log', [...args])
+          log.debug('rule log: %s', [...args])
+        }
+      }
+    }
   })
   vm.run('exports = {}; module = { exports }')
 
