@@ -31,6 +31,9 @@ async function main () {
 
   cron.schedule('* * * * *', async () => {
     const date = new Date()
+
+    date.setMilliseconds(0)
+
     const trigger = {
       id: crypto.randomBytes(16).toString('hex'),
       type: 'cron',
