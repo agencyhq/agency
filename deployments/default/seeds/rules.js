@@ -9,6 +9,10 @@ exports.seed = async knex => {
     code: fs.readFileSync(path.join(__dirname, 'rules/http_e2e.js')),
     user: 'enykeev'
   }, {
+    id: crypto.randomBytes(16).toString('hex'),
+    code: fs.readFileSync(path.join(__dirname, 'rules/http_e2e_multiple.js')),
+    user: 'enykeev'
+  }, {
     id: 'http-web',
     code: fs.readFileSync(path.join(__dirname, 'rules/http_web.js')),
     user: 'enykeev'

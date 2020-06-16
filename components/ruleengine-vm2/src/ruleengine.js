@@ -91,11 +91,12 @@ async function evaluateRule (rule, trigger) {
 
   log.debug('found match for trigger: %s', trigger.id)
 
-  let execution
+  const executions = []
   try {
-    execution = await rpc.call('execution.request', {
+    executions[0] = await rpc.call('execution.request', {
       triggered_by: trigger.id,
-      matched_to: rule.id
+      matched_to: rule.id,
+      hash: 0
     })
     log.debug('granted claim for trigger %s matching rule %s', trigger.id, rule.id)
   } catch (e) {
@@ -104,18 +105,14 @@ async function evaluateRule (rule, trigger) {
   }
 
   const thenDuration = metrics.measureRuleThenDuration(rule)
+  const results = []
   try {
-    const {
-      action,
-      parameters = {}
-    } = rule.then(trigger)
-
-    if (!action) {
-      throw new Error('rule produced no action')
+    const res = rule.then(trigger)
+    if (res.length) {
+      results.push(...res)
+    } else {
+      results.push(res)
     }
-
-    execution.action = action
-    execution.parameters = parameters
   } catch (e) {
     rpc.notify('trigger.evaluationError', e)
     log.debug('trigger evaluation error: %s', e.toString())
@@ -123,7 +120,37 @@ async function evaluateRule (rule, trigger) {
   }
   thenDuration.end()
 
-  await rpc.call('execution.schedule', execution)
+  for (const index in results) {
+    if (index > 0) {
+      executions[index] = await rpc.call('execution.request', {
+        triggered_by: trigger.id,
+        matched_to: rule.id,
+        hash: index
+      })
+      log.debug(
+        'requested additional execution for trigger %s matching rule %s with hash %s',
+        trigger.id, rule.id, index
+      )
+    }
+
+    const {
+      action,
+      parameters = {},
+      hash = index
+    } = results[index]
+
+    if (!action) {
+      rpc.notify('trigger.evaluationError', `rule ${rule.id}:${hash} produced no action`)
+      log.debug('trigger evaluation error: %s', `rule ${rule.id}:${hash} produced no action`)
+      continue
+    }
+
+    executions[index].hash = hash
+    executions[index].action = action
+    executions[index].parameters = parameters
+
+    await rpc.call('execution.schedule', executions[index])
+  }
 }
 
 async function main () {

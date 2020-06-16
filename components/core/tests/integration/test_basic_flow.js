@@ -1,6 +1,7 @@
 const axios = require('axios').default
 const chai = require('chai')
 const express = require('express')
+const sinon = require('sinon')
 
 const { expect } = chai
 chai.use(require('sinon-chai'))
@@ -39,11 +40,11 @@ describe('E2E', () => {
   })
 
   it('should make http call to mock server on http trigger', async () => {
-    const mock = new Promise(resolve => {
-      app.post('/fakeEndpoint', (req, res) => {
-        res.status(204).send()
-        resolve(req)
-      })
+    const mock = sinon.spy()
+
+    app.post('/fakeEndpoint', (req, res) => {
+      mock(req.body)
+      res.status(204).send()
     })
 
     const event = {
@@ -55,9 +56,37 @@ describe('E2E', () => {
     const resp = await client.post('/http', event)
     expect(resp.data).to.equal('OK')
 
-    const req = await mock
-    expect(req.body).to.deep.equal({ a: 'b' })
-  })
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    expect(mock).to.be.calledOnce
+    expect(mock.getCall(0).firstArg).to.have.property('a', 'b')
+  }).slow(3000)
+
+  it('should make two http calls to mock server on e2e-multiple trigger', async () => {
+    const mock = sinon.spy()
+
+    app.post('/fakeEndpointMulti', (req, res) => {
+      mock(req.body)
+      res.status(204).send()
+    })
+
+    const event = {
+      type: 'e2e-multiple',
+      url: 'http://localhost:2999/fakeEndpointMulti',
+      payload: { a: 'b' }
+    }
+
+    const resp = await client.post('/http', event)
+    expect(resp.data).to.equal('OK')
+
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
+    expect(mock).to.be.calledTwice
+    expect(mock.getCall(0).firstArg).to.have.property('a', 'b')
+    expect(mock.getCall(0).firstArg).to.have.property('hash', 1)
+    expect(mock.getCall(1).firstArg).to.have.property('a', 'b')
+    expect(mock.getCall(1).firstArg).to.have.property('hash', 2)
+  }).slow(3000)
 
   it.skip('should test anything but the happiest of paths')
 })

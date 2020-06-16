@@ -121,6 +121,7 @@ describe('RPC Methods', () => {
 
       expect(res).to.be.deep.equal({
         created_at: res.created_at,
+        hash: null,
         id: res.id,
         matched_to: 'thing',
         status: 'requested',
@@ -130,7 +131,7 @@ describe('RPC Methods', () => {
       expect(tracker.queries.count()).to.be.equal(2)
       expect(tracker.queries.first()).to.have.property('method', 'insert')
       expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        res.created_at, res.id, 'thing', 'requested', 'some', user
+        res.created_at, null, res.id, 'thing', 'requested', 'some', user
       ])
     })
   })
