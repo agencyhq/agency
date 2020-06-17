@@ -14,6 +14,7 @@ module.exports = async ({ triggered_by, matched_to, hash = null }, { user }) => 
     hash,
     user
   })
+  // TODO: this line throws error in postgres log every time the conflict happens. And the conflicts here are pretty much expected and intentional. There is a construct `... ON CONFLICT DO NOTHING`, but it's currently impossible to implement it in knex. PR's pending https://github.com/knex/knex/pull/3763
   const res = await mod.save(null, { method: 'insert' })
   log.debug(
     'execution requested for trigger %s and rule %s with id %s',

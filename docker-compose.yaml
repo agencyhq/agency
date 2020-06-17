@@ -50,6 +50,9 @@ services:
     environment:
       POSTGRES_USER: ifttt
       POSTGRES_PASSWORD: mypassword
+    command:
+      - '-c'
+      - 'log_min_messages=fatal'
     networks:
       - db
     ports:
