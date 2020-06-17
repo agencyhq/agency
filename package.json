@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "clean": "lerna clean -y",
+    "debootstrap": "node debootstrap.js",
     "lint": "eslint .",
     "migrate": "knex migrate:latest && knex seed:run",
     "depcheck": "depcheck; lerna exec --no-bail --stream depcheck",
@@ -28,5 +30,10 @@
     "npm-check-updates": "^7.0.1",
     "pg": "^8.2.1",
     "pm2": "^4.4.0"
+  },
+  "dependencies": {
+    "@npmcli/arborist": "0.0.0-pre.21",
+    "globby": "^11.0.1",
+    "npm": "^6.14.5"
   }
 }

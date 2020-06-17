@@ -87,27 +87,27 @@ services:
     volumes:
       - ./components/metrics/contrib/nginx.conf:/etc/nginx/nginx.conf
 
-  migration:
-    build:
-      context: .
-      dockerfile: ./components/controller/Dockerfile
-    image: enykeev/ifttt:latest
-    command: npm run migrate
-    environment:
-      NODE_ENV: staging
-      WAIT_DB: 1
-      PG_CONNECTION_STRING: postgres://ifttt:mypassword@db/ifttt
-    depends_on:
-      - db
-    networks:
-      - db
+  # migration:
+  #   build:
+  #     context: .
+  #     dockerfile: ./components/controller/Dockerfile
+  #   image: enykeev/ifttt:latest
+  #   command: npm run migrate
+  #   environment:
+  #     NODE_ENV: staging
+  #     WAIT_DB: 1
+  #     PG_CONNECTION_STRING: postgres://ifttt:mypassword@db/ifttt
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - db
 
   api:
     build:
       context: .
-      dockerfile: ./components/controller/Dockerfile
-    image: enykeev/ifttt:latest
-    command: node src/api.js
+      args:
+        component: core
+    image: agencyhq/agency-core:latest
     environment:
       NODE_ENV: staging
       # LOG_LEVEL: debug
@@ -135,9 +135,9 @@ services:
   sensor:
     build:
       context: .
-      dockerfile: ./components/controller/Dockerfile
-    image: enykeev/ifttt:latest
-    command: node src/components/sensor.js
+      args:
+        component: sensor-http
+    image: agencyhq/agency-sensor-http:latest
     environment:
       NODE_ENV: staging
       # LOG_LEVEL: debug
@@ -154,9 +154,9 @@ services:
   actionrunner:
     build:
       context: .
-      dockerfile: ./components/controller/Dockerfile
-    image: enykeev/ifttt:latest
-    command: node src/components/actionrunner.js
+      args:
+        component: actionrunner-http
+    image: agencyhq/agency-actionrunner-http:latest
     environment:
       NODE_ENV: staging
       # LOG_LEVEL: debug
@@ -171,9 +171,9 @@ services:
   ruleengine:
     build:
       context: .
-      dockerfile: ./components/controller/Dockerfile
-    image: enykeev/ifttt:latest
-    command: node src/components/ruleengine.js
+      args:
+        component: ruleengine-vm2
+    image: agencyhq/agency-ruleengine-vm2:latest
     environment:
       NODE_ENV: staging
       # LOG_LEVEL: debug
