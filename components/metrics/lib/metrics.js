@@ -84,31 +84,28 @@ function createMonitoringServer (port) {
 }
 
 function instrumentRPCClient (client) {
-  async function connect (...args) {
-    await client.connect(...args)
+  const connect = client.connect.bind(client)
+  const call = client.call.bind(client)
 
-    this.ws.on('message', m => {
+  client.connect = async function (...args) {
+    await connect(...args)
+
+    client.ws.on('message', m => {
       rpcMessagesCounter.inc()
       log.debug('rpc message received:', m)
     })
   }
 
-  async function call (method, ...args) {
+  client.call = async function (method, ...args) {
     const rpcRequestDurationEnd = rpcRequestDuration.startTimer({ method })
     try {
-      const v = await client.call(method, ...args)
+      const v = await call(method, ...args)
       rpcRequestDurationEnd({ status: 'resolved' })
       return v
     } catch (e) {
       rpcRequestDurationEnd({ status: 'rejected' })
       throw e
     }
-  }
-
-  return {
-    ...client,
-    connect,
-    call
   }
 }
 

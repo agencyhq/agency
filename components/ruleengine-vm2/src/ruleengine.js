@@ -79,7 +79,7 @@ function initializeRule (rule) {
 }
 
 async function evaluateRule (rule, trigger) {
-  const ifDuration = metrics.measureRuleInitDuration(rule)
+  const ifDuration = metrics.measureRuleIfDuration(rule)
   const isTriggered = (() => {
     try {
       return rule.if(trigger)
