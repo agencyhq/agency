@@ -1,6 +1,5 @@
 {
   "name": "@agencyhq/agency-telegram-adapter",
-  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "@agencyhq/agency-metrics": "^0.0.0",
     "@agencyhq/jsonrpc-ws": "^0.0.0",

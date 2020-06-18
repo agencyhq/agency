@@ -1,6 +1,7 @@
 {
   "name": "@agencyhq/agency-core",
   "version": "0.0.0",
+  "private": true,
   "description": "",
   "main": "src/api.js",
   "scripts": {
@@ -22,14 +23,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/enykeev/ifttt.git"
+    "url": "git+https://github.com/agencyhq/agency.git"
   },
   "author": "Kirill Enykeev <enykeev@mech.sh>",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/enykeev/ifttt/issues"
+    "url": "https://github.com/agencyhq/agency/issues"
   },
-  "homepage": "https://github.com/enykeev/ifttt#readme",
+  "homepage": "https://github.com/agencyhq/agency#readme",
   "dependencies": {
     "@agencyhq/agency-metrics": "^0.0.0",
     "@agencyhq/jsonrpc-ws": "^0.0.0",

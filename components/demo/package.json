@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "@agencyhq/jsonrpc-ws": "^0.0.0",
     "@agencyhq/world": "^1.0.1",
