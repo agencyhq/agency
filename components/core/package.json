@@ -6,7 +6,8 @@
   "main": "src/api.js",
   "scripts": {
     "start": "node .",
-    "test": "nyc mocha tests/**/test_*.js --reporter dot",
+    "test": "nyc mocha tests/unit/test_*.js tests/spec/test_*.js --reporter dot",
+    "integration": "nyc mocha tests/integration/test_*.js --reporter dot",
     "migrate": "knex migrate:latest && knex seed:run"
   },
   "nyc": {
