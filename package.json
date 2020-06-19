@@ -10,7 +10,8 @@
     "migrate": "knex migrate:latest && knex seed:run",
     "depcheck": "depcheck; lerna exec --no-bail --stream depcheck",
     "start": "pm2 start deployments/default/ecosystem.yaml --no-daemon",
-    "test": "lerna exec --no-bail --concurrency 1 -- npm run test"
+    "test": "lerna exec --no-bail --concurrency 1 -- npm run test",
+    "integration": "lerna exec --no-bail --concurrency 1 -- npm run integration --if-present"
   },
   "keywords": [],
   "author": "",
