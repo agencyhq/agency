@@ -25,6 +25,7 @@ jobs:
     - run: npm run lint
     - run: npm test
     - run: docker-compose up -d db mq
+    - run: sleep 15
     - run: npm run migrate
     - run: npx pm2 start deployments/default/ecosystem.yaml
     - run: sleep 15
