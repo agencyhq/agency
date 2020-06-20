@@ -41,6 +41,11 @@
       "request": "launch",
       "name": "Launch File",
       "program": "${file}",
+      "cwd": "${fileDirname}",
+      "runtimeArgs": [
+        "-r",
+        "dotenv/config"
+      ],
       "skipFiles": [
         "<node_internals>/**"
       ]
