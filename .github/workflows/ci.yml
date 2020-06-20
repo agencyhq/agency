@@ -7,8 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
-
+  unit:
     runs-on: ubuntu-latest
 
     strategy:
@@ -17,11 +16,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix['node-version'] }}
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: ${{ matrix['node-version'] }}
     - run: npm ci
     - run: npx lerna bootstrap
     - run: npm run lint
     - run: npm test
+    - run: docker-compose up -d db mq
+    - run: npm run migrate
+    - run: npx pm2 start deployments/default/ecosystem.yaml
+    - run: sleep 15
+    - run: npm run integration
+    - run: npx pm2 kill
