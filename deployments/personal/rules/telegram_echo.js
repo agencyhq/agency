@@ -1,23 +1,40 @@
 const chatId = 127792927
 
 const reminders = [{
-  time: ({ hours, minutes }) => hours === 16 && minutes === 0,
-  text: "4 o'clock"
+  time: ({ hours, minutes }) => hours === 14 && minutes === 0,
+  text: "2 o'clock"
+}, {
+  time: '14:30',
+  text: 'passed'
+}, {
+  time: '14:30',
+  text: 'passed again'
 }]
 
-export function condition (trigger) {
-  return trigger.type === 'cron' &&
-    reminders.some(r => r.time(trigger.event))
+function match (event, reminder) {
+  if (typeof reminder.time === 'function') {
+    return !!reminder.time(event)
+  }
+
+  if (typeof reminder.time === 'string') {
+    const [hours, minutes] = reminder.time.split(':')
+    return event.hours === +hours && event.minutes === +minutes
+  }
 }
 
-export function then (trigger) {
-  const { text } = reminders.find(r => r.time(trigger.event))
+export function condition ({ type, event }) {
+  return type === 'cron' &&
+    reminders.some(r => match(event, r))
+}
 
-  return {
-    action: 'telegram',
-    parameters: {
-      chatId,
-      text
-    }
-  }
+export function then ({ event }) {
+  return reminders
+    .filter(r => match(event, r))
+    .map(({ text }) => ({
+      action: 'telegram',
+      parameters: {
+        chatId,
+        text
+      }
+    }))
 }
