@@ -8,6 +8,13 @@ const RPC = require('@agencyhq/jsonrpc-ws')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
+const forever = new Promise(resolve => {
+  process.on('SIGINT', () => {
+    log.info('Caught interrupt signal')
+    resolve()
+  })
+})
+
 function wrapRPC (fn) {
   return async (argv) => {
     const { rpcToken, rpcUrl, quiet } = argv
@@ -19,8 +26,8 @@ function wrapRPC (fn) {
     try {
       const output = await fn({ ...argv, rpc })
 
-      if (!quiet) {
-        console.log(output)
+      if (!quiet && output) {
+        log.info(output)
       }
     } finally {
       await rpc.close()
@@ -94,6 +101,27 @@ const COMMANDS = [{
       return formatRule(rule)
     })
   }]
+}, {
+  command: 'subscribe [events...]',
+  describe: 'subscribe to event',
+  builder: y => y
+    .positional('events', {
+      type: 'string',
+      description: 'event type',
+      array: true
+    }),
+  handler: wrapRPC(async ({ rpc, events, json }) => {
+    for (const event of events) {
+      await rpc.subscribe(event, payload => {
+        log.info(JSON.stringify({
+          event,
+          payload
+        }, null, 2))
+      })
+    }
+
+    await forever
+  })
 }]
 
 async function main () {
@@ -121,11 +149,23 @@ async function main () {
     })
 
   for (const cmd of COMMANDS) {
-    yargs.command(cmd.command, '', y => {
-      for (const subcmd of cmd.subcommands) {
-        y.command(subcmd)
-      }
-    })
+    const {
+      command,
+      describe = '',
+      subcommands,
+      builder,
+      handler
+    } = cmd
+
+    if (subcommands) {
+      yargs.command(command, describe, y => {
+        for (const subcmd of subcommands) {
+          y.command(subcmd)
+        }
+      })
+    } else {
+      yargs.command(command, describe, builder, handler)
+    }
   }
 
   yargs
