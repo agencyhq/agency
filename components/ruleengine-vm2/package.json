@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/ruleengine.js",
   "scripts": {
-    "start": "node .",
+    "start": "node bin/ruleengine.js",
     "test": "nyc mocha --reporter dot"
   },
   "nyc": {

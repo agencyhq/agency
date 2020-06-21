@@ -49,12 +49,8 @@ async function main () {
 
     await rpc.call('trigger.emit', trigger)
   })
-
-  log.info('ready to emit triggers')
 }
 
-main()
-  .catch(e => {
-    log.error(e)
-    process.exit(1)
-  })
+module.exports = {
+  main
+}

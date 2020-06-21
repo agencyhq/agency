@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/sensor.js",
   "scripts": {
-    "start": "node .",
+    "start": "node bin/sensor.js",
     "test": "nyc mocha --reporter dot"
   },
   "nyc": {

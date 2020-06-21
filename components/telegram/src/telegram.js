@@ -85,12 +85,8 @@ async function main () {
   })
 
   await rpc.notify('ready')
-
-  log.info('ready to handle executions and emit triggers')
 }
 
-main()
-  .catch(e => {
-    log.error(e)
-    process.exit(1)
-  })
+module.exports = {
+  main
+}
