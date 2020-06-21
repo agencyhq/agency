@@ -1,5 +1,8 @@
 const pubsub = require('../../pubsub')
 
-module.exports = trigger => {
-  pubsub.publish('trigger', trigger)
+module.exports = (trigger, { user }) => {
+  pubsub.publish('trigger', {
+    ...trigger,
+    user
+  })
 }
