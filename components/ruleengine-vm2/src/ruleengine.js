@@ -29,7 +29,7 @@ function initializeRule (rule) {
       console: {
         log: (...args) => {
           rpc.notify('rule.log', [...args])
-          log.debug('rule log: %s', [...args])
+          log.debug('rule log:', ...args)
         }
       }
     }
