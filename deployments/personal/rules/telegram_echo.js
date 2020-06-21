@@ -1,8 +1,8 @@
 const chatId = 127792927
 
 const reminders = [{
-  time: ({ hours, minutes }) => minutes % 5 === 0,
-  text: 'every 5 minute'
+  time: ({ hours, minutes }) => hours === 16 && minutes === 0,
+  text: "4 o'clock"
 }]
 
 export function condition (trigger) {
@@ -17,7 +17,7 @@ export function then (trigger) {
     action: 'telegram',
     parameters: {
       chatId,
-      text: text
+      text
     }
   }
 }

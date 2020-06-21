@@ -1,11 +1,26 @@
 apps:
   - name: personal_bootstrap
+    cwd: deployments/personal
     script: bash
     args: bootstrap.sh
-    cwd: deployment/personal
     env:
       PGPASSWORD: mypassword
     autorestart: false
+
+  - name: personal_sync
+    cwd: deployments/personal
+    script: ../../components/cli/src/cli.js
+    args:
+      - rule
+      - update
+      - telegram-echo
+      - rules/telegram_echo.js
+      - --quiet
+    env:
+      AGENCY_TOKEN: alltoken
+    autorestart: false
+    watch:
+      - rules/telegram_echo.js
 
   - name: personal_sensor_cron
     script: src/sensor.js
