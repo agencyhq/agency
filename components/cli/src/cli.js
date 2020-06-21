@@ -78,6 +78,25 @@ const COMMANDS = [{
       return output.join('\n')
     })
   }, {
+    command: 'create [filepath]',
+    describe: 'create a rule with content of the file',
+    builder: y => y
+      .positional('filepath', {
+        type: 'string',
+        description: 'path to the file'
+      }),
+    handler: wrapRPC(async ({ rpc, filepath, json }) => {
+      const code = fs.readFileSync(filepath, { encoding: 'utf8' })
+
+      const rule = await rpc.call('rule.create', { code })
+
+      if (json) {
+        return rule
+      }
+
+      return formatRule(rule)
+    })
+  }, {
     command: 'update [id] [filepath]',
     describe: 'update the rule with content of the file',
     builder: y => y
