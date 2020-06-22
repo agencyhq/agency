@@ -3,7 +3,7 @@ const RPC = require('@agencyhq/jsonrpc-ws')
 const axios = require('axios').default
 const log = require('loglevel')
 
-const rpc = new RPC.Client(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
+const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
 
@@ -64,7 +64,8 @@ async function handleExecution (execution) {
 async function main () {
   const {
     PORT = 3000,
-    METRICS = false
+    METRICS = false,
+    AGENCY_TOKEN
   } = process.env
 
   if (METRICS) {
@@ -76,7 +77,7 @@ async function main () {
   })
 
   await rpc.connect()
-  await rpc.auth({ token: 'executiontoken' })
+  await rpc.auth({ token: AGENCY_TOKEN })
 
   await rpc.subscribe('execution', handleExecution)
 

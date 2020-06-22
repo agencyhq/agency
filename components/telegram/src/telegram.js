@@ -9,27 +9,24 @@ const TelegramBot = require('node-telegram-bot-api')
 const EVENT_TYPE = 'telegram'
 const ACTION_TYPE = 'telegram'
 
-const {
-  AGENCY_TOKEN,
-  TELEGRAM_BOT_TOKEN
-} = process.env
-
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
-const rpc = new RPC.Client(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
+const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
 
-const {
-  PORT = 3000,
-  METRICS = false
-} = process.env
-
-if (METRICS) {
-  metrics.createServer(PORT)
-}
-
 async function main () {
+  const {
+    PORT = 3000,
+    METRICS = false,
+    AGENCY_TOKEN,
+    TELEGRAM_BOT_TOKEN
+  } = process.env
+
+  if (METRICS) {
+    metrics.createServer(PORT)
+  }
+
   rpc.on('disconnected', () => {
     process.exit(1)
   })

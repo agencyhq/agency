@@ -16,6 +16,8 @@ apps:
   - name: ifttt_sensor_http
     cwd: components/sensor-http
     script: npm start --silent
+    env:
+      AGENCY_TOKEN: sensortoken
     instances: 1
     autorestart: true
     restart_delay: 10000
@@ -26,6 +28,8 @@ apps:
   - name: ifttt_ruleengine
     cwd: components/ruleengine-vm2
     script: npm start --silent
+    env:
+      AGENCY_TOKEN: ruletoken
     instances: 2
     autorestart: true
     restart_delay: 10000
@@ -36,6 +40,8 @@ apps:
   - name: ifttt_actionrunner_http
     cwd: components/actionrunner-http
     script: npm start --silent
+    env:
+      AGENCY_TOKEN: executiontoken
     instances: 2
     autorestart: true
     restart_delay: 10000

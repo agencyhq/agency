@@ -147,7 +147,8 @@ services:
       # LOG_LEVEL: debug
       WAIT_API: 1
       METRICS: 1
-      RPC_CONNECTION_STRING: ws://api:3000
+      AGENCY_URL: ws://api:3000
+      AGENCY_TOKEN: sensortoken
     restart: unless-stopped
     networks:
       - http
@@ -166,7 +167,8 @@ services:
       # LOG_LEVEL: debug
       WAIT_API: 1
       METRICS: 1
-      RPC_CONNECTION_STRING: ws://api:3000
+      AGENCY_URL: ws://api:3000
+      AGENCY_TOKEN: executiontoken
     restart: unless-stopped
     scale: 2
     networks:
@@ -183,7 +185,8 @@ services:
       # LOG_LEVEL: debug
       WAIT_API: 1
       METRICS: 1
-      RPC_CONNECTION_STRING: ws://api:3000
+      AGENCY_URL: ws://api:3000
+      AGENCY_TOKEN: ruletoken
     restart: unless-stopped
     scale: 2
     networks:

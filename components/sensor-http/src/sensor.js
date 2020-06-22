@@ -8,22 +8,23 @@ const morgan = require('morgan')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
-const rpc = new RPC.Client(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
+const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
 
-const {
-  PORT = 3001,
-  METRICS = false
-} = process.env
-
 async function main () {
+  const {
+    PORT = 3001,
+    METRICS = false,
+    AGENCY_TOKEN
+  } = process.env
+
   rpc.on('disconnected', () => {
     process.exit(1)
   })
 
   await rpc.connect()
-  await rpc.auth({ token: 'sensortoken' })
+  await rpc.auth({ token: AGENCY_TOKEN })
   await rpc.notify('ready')
 
   const app = express()

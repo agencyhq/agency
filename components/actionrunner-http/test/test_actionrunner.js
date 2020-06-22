@@ -47,10 +47,12 @@ describe('Actionrunner', () => {
     sandbox.stub(rpc, 'subscribe').callsFake()
     sandbox.stub(rpc, 'notify').callsFake()
 
+    process.env.AGENCY_TOKEN = 'faketoken'
+
     await actionrunner()
 
     expect(rpc.connect).to.be.calledOnce
-    expect(rpc.auth).to.be.calledOnceWith({ token: 'executiontoken' })
+    expect(rpc.auth).to.be.calledOnceWith({ token: 'faketoken' })
     expect(rpc.subscribe).to.be.calledOnceWith('execution', handleExecution)
     expect(rpc.notify).to.be.calledOnceWith('ready')
   })

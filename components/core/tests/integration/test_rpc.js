@@ -46,7 +46,7 @@ describe('RPC', () => {
   let identity
 
   before(async () => {
-    rpc = new RPC.Client(process.env.RPC_CONNECTION_STRING || 'ws://localhost:3000/')
+    rpc = new RPC.Client('ws://localhost:3000/')
 
     await rpc.connect()
     await rpc.auth({ token: 'alltoken' })
