@@ -85,7 +85,7 @@ async function main () {
 
   const bot = new TelegramBot(TELEGRAM_BOT_TOKEN, {
     polling: true,
-    request: {
+    request: process.env.PROXY_SOCKS5_HOST && {
       agentClass: Agent,
       agentOptions: {
         socksHost: process.env.PROXY_SOCKS5_HOST,

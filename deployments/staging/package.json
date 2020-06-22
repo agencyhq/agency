@@ -1,0 +1,22 @@
+{
+  "name": "@agencyhq/agency-deployment-staging",
+  "version": "0.0.0",
+  "private": true,
+  "description": "",
+  "scripts": {
+    "migrate": "npm i && knex migrate:latest && knex seed:run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agencyhq/agency.git"
+  },
+  "author": "Kirill Enykeev <enykeev@mech.sh>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/agencyhq/agency/issues"
+  },
+  "dependencies": {
+    "knex": "^0.21.1",
+    "pg": "^8.2.1"
+  }
+}
