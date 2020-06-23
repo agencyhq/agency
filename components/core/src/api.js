@@ -56,16 +56,20 @@ async function handleRule (rpc, msg) {
 
 async function auth (token) {
   const identity = await models.Tokens
-    .forge({ id: token })
-    .fetch()
-    .then(model => model.toJSON())
+    .forge({ id: token || '' })
+    .fetch({ require: false })
+    .then(model => model ? model.toJSON() : {})
+    .catch(err => {
+      log.warn(err)
+      return {}
+    })
 
   const {
     id,
     user,
     meta: {
       scopes
-    }
+    } = {}
   } = identity
 
   if (id === token) {
