@@ -8,12 +8,14 @@ const RPC = require('@agencyhq/jsonrpc-ws')
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
-const forever = new Promise(resolve => {
-  process.on('SIGINT', () => {
-    log.info('Caught interrupt signal')
-    resolve()
+function forever () {
+  return new Promise(resolve => {
+    process.once('SIGINT', () => {
+      log.info('Caught interrupt signal')
+      resolve()
+    })
   })
-})
+}
 
 function wrapRPC (fn) {
   return async (argv) => {
@@ -139,7 +141,9 @@ const COMMANDS = [{
       })
     }
 
-    await forever
+    log.info('listening for events:', events)
+
+    await forever()
   })
 }]
 
