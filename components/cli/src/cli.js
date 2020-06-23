@@ -19,11 +19,11 @@ function forever () {
 
 function wrapRPC (fn) {
   return async (argv) => {
-    const { rpcToken, rpcUrl, quiet } = argv
-    const rpc = new RPC.Client(rpcUrl)
+    const { agencyToken, agencyUrl, quiet } = argv
+    const rpc = new RPC.Client(agencyUrl)
 
     await rpc.connect()
-    await rpc.auth({ token: rpcToken })
+    await rpc.auth({ token: agencyToken })
 
     try {
       const output = await fn({ ...argv, rpc })
@@ -149,13 +149,13 @@ const COMMANDS = [{
 
 async function main () {
   yargs
-    .option('rpc-token', {
+    .option('agency-token', {
       global: true,
       description: 'Agency RPC token',
       type: 'string',
       default: process.env.AGENCY_TOKEN
     })
-    .option('rpc-url', {
+    .option('agency-url', {
       global: true,
       description: 'Agency RPC url',
       type: 'string',
