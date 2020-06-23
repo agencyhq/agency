@@ -192,12 +192,10 @@ async function main () {
   }
 
   yargs
-    .help()
+    .demandCommand()
     .parse()
 }
 
-main()
-  .catch(e => {
-    log.error(e)
-    process.exit(1)
-  })
+module.exports = {
+  main
+}
