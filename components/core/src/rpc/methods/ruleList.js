@@ -1,17 +1,31 @@
 const models = require('../../models')
 
-module.exports = async (query, { user }) => {
-  const model = await models.Rules
+module.exports = async (query = {}, { user }) => {
+  const {
+    pageSize,
+    page,
+    limit,
+    offset,
+    ...restQuery
+  } = query
 
-  if (!query) {
-    query = {}
+  if (user !== '*') {
+    restQuery.user = user
   }
 
-  query.user = user
+  const model = models.Rules.forge()
 
-  if (!query.limit && !query.pageSize) {
-    return model.fetchAll(query)
-  } else {
-    return model.fetchPage(query)
-  }
+  model.where(restQuery)
+
+  const res = !limit && !pageSize
+    ? await model.fetchAll({ require: false })
+    : await model.fetchPage({
+      require: false,
+      pageSize,
+      page,
+      limit,
+      offset
+    })
+
+  return res ? res.toJSON() : []
 }

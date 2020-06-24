@@ -19,7 +19,7 @@ function initializeRule (rule) {
     sandbox: {
       console: {
         log: (...args) => {
-          rpc.notify('rule.log', [...args])
+          rpc.notify('rule.log', [...args], { become: rule.user })
           log.debug('rule log:', ...args)
         }
       }
@@ -75,7 +75,7 @@ async function evaluateRule (rule, trigger) {
     try {
       return rule.if(trigger)
     } catch (e) {
-      rpc.notify('trigger.evaluationError', e)
+      rpc.notify('trigger.evaluationError', e, { become: rule.user })
       log.debug('trigger evaluation error: %s', e.toString())
       return false
     }
@@ -95,7 +95,7 @@ async function evaluateRule (rule, trigger) {
       triggered_by: trigger.id,
       matched_to: rule.id,
       hash: 0
-    })
+    }, { become: rule.user })
     log.debug('granted claim for trigger %s matching rule %s', trigger.id, rule.id)
   } catch (e) {
     log.debug('denied claim for trigger %s matching rule %s', trigger.id, rule.id)
@@ -112,7 +112,7 @@ async function evaluateRule (rule, trigger) {
       results.push(res)
     }
   } catch (e) {
-    rpc.notify('trigger.evaluationError', e)
+    rpc.notify('trigger.evaluationError', e, { become: rule.user })
     log.debug('trigger evaluation error: %s', e.toString())
     return {}
   }
@@ -124,7 +124,7 @@ async function evaluateRule (rule, trigger) {
         triggered_by: trigger.id,
         matched_to: rule.id,
         hash: index
-      })
+      }, { become: rule.user })
       log.debug(
         'requested additional execution for trigger %s matching rule %s with hash %s',
         trigger.id, rule.id, index
@@ -138,7 +138,9 @@ async function evaluateRule (rule, trigger) {
     } = results[index]
 
     if (!action) {
-      rpc.notify('trigger.evaluationError', `rule ${rule.id}:${hash} produced no action`)
+      rpc.notify('trigger.evaluationError', `rule ${rule.id}:${hash} produced no action`, {
+        become: rule.user
+      })
       log.debug('trigger evaluation error: %s', `rule ${rule.id}:${hash} produced no action`)
       continue
     }
@@ -147,7 +149,7 @@ async function evaluateRule (rule, trigger) {
     executions[index].action = action
     executions[index].parameters = parameters
 
-    await rpc.call('execution.schedule', executions[index])
+    await rpc.call('execution.schedule', executions[index], { become: rule.user })
   }
 }
 
@@ -169,7 +171,7 @@ async function main () {
   await rpc.connect()
   await rpc.auth({ token: AGENCY_TOKEN })
 
-  const req = await rpc.call('rule.list')
+  const req = await rpc.call('rule.list', {}, { become: '*' })
 
   for (const rule of req) {
     rules.push(initializeRule(rule))

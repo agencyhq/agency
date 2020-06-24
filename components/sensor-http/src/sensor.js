@@ -25,7 +25,6 @@ async function main () {
 
   await rpc.connect()
   await rpc.auth({ token: AGENCY_TOKEN })
-  await rpc.notify('ready')
 
   const app = express()
 
@@ -53,12 +52,13 @@ async function main () {
       }
     }
 
-    await rpc.call('trigger.emit', trigger)
+    await rpc.call('trigger.emit', trigger, { become: '*' })
 
     res.send('OK')
   })
 
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
+    await rpc.notify('ready')
     log.info(`Listening on http://localhost:${PORT}`)
   })
 }

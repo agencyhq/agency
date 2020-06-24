@@ -44,9 +44,10 @@ async function ensureRuleDeletion (rpc, rule) {
 describe('RPC', () => {
   let rpc
   let identity
+  let initialRule
 
   before(async () => {
-    rpc = new RPC.Client('ws://localhost:3000/')
+    rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
     await rpc.connect()
     await rpc.auth({ token: 'alltoken' })
@@ -59,9 +60,16 @@ describe('RPC', () => {
     })
 
     await rpc.auth({ token: identity.id })
+
+    const rule = {
+      code: 'module.exports = { if: () => false, then: () => ({}) }'
+    }
+
+    initialRule = await ensureRuleCreation(rpc, rule)
   })
 
   after(async () => {
+    await ensureRuleDeletion(rpc, initialRule)
     await rpc.call('token.delete', identity)
   })
 
@@ -78,7 +86,7 @@ describe('RPC', () => {
   describe('#ruleCreate', () => {
     it('should create a rule', async () => {
       const rule = {
-        code: '{ if: () => false, then: () => ({}) }'
+        code: 'module.exports = { if: () => false, then: () => ({}) }'
       }
 
       const res = await rpc.call('rule.create', rule)
@@ -101,7 +109,7 @@ describe('RPC', () => {
       await rpc.subscribe('rule', fn)
 
       const rule = {
-        code: '{ if: () => false, then: () => ({}) }'
+        code: 'module.exports = { if: () => false, then: () => ({}) }'
       }
 
       const res = await rpc.call('rule.create', rule)
@@ -124,7 +132,7 @@ describe('RPC', () => {
 
     beforeEach(async () => {
       rule = await ensureRuleCreation(rpc, {
-        code: '{ if: () => false, then: () => ({}) }'
+        code: 'module.exports = { if: () => false, then: () => ({}) }'
       })
     })
 
@@ -137,7 +145,7 @@ describe('RPC', () => {
     it('should update a rule', async () => {
       const update = {
         id: rule.id,
-        code: '{ if: () => false, then: () => ({}), updated: true }'
+        code: 'module.exports = { if: () => false, then: () => ({}), updated: true }'
       }
 
       const res = await rpc.call('rule.update', update)
@@ -158,7 +166,7 @@ describe('RPC', () => {
 
       const update = {
         id: rule.id,
-        code: '{ if: () => false, then: () => ({}), updated: true }'
+        code: 'module.exports = { if: () => false, then: () => ({}), updated: true }'
       }
 
       res = await rpc.call('rule.update', update)
@@ -180,7 +188,7 @@ describe('RPC', () => {
 
     beforeEach(async () => {
       rule = await ensureRuleCreation(rpc, {
-        code: '{ if: () => false, then: () => ({}) }'
+        code: 'module.exports = { if: () => false, then: () => ({}) }'
       })
     })
 

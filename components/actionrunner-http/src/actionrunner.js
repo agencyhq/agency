@@ -17,7 +17,7 @@ const ACTIONS = {
 }
 
 async function handleExecution (execution) {
-  const { id } = execution
+  const { id, user } = execution
   log.debug('processing execution: %s', id)
 
   const action = ACTIONS[execution.action]
@@ -25,7 +25,7 @@ async function handleExecution (execution) {
     return
   }
 
-  const claim = await rpc.call('execution.claim', { id })
+  const claim = await rpc.call('execution.claim', { id }, { become: user })
   metrics.countClaims(claim)
 
   if (!claim.granted) {
@@ -38,7 +38,7 @@ async function handleExecution (execution) {
   const promise = action(execution)
   metrics.measureExecutionDuration(execution, promise)
   log.info('execution started: %s', id)
-  rpc.notify('execution.started', { id })
+  rpc.notify('execution.started', { id }, { become: user })
 
   try {
     const { request, ...result } = await promise
@@ -49,7 +49,7 @@ async function handleExecution (execution) {
       id: execution.id,
       status: 'succeeded',
       result
-    })
+    }, { become: user })
   } catch (e) {
     log.info('execution failed: %s', execution.id)
 
@@ -57,7 +57,7 @@ async function handleExecution (execution) {
       id: execution.id,
       status: 'failed',
       result: e
-    })
+    }, { become: user })
   }
 }
 

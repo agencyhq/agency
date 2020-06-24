@@ -21,6 +21,7 @@ methods:
   rule.list:
     operationId: ruleList
     scopes:
+      - operator
       - rule
     parameters:
       - name: query

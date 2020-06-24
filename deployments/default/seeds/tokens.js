@@ -13,21 +13,21 @@ exports.seed = async knex => {
       id: 'sensortoken',
       user: 'enykeev',
       meta: {
-        scopes: ['sensor']
+        scopes: ['sensor', 'service']
       },
       created_by: 'initial seeding'
     }, {
       id: 'ruletoken',
       user: 'enykeev',
       meta: {
-        scopes: ['rule']
+        scopes: ['rule', 'service']
       },
       created_by: 'initial seeding'
     }, {
       id: 'executiontoken',
       user: 'enykeev',
       meta: {
-        scopes: ['execution']
+        scopes: ['execution', 'service']
       },
       created_by: 'initial seeding'
     }, {
@@ -39,9 +39,9 @@ exports.seed = async knex => {
       created_by: 'initial seeding'
     }, {
       id: 'sometoken',
-      user: 'someguy',
+      user: 'someuser',
       meta: {
-        scopes: ['web']
+        scopes: ['all']
       },
       created_by: 'initial seeding'
     }

@@ -52,18 +52,19 @@ async function main () {
       event: msg
     }
 
+    // TODO: need to figure out a user the message to. '*' is not going to cut it here.
     await rpc.call('trigger.emit', trigger)
   })
 
   await rpc.subscribe('execution', async execution => {
-    const { id, action, parameters } = execution
+    const { id, action, parameters, user } = execution
     log.debug('processing execution: %s', id)
 
     if (action !== ACTION_TYPE) {
       return
     }
 
-    const claim = await rpc.call('execution.claim', { id })
+    const claim = await rpc.call('execution.claim', { id }, { become: user })
     metrics.countClaims(claim)
 
     if (!claim.granted) {
@@ -78,7 +79,25 @@ async function main () {
       text
     } = parameters
 
-    bot.sendMessage(chatId, text)
+    try {
+      const result = await bot.sendMessage(chatId, text)
+
+      log.info('execution completed successfully: %s', execution.id)
+
+      await rpc.call('execution.completed', {
+        id: execution.id,
+        status: 'succeeded',
+        result
+      }, { become: user })
+    } catch (e) {
+      log.info('execution failed: %s', execution.id)
+
+      await rpc.call('execution.completed', {
+        id: execution.id,
+        status: 'failed',
+        result: e
+      }, { become: user })
+    }
   })
 
   await rpc.notify('ready')

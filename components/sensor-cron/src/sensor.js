@@ -48,7 +48,7 @@ async function main () {
       }
     }
 
-    await rpc.call('trigger.emit', trigger)
+    await rpc.call('trigger.emit', trigger, { become: '*' })
   })
 }
 
