@@ -12,6 +12,23 @@ const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
 
+async function handleRequest (req, res) {
+  const trigger = {
+    id: crypto.randomBytes(16).toString('hex'),
+    type: 'http',
+    event: {
+      path: req.path,
+      headers: req.headers,
+      query: req.query,
+      body: req.body
+    }
+  }
+
+  await rpc.call('trigger.emit', trigger, { become: '*' })
+
+  res.send('OK')
+}
+
 async function main () {
   const {
     PORT = 3001,
@@ -36,26 +53,11 @@ async function main () {
   app.use(express.json())
   app.use(morgan('short', {
     stream: {
-      write: str => log.debug(str)
+      write: log.debug
     }
   }))
 
-  app.post('*', async (req, res) => {
-    const trigger = {
-      id: crypto.randomBytes(16).toString('hex'),
-      type: 'http',
-      event: {
-        path: req.path,
-        headers: req.headers,
-        query: req.query,
-        body: req.body
-      }
-    }
-
-    await rpc.call('trigger.emit', trigger, { become: '*' })
-
-    res.send('OK')
-  })
+  app.post('*', handleRequest)
 
   app.listen(PORT, async () => {
     await rpc.notify('ready')
@@ -64,5 +66,7 @@ async function main () {
 }
 
 module.exports = {
-  main
+  main,
+  rpc,
+  handleRequest
 }

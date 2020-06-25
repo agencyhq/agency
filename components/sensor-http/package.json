@@ -5,7 +5,7 @@
   "main": "src/sensor.js",
   "scripts": {
     "start": "node bin/sensor.js",
-    "test": "echo \"Error: no tests specified\" && exit 0",
+    "test": "nyc mocha --reporter dot test/unit/test_*.js",
     "integration": "mocha test/integration/test_*.js --reporter dot"
   },
   "nyc": {
