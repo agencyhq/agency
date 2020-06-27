@@ -1,3 +1,4 @@
 {
-  "eslint.enable": true
+  "eslint.enable": true,
+  "css.customData": [".vscode/css_custom_data.json"]
 }
