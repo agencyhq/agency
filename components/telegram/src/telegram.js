@@ -6,7 +6,56 @@ const metrics = require('@agencyhq/agency-metrics')
 const RPC = require('@agencyhq/jsonrpc-ws')
 const TelegramBot = require('node-telegram-bot-api')
 
+/**
+ * The module acts as an adapter for Telegram. It interfaces with a single bot via provided token, converts every message the bot receives into separate trigger and transmits it to every user. It also acts as an actionrunner allowing bot to send back messages to chats that has already been established with it.
+ *
+ * Needless to say, in the current implementation one should not trust any secrets to the bot and should expect to get messages from other users he didn't specifically asked for. In other words, it is currently a security mess and there's no point dancing around it. Nonetheless, it is an important stepping stone for us in developing Agency.
+ *
+ * @module agencyhq/agency-telegram-adapter
+ *
+ * @param {string} [process.env.AGENCY_URL] - Agency RPC url.
+ * @param {string} process.env.AGENCY_TOKEN - Agency RPC token. Should have `sensor` and `execution` scopes.
+ * @param {string} [process.env.LOG_LEVEL=info] - Log level to output
+ * @param {string} [process.env.METRICS] - Enable metrics endpoint
+ * @param {string} [process.env.PORT=3000] - Port to bind HTTP server to
+ *
+ * @param {string} process.env.TELEGRAM_BOT_TOKEN - Token for a bot.
+ * @param {string} [process.env.PROXY_SOCKS5_HOST] - SOCKS5 proxy host for connecting to Telegram.
+ * @param {string} [process.env.PROXY_SOCKS5_PORT] - SOCKS5 proxy port.
+ */
+
+/**
+ * The trigger gets emitted on every message bot sees.
+ *
+ * Properties listed below is just a subset of ones you might use frequently than others. For a fill list of properties, please consult [Telegram API](https://core.telegram.org/bots/api#message).
+ *
+ * @kind Agency.Trigger
+ * @name telegram
+ * @prop {number} message_id
+ * @prop {object} [from]
+ * @prop {number} from.id
+ * @prop {string} from.first_name
+ * @prop {string} [from.last_name]
+ * @prop {string} [from.username]
+ * @prop {number} date
+ * @prop {object} chat
+ * @prop {number} chat.id
+ * @prop {ChatType} chat.type
+ * @prop {string} [chat.title]
+ * @prop {string} [chat.username]
+ * @prop {string} [chat.first_name]
+ * @prop {string} [chat.last_name]
+ */
 const EVENT_TYPE = 'telegram'
+
+/**
+ * The action sends a message to a specified chatId.
+ *
+ * @kind Agency.Action
+ * @name telegram
+ * @prop {string|number} chatId
+ * @prop {string} text
+ */
 const ACTION_TYPE = 'telegram'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')

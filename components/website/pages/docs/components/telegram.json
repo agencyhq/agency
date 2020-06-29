@@ -1,0 +1,1440 @@
+[
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                6,
+                32
+            ],
+            "filename": "telegram.js",
+            "lineno": 1,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000003",
+                "name": "crypto",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "crypto",
+        "longname": "crypto",
+        "kind": "constant",
+        "scope": "global",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                40,
+                88
+            ],
+            "filename": "telegram.js",
+            "lineno": 3,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000009",
+                "name": "Agent",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "Agent",
+        "longname": "Agent",
+        "kind": "constant",
+        "scope": "global",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                95,
+                120
+            ],
+            "filename": "telegram.js",
+            "lineno": 4,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000015",
+                "name": "log",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "log",
+        "longname": "log",
+        "kind": "constant",
+        "scope": "global",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                127,
+                172
+            ],
+            "filename": "telegram.js",
+            "lineno": 5,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000021",
+                "name": "metrics",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "metrics",
+        "longname": "metrics",
+        "kind": "constant",
+        "scope": "global",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                179,
+                216
+            ],
+            "filename": "telegram.js",
+            "lineno": 6,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000027",
+                "name": "RPC",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "RPC",
+        "longname": "RPC",
+        "kind": "constant",
+        "scope": "global",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                223,
+                269
+            ],
+            "filename": "telegram.js",
+            "lineno": 7,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000033",
+                "name": "TelegramBot",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "TelegramBot",
+        "longname": "TelegramBot",
+        "kind": "constant",
+        "scope": "global",
+        "params": []
+    },
+    {
+        "comment": "/**\n * The module acts as an adapter for Telegram. It interfaces with a single bot via provided token, converts every message the bot receives into separate trigger and transmits it to every user. It also acts as an actionrunner allowing bot to send back messages to chats that has already been established with it.\n *\n * Needless to say, in the current implementation one should not trust any secrets to the bot and should expect to get messages from other users he didn't specifically asked for. In other words, it is currently a security mess and there's no point dancing around it. Nonetheless, it is an important stepping stone for us in developing Agency.\n *\n * @module agencyhq/agency-telegram-adapter\n *\n * @param {string} [process.env.AGENCY_URL] - Agency RPC url.\n * @param {string} process.env.AGENCY_TOKEN - Agency RPC token. Should have `sensor` and `execution` scopes.\n * @param {string} [process.env.LOG_LEVEL=info] - Log level to output\n * @param {string} [process.env.METRICS] - Enable metrics endpoint\n * @param {string} [process.env.PORT=3000] - Port to bind HTTP server to\n *\n * @param {string} process.env.TELEGRAM_BOT_TOKEN - Token for a bot.\n * @param {string} [process.env.PROXY_SOCKS5_HOST] - SOCKS5 proxy host for connecting to Telegram.\n * @param {string} [process.env.PROXY_SOCKS5_PORT] - SOCKS5 proxy port.\n */",
+        "meta": {
+            "filename": "telegram.js",
+            "lineno": 9,
+            "columnno": 0,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {}
+        },
+        "description": "The module acts as an adapter for Telegram. It interfaces with a single bot via provided token, converts every message the bot receives into separate trigger and transmits it to every user. It also acts as an actionrunner allowing bot to send back messages to chats that has already been established with it.\n\nNeedless to say, in the current implementation one should not trust any secrets to the bot and should expect to get messages from other users he didn't specifically asked for. In other words, it is currently a security mess and there's no point dancing around it. Nonetheless, it is an important stepping stone for us in developing Agency.",
+        "kind": "module",
+        "name": "agencyhq/agency-telegram-adapter",
+        "params": [
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "description": "Agency RPC url.",
+                "name": "process.env.AGENCY_URL"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "Agency RPC token. Should have `sensor` and `execution` scopes.",
+                "name": "process.env.AGENCY_TOKEN"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "defaultvalue": "info",
+                "description": "Log level to output",
+                "name": "process.env.LOG_LEVEL"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "description": "Enable metrics endpoint",
+                "name": "process.env.METRICS"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "defaultvalue": 3000,
+                "description": "Port to bind HTTP server to",
+                "name": "process.env.PORT"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "description": "Token for a bot.",
+                "name": "process.env.TELEGRAM_BOT_TOKEN"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "description": "SOCKS5 proxy host for connecting to Telegram.",
+                "name": "process.env.PROXY_SOCKS5_HOST"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "description": "SOCKS5 proxy port.",
+                "name": "process.env.PROXY_SOCKS5_PORT"
+            }
+        ],
+        "longname": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "/**\n * The trigger gets emitted on every message bot sees.\n *\n * Properties listed below is just a subset of ones you might use frequently than others. For a fill list of properties, please consult [Telegram API](https://core.telegram.org/bots/api#message).\n *\n * @kind Agency.Trigger\n * @name telegram\n * @prop {number} message_id\n * @prop {object} [from]\n * @prop {number} from.id\n * @prop {string} from.first_name\n * @prop {string} [from.last_name]\n * @prop {string} [from.username]\n * @prop {number} date\n * @prop {object} chat\n * @prop {number} chat.id\n * @prop {ChatType} chat.type\n * @prop {string} [chat.title]\n * @prop {string} [chat.username]\n * @prop {string} [chat.first_name]\n * @prop {string} [chat.last_name]\n */",
+        "meta": {
+            "filename": "telegram.js",
+            "lineno": 27,
+            "columnno": 0,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {}
+        },
+        "description": "The trigger gets emitted on every message bot sees.\n\nProperties listed below is just a subset of ones you might use frequently than others. For a fill list of properties, please consult [Telegram API](https://core.telegram.org/bots/api#message).",
+        "kind": "Agency.Trigger",
+        "name": "telegram",
+        "properties": [
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "name": "message_id"
+            },
+            {
+                "type": {
+                    "names": [
+                        "object"
+                    ]
+                },
+                "optional": true,
+                "name": "from"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "name": "from.id"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "name": "from.first_name"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "name": "from.last_name"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "name": "from.username"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "name": "date"
+            },
+            {
+                "type": {
+                    "names": [
+                        "object"
+                    ]
+                },
+                "name": "chat"
+            },
+            {
+                "type": {
+                    "names": [
+                        "number"
+                    ]
+                },
+                "name": "chat.id"
+            },
+            {
+                "type": {
+                    "names": [
+                        "ChatType"
+                    ]
+                },
+                "name": "chat.type"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "name": "chat.title"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "name": "chat.username"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "name": "chat.first_name"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "optional": true,
+                "name": "chat.last_name"
+            }
+        ],
+        "longname": "module:agencyhq/agency-telegram-adapter~telegram",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2346,
+                2369
+            ],
+            "filename": "telegram.js",
+            "lineno": 49,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000039",
+                "name": "EVENT_TYPE",
+                "type": "Literal",
+                "value": "telegram"
+            }
+        },
+        "undocumented": true,
+        "name": "EVENT_TYPE",
+        "longname": "module:agencyhq/agency-telegram-adapter~EVENT_TYPE",
+        "kind": "constant",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter",
+        "params": []
+    },
+    {
+        "comment": "/**\n * The action sends a message to a specified chatId.\n *\n * @kind Agency.Action\n * @name telegram\n * @prop {string|number} chatId\n * @prop {string} text\n */",
+        "meta": {
+            "filename": "telegram.js",
+            "lineno": 51,
+            "columnno": 0,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {}
+        },
+        "description": "The action sends a message to a specified chatId.",
+        "kind": "Agency.Action",
+        "name": "telegram",
+        "properties": [
+            {
+                "type": {
+                    "names": [
+                        "string",
+                        "number"
+                    ]
+                },
+                "name": "chatId"
+            },
+            {
+                "type": {
+                    "names": [
+                        "string"
+                    ]
+                },
+                "name": "text"
+            }
+        ],
+        "longname": "module:agencyhq/agency-telegram-adapter~telegram",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2537,
+                2561
+            ],
+            "filename": "telegram.js",
+            "lineno": 59,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000043",
+                "name": "ACTION_TYPE",
+                "type": "Literal",
+                "value": "telegram"
+            }
+        },
+        "undocumented": true,
+        "name": "ACTION_TYPE",
+        "longname": "module:agencyhq/agency-telegram-adapter~ACTION_TYPE",
+        "kind": "constant",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2616,
+                2686
+            ],
+            "filename": "telegram.js",
+            "lineno": 63,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000059",
+                "name": "rpc",
+                "type": "NewExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "rpc",
+        "longname": "module:agencyhq/agency-telegram-adapter~rpc",
+        "kind": "constant",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2722,
+                4629
+            ],
+            "filename": "telegram.js",
+            "lineno": 67,
+            "columnno": 0,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000078",
+                "name": "main",
+                "type": "FunctionDeclaration",
+                "paramnames": []
+            },
+            "vars": {
+                "undefined": null,
+                "": null,
+                "bot": "module:agencyhq/agency-telegram-adapter~main~bot"
+            }
+        },
+        "undocumented": true,
+        "name": "main",
+        "longname": "module:agencyhq/agency-telegram-adapter~main",
+        "kind": "function",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter",
+        "params": [],
+        "async": true
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2761,
+                2772
+            ],
+            "filename": "telegram.js",
+            "lineno": 69,
+            "columnno": 4,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000084",
+                "name": "PORT",
+                "type": "AssignmentPattern",
+                "value": "PORT"
+            }
+        },
+        "undocumented": true,
+        "name": "PORT",
+        "longname": "module:agencyhq/agency-telegram-adapter~PORT",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2778,
+                2793
+            ],
+            "filename": "telegram.js",
+            "lineno": 70,
+            "columnno": 4,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000088",
+                "name": "METRICS",
+                "type": "AssignmentPattern",
+                "value": "METRICS"
+            }
+        },
+        "undocumented": true,
+        "name": "METRICS",
+        "longname": "module:agencyhq/agency-telegram-adapter~METRICS",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2799,
+                2811
+            ],
+            "filename": "telegram.js",
+            "lineno": 71,
+            "columnno": 4,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000092",
+                "name": "AGENCY_TOKEN",
+                "type": "Identifier",
+                "value": "AGENCY_TOKEN"
+            }
+        },
+        "undocumented": true,
+        "name": "AGENCY_TOKEN",
+        "longname": "module:agencyhq/agency-telegram-adapter~AGENCY_TOKEN",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                2817,
+                2835
+            ],
+            "filename": "telegram.js",
+            "lineno": 72,
+            "columnno": 4,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000094",
+                "name": "TELEGRAM_BOT_TOKEN",
+                "type": "Identifier",
+                "value": "TELEGRAM_BOT_TOKEN"
+            }
+        },
+        "undocumented": true,
+        "name": "TELEGRAM_BOT_TOKEN",
+        "longname": "module:agencyhq/agency-telegram-adapter~TELEGRAM_BOT_TOKEN",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3008,
+                3027
+            ],
+            "filename": "telegram.js",
+            "lineno": 84,
+            "columnno": 19,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000135",
+                "name": "token",
+                "type": "Identifier",
+                "value": "AGENCY_TOKEN"
+            }
+        },
+        "undocumented": true,
+        "name": "token",
+        "longname": "module:agencyhq/agency-telegram-adapter~token",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3040,
+                3292
+            ],
+            "filename": "telegram.js",
+            "lineno": 86,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000138",
+                "name": "bot",
+                "type": "NewExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "bot",
+        "longname": "module:agencyhq/agency-telegram-adapter~main~bot",
+        "kind": "constant",
+        "memberof": "module:agencyhq/agency-telegram-adapter~main",
+        "scope": "inner",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3088,
+                3101
+            ],
+            "filename": "telegram.js",
+            "lineno": 87,
+            "columnno": 4,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000144",
+                "name": "polling",
+                "type": "Literal",
+                "value": true
+            }
+        },
+        "undocumented": true,
+        "name": "polling",
+        "longname": "module:agencyhq/agency-telegram-adapter~polling",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3107,
+                3287
+            ],
+            "filename": "telegram.js",
+            "lineno": 88,
+            "columnno": 4,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000146",
+                "name": "request",
+                "type": "ObjectExpression",
+                "value": "{\"agentClass\":\"\",\"agentOptions\":\"\"}"
+            }
+        },
+        "undocumented": true,
+        "name": "request",
+        "longname": "module:agencyhq/agency-telegram-adapter~request",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3124,
+                3141
+            ],
+            "filename": "telegram.js",
+            "lineno": 89,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000148",
+                "name": "agentClass",
+                "type": "Identifier",
+                "value": "Agent"
+            }
+        },
+        "undocumented": true,
+        "name": "agentClass",
+        "longname": "module:agencyhq/agency-telegram-adapter~request.agentClass",
+        "kind": "member",
+        "memberof": "module:agencyhq/agency-telegram-adapter~request",
+        "scope": "static"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3149,
+                3281
+            ],
+            "filename": "telegram.js",
+            "lineno": 90,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000150",
+                "name": "agentOptions",
+                "type": "ObjectExpression",
+                "value": "{\"socksHost\":\"\",\"socksPort\":\"\"}"
+            }
+        },
+        "undocumented": true,
+        "name": "agentOptions",
+        "longname": "module:agencyhq/agency-telegram-adapter~request.agentOptions",
+        "kind": "member",
+        "memberof": "module:agencyhq/agency-telegram-adapter~request",
+        "scope": "static"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3173,
+                3213
+            ],
+            "filename": "telegram.js",
+            "lineno": 91,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000152",
+                "name": "socksHost",
+                "type": "MemberExpression",
+                "value": "process.env.PROXY_SOCKS5_HOST"
+            }
+        },
+        "undocumented": true,
+        "name": "socksHost",
+        "longname": "module:agencyhq/agency-telegram-adapter~request.agentOptions.socksHost",
+        "kind": "member",
+        "memberof": "module:agencyhq/agency-telegram-adapter~request.agentOptions",
+        "scope": "static"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3223,
+                3273
+            ],
+            "filename": "telegram.js",
+            "lineno": 92,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000158",
+                "name": "socksPort",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "socksPort",
+        "longname": "module:agencyhq/agency-telegram-adapter~request.agentOptions.socksPort",
+        "kind": "member",
+        "memberof": "module:agencyhq/agency-telegram-adapter~request.agentOptions",
+        "scope": "static"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3341,
+                3449
+            ],
+            "filename": "telegram.js",
+            "lineno": 98,
+            "columnno": 10,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000176",
+                "name": "trigger",
+                "type": "ObjectExpression",
+                "value": "{\"id\":\"\",\"type\":\"\",\"event\":\"\"}"
+            }
+        },
+        "undocumented": true,
+        "name": "trigger",
+        "longname": "<anonymous>~trigger",
+        "kind": "constant",
+        "memberof": "<anonymous>",
+        "scope": "inner",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3359,
+                3401
+            ],
+            "filename": "telegram.js",
+            "lineno": 99,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000179",
+                "name": "id",
+                "type": "CallExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "id",
+        "longname": "<anonymous>~trigger.id",
+        "kind": "member",
+        "memberof": "<anonymous>~trigger",
+        "scope": "static"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3409,
+                3425
+            ],
+            "filename": "telegram.js",
+            "lineno": 100,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000189",
+                "name": "type",
+                "type": "Identifier",
+                "value": "EVENT_TYPE"
+            }
+        },
+        "undocumented": true,
+        "name": "type",
+        "longname": "<anonymous>~trigger.type",
+        "kind": "member",
+        "memberof": "<anonymous>~trigger",
+        "scope": "static"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3433,
+                3443
+            ],
+            "filename": "telegram.js",
+            "lineno": 101,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000191",
+                "name": "event",
+                "type": "Identifier",
+                "value": "msg"
+            }
+        },
+        "undocumented": true,
+        "name": "event",
+        "longname": "<anonymous>~trigger.event",
+        "kind": "member",
+        "memberof": "<anonymous>~trigger",
+        "scope": "static"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3657,
+                3659
+            ],
+            "filename": "telegram.js",
+            "lineno": 109,
+            "columnno": 12,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000214",
+                "name": "id",
+                "type": "Identifier",
+                "value": "id"
+            }
+        },
+        "undocumented": true,
+        "name": "id",
+        "longname": "module:agencyhq/agency-telegram-adapter~id",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3661,
+                3667
+            ],
+            "filename": "telegram.js",
+            "lineno": 109,
+            "columnno": 16,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000216",
+                "name": "action",
+                "type": "Identifier",
+                "value": "action"
+            }
+        },
+        "undocumented": true,
+        "name": "action",
+        "longname": "module:agencyhq/agency-telegram-adapter~action",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3669,
+                3679
+            ],
+            "filename": "telegram.js",
+            "lineno": 109,
+            "columnno": 24,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000218",
+                "name": "parameters",
+                "type": "Identifier",
+                "value": "parameters"
+            }
+        },
+        "undocumented": true,
+        "name": "parameters",
+        "longname": "module:agencyhq/agency-telegram-adapter~parameters",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3681,
+                3685
+            ],
+            "filename": "telegram.js",
+            "lineno": 109,
+            "columnno": 36,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000220",
+                "name": "user",
+                "type": "Identifier",
+                "value": "user"
+            }
+        },
+        "undocumented": true,
+        "name": "user",
+        "longname": "module:agencyhq/agency-telegram-adapter~user",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3811,
+                3878
+            ],
+            "filename": "telegram.js",
+            "lineno": 116,
+            "columnno": 10,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000237",
+                "name": "claim",
+                "type": "AwaitExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "claim",
+        "longname": "<anonymous>~claim",
+        "kind": "constant",
+        "memberof": "<anonymous>",
+        "scope": "inner",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3855,
+                3857
+            ],
+            "filename": "telegram.js",
+            "lineno": 116,
+            "columnno": 54,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000246",
+                "name": "id",
+                "type": "Identifier",
+                "value": "id"
+            }
+        },
+        "undocumented": true,
+        "name": "id",
+        "longname": "module:agencyhq/agency-telegram-adapter~id",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                3863,
+                3875
+            ],
+            "filename": "telegram.js",
+            "lineno": 116,
+            "columnno": 62,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000249",
+                "name": "become",
+                "type": "Identifier",
+                "value": "user"
+            }
+        },
+        "undocumented": true,
+        "name": "become",
+        "longname": "module:agencyhq/agency-telegram-adapter~become",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4053,
+                4059
+            ],
+            "filename": "telegram.js",
+            "lineno": 127,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000285",
+                "name": "chatId",
+                "type": "Identifier",
+                "value": "chatId"
+            }
+        },
+        "undocumented": true,
+        "name": "chatId",
+        "longname": "module:agencyhq/agency-telegram-adapter~chatId",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4067,
+                4071
+            ],
+            "filename": "telegram.js",
+            "lineno": 128,
+            "columnno": 6,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000287",
+                "name": "text",
+                "type": "Identifier",
+                "value": "text"
+            }
+        },
+        "undocumented": true,
+        "name": "text",
+        "longname": "module:agencyhq/agency-telegram-adapter~text",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4114,
+                4158
+            ],
+            "filename": "telegram.js",
+            "lineno": 132,
+            "columnno": 12,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000293",
+                "name": "result",
+                "type": "AwaitExpression",
+                "value": ""
+            }
+        },
+        "undocumented": true,
+        "name": "result",
+        "longname": "<anonymous>~result",
+        "kind": "constant",
+        "memberof": "<anonymous>",
+        "scope": "inner",
+        "params": []
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4284,
+                4300
+            ],
+            "filename": "telegram.js",
+            "lineno": 137,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000319",
+                "name": "id",
+                "type": "MemberExpression",
+                "value": "execution.id"
+            }
+        },
+        "undocumented": true,
+        "name": "id",
+        "longname": "module:agencyhq/agency-telegram-adapter~id",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4310,
+                4329
+            ],
+            "filename": "telegram.js",
+            "lineno": 138,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000323",
+                "name": "status",
+                "type": "Literal",
+                "value": "succeeded"
+            }
+        },
+        "undocumented": true,
+        "name": "status",
+        "longname": "module:agencyhq/agency-telegram-adapter~status",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4339,
+                4345
+            ],
+            "filename": "telegram.js",
+            "lineno": 139,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000325",
+                "name": "result",
+                "type": "Identifier",
+                "value": "result"
+            }
+        },
+        "undocumented": true,
+        "name": "result",
+        "longname": "module:agencyhq/agency-telegram-adapter~result",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4357,
+                4369
+            ],
+            "filename": "telegram.js",
+            "lineno": 140,
+            "columnno": 11,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000328",
+                "name": "become",
+                "type": "Identifier",
+                "value": "user"
+            }
+        },
+        "undocumented": true,
+        "name": "become",
+        "longname": "module:agencyhq/agency-telegram-adapter~become",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4499,
+                4515
+            ],
+            "filename": "telegram.js",
+            "lineno": 145,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000348",
+                "name": "id",
+                "type": "MemberExpression",
+                "value": "execution.id"
+            }
+        },
+        "undocumented": true,
+        "name": "id",
+        "longname": "module:agencyhq/agency-telegram-adapter~id",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4525,
+                4541
+            ],
+            "filename": "telegram.js",
+            "lineno": 146,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000352",
+                "name": "status",
+                "type": "Literal",
+                "value": "failed"
+            }
+        },
+        "undocumented": true,
+        "name": "status",
+        "longname": "module:agencyhq/agency-telegram-adapter~status",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4551,
+                4560
+            ],
+            "filename": "telegram.js",
+            "lineno": 147,
+            "columnno": 8,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000354",
+                "name": "result",
+                "type": "Identifier",
+                "value": "e"
+            }
+        },
+        "undocumented": true,
+        "name": "result",
+        "longname": "module:agencyhq/agency-telegram-adapter~result",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4572,
+                4584
+            ],
+            "filename": "telegram.js",
+            "lineno": 148,
+            "columnno": 11,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000357",
+                "name": "become",
+                "type": "Identifier",
+                "value": "user"
+            }
+        },
+        "undocumented": true,
+        "name": "become",
+        "longname": "module:agencyhq/agency-telegram-adapter~become",
+        "kind": "member",
+        "scope": "inner",
+        "memberof": "module:agencyhq/agency-telegram-adapter"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4631,
+                4658
+            ],
+            "filename": "telegram.js",
+            "lineno": 155,
+            "columnno": 0,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000367",
+                "name": "module.exports",
+                "type": "ObjectExpression",
+                "value": "{\"main\":\"\"}",
+                "paramnames": []
+            }
+        },
+        "undocumented": true,
+        "name": "module:agencyhq/agency-telegram-adapter",
+        "longname": "module:agencyhq/agency-telegram-adapter",
+        "kind": "member"
+    },
+    {
+        "comment": "",
+        "meta": {
+            "range": [
+                4652,
+                4656
+            ],
+            "filename": "telegram.js",
+            "lineno": 156,
+            "columnno": 2,
+            "path": "/home/enykeev/Developer/agency/components/telegram/src",
+            "code": {
+                "id": "astnode100000372",
+                "name": "main",
+                "type": "Identifier",
+                "value": "main"
+            }
+        },
+        "undocumented": true,
+        "name": "main",
+        "longname": "module:agencyhq/agency-telegram-adapter.main",
+        "kind": "member",
+        "memberof": "module:agencyhq/agency-telegram-adapter",
+        "scope": "static"
+    },
+    {
+        "kind": "package",
+        "longname": "package:undefined",
+        "files": [
+            "/home/enykeev/Developer/agency/components/telegram/src/telegram.js"
+        ]
+    }
+]
