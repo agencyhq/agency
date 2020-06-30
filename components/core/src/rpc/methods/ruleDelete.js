@@ -5,6 +5,7 @@ module.exports = async ({ id }, { user }) => {
   const query = { id, user }
 
   const mod = models.Rules.forge(query)
+    .where({ user })
   await mod.destroy()
 
   const rule = {

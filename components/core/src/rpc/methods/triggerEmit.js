@@ -1,8 +1,15 @@
 const pubsub = require('../../pubsub')
 
-module.exports = (trigger, { user }) => {
+module.exports = async ({ id, type, event }, { user }) => {
+  const trigger = {
+    id,
+    type,
+    event
+  }
+
   if (user !== '*') {
     trigger.user = user
   }
-  pubsub.publish('trigger', trigger)
+
+  await pubsub.publish('trigger', trigger)
 }

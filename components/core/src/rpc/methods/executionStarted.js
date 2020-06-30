@@ -1,11 +1,16 @@
 const log = require('loglevel')
 const models = require('../../models')
 
-module.exports = async ({ id }) => {
+module.exports = async ({ id }, { user }) => {
   log.debug('execution started: %s', id)
-  await models.Executions.forge({ id })
-    .where('status', 'claimed')
+  const res = await models.Executions.forge({ id })
+    .where({
+      status: 'claimed',
+      user
+    })
     .save({
       status: 'running'
     })
+
+  return res.toJSON()
 }

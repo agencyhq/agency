@@ -27,5 +27,5 @@ module.exports = async (query = {}, { user }) => {
       offset
     })
 
-  return res ? res.toJSON() : []
+  return res.toJSON()
 }

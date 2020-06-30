@@ -12,7 +12,7 @@ module.exports = async (query, { user }) => {
   }, {
     method: 'update'
   })
-  await pubsub.publish('rule', rule)
+  await pubsub.publish('rule', rule.toJSON())
 
-  return rule
+  return rule.toJSON()
 }
