@@ -6,22 +6,6 @@ const sinon = require('sinon')
 const { expect } = chai
 chai.use(require('sinon-chai'))
 
-describe('RESTful', () => {
-  const client = axios.create({
-    baseURL: 'http://localhost:3000',
-    headers: {
-      authorization: 'bearer alltoken'
-    }
-  })
-
-  describe('#/', () => {
-    it('should return hello world string', async () => {
-      const resp = await client.get('/')
-      expect(resp.data).to.equal('Hello World')
-    })
-  })
-})
-
 describe('E2E', () => {
   const client = axios.create({
     baseURL: 'http://localhost:3001'

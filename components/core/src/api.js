@@ -9,7 +9,6 @@ const passport = require('passport')
 const bearer = require('passport-http-bearer')
 
 const pubsub = require('./pubsub')
-const router = require('./rest/router')
 const RPCServer = require('./rpc/server')
 const models = require('./models')
 
@@ -94,15 +93,6 @@ async function main () {
   }))
   app.use(passport.authenticate('bearer', { session: false }))
   app.use(express.json())
-  app.use(router('../openapi.yaml', opId => {
-    if (!opId) {
-      return () => {
-        throw new Error('not implemented')
-      }
-    }
-
-    return require(`./rest/methods/${opId}`)
-  }))
 
   rpc.registerMethod('ready', () => {}, { scopes: ['any'] })
 
