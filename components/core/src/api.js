@@ -21,36 +21,14 @@ const {
   METRICS = false
 } = process.env
 
-async function handleExecution (rpc, msg) {
+async function handleMessage (type, rpc, msg) {
   const execution = JSON.parse(msg.content.toString())
-  metrics.countExecutions(execution)
+  metrics.countMessages(type, execution)
   log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(execution))
 
-  await rpc.notify('execution', execution)
+  await rpc.notify(type, execution)
 
   log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, execution.id)
-  pubsub.channel.ack(msg)
-}
-
-async function handleTrigger (rpc, msg) {
-  const trigger = JSON.parse(msg.content.toString())
-  metrics.countTriggers(trigger)
-  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(trigger))
-
-  await rpc.notify('trigger', trigger)
-
-  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, trigger.id)
-  pubsub.channel.ack(msg)
-}
-
-async function handleRule (rpc, msg) {
-  const rule = JSON.parse(msg.content.toString())
-  // metrics.countTriggers(trigger)
-  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(rule))
-
-  await rpc.notify('rule', rule)
-
-  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, rule.id)
   pubsub.channel.ack(msg)
 }
 
@@ -138,17 +116,22 @@ async function main () {
     return require(`./rest/methods/${opId}`)
   }))
 
-  pubsub.subscribe('execution', msg => handleExecution(rpc, msg), {
+  pubsub.subscribe('execution', msg => handleMessage('execution', rpc, msg), {
     name: false,
     exclusive: true
   })
 
-  pubsub.subscribe('rule', msg => handleRule(rpc, msg), {
+  pubsub.subscribe('rule', msg => handleMessage('rule', rpc, msg), {
     name: false,
     exclusive: true
   })
 
-  pubsub.subscribe('trigger', msg => handleTrigger(rpc, msg), {
+  pubsub.subscribe('trigger', msg => handleMessage('trigger', rpc, msg), {
+    name: false,
+    exclusive: true
+  })
+
+  pubsub.subscribe('result', msg => handleMessage('result', rpc, msg), {
     name: false,
     exclusive: true
   })

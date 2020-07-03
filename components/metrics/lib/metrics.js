@@ -28,14 +28,10 @@ const executionDuration = new Prometheus.Histogram({
   labelNames: ['action', 'status']
 })
 
-const executionCounter = new Prometheus.Counter({
+const messageCounter = new Prometheus.Counter({
   name: 'ifttt_api_executions_received',
-  help: 'Counter for number of executions received via mq from other nodes'
-})
-
-const triggerCounter = new Prometheus.Counter({
-  name: 'ifttt_api_triggers_received',
-  help: 'Counter for number of triggers received via mq from other nodes'
+  help: 'Counter for number of messages of type received via mq from other nodes',
+  labelNames: ['type']
 })
 
 const rulesRegisteredGauge = new Prometheus.Gauge({
@@ -119,16 +115,12 @@ function countClaims (claim) {
   return claim
 }
 
-function countExecutions () {
-  executionCounter.inc()
-}
-
 function countRules (rules) {
   rulesRegisteredGauge.set(rules.length)
 }
 
-function countTriggers () {
-  triggerCounter.inc()
+function countMessages (type) {
+  messageCounter.inc({ type })
 }
 
 function measureExecutionDuration (execution, promise) {
@@ -165,9 +157,8 @@ module.exports = {
   createServer: createMonitoringServer,
   instrumentRPCClient,
   countClaims,
-  countExecutions,
   countRules,
-  countTriggers,
+  countMessages,
   measureExecutionDuration,
   measureRuleInitDuration,
   measureRuleIfDuration,

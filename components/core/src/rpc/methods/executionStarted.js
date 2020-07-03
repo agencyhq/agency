@@ -9,6 +9,7 @@ module.exports = async ({ id }, { user }) => {
       user
     })
     .save({
+      updated_at: new Date().toISOString(),
       status: 'running'
     })
 

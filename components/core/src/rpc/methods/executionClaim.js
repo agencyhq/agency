@@ -6,6 +6,7 @@ module.exports = async ({ id }, { user }) => {
     await models.Executions.forge({ id, user })
       .where('status', 'scheduled')
       .save({
+        updated_at: new Date().toISOString(),
         status: 'claimed'
       })
   } catch (e) {

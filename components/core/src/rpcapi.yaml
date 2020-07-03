@@ -184,6 +184,12 @@ events:
       - rule
     response:
       $ref: '#/definitions/Rule'
+  result:
+    scopes:
+      - rule
+      - operator
+    response:
+      $ref: '#/definitions/Result'
 
 definitions:
   Deleted:

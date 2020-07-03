@@ -22,6 +22,12 @@ const { expect } = chai
 chai.use(chaiAsPromised)
 chai.use(require('sinon-chai'))
 
+function serializeQuery ({ sql, bindings }) {
+  return sql.replace(/\$(\d)/g, (_, match) => {
+    return `"${bindings[match - 1]}"`
+  })
+}
+
 const db = knex({
   client: 'pg'
 })
@@ -50,7 +56,11 @@ describe('RPC Methods', () => {
     })
 
     it('grants claim if db request succeeds', async () => {
+      let updatedAt
       tracker.on('query', q => {
+        if (q.step === 1) {
+          updatedAt = q.bindings[1]
+        }
         q.response({})
       })
 
@@ -59,11 +69,17 @@ describe('RPC Methods', () => {
       expect(res).to.be.deep.equal({ granted: true })
       expect(tracker.queries.count()).to.be.equal(2)
       expect(tracker.queries.first()).to.have.property('method', 'update')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [user, 'claimed', 'scheduled', 1])
+      expect(tracker.queries.first()).to.have.deep.property('bindings', [
+        user, updatedAt, 'claimed', 'scheduled', 1
+      ])
     })
 
     it('denies claim if db request fails', async () => {
+      let updatedAt
       tracker.on('query', q => {
+        if (q.step === 1) {
+          updatedAt = q.bindings[1]
+        }
         q.reject('error')
       })
 
@@ -72,7 +88,9 @@ describe('RPC Methods', () => {
       expect(res).to.be.deep.equal({ granted: false })
       expect(tracker.queries.count()).to.be.equal(1)
       expect(tracker.queries.first()).to.have.property('method', 'update')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [user, 'claimed', 'scheduled', 1])
+      expect(tracker.queries.first()).to.have.deep.property('bindings', [
+        user, updatedAt, 'claimed', 'scheduled', 1
+      ])
     })
   })
 
@@ -86,12 +104,23 @@ describe('RPC Methods', () => {
         q.response({})
       })
 
+      sandbox.stub(pubsub, 'publish').resolves()
+
       const res = await executionCompleted({ id: 1, status: 'succeeded' }, { user })
 
-      expect(res).to.be.true
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'insert')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [1, 'succeeded', user])
+      expect(res).to.be.deep.equal({
+        id: 1,
+        status: 'completed',
+        updated_at: res.updated_at
+      })
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        'BEGIN;',
+        `update "executions" set "updated_at" = "${res.updated_at}", "status" = "completed" where "user" = "testuser" and "status" = "running" and "id" = "1" returning *`,
+        'select "executions".* from "executions" where "executions"."id" = "1" limit "1"',
+        'insert into "results" ("id", "result", "status", "user") values ("1", DEFAULT, "succeeded", "testuser") returning *',
+        'select "results".* from "results" where "results"."id" = "1" limit "1"',
+        'COMMIT;'
+      ])
     })
   })
 
@@ -206,12 +235,13 @@ describe('RPC Methods', () => {
 
       expect(res).to.be.deep.equal({
         id: res.id,
-        status: 'running'
+        status: 'running',
+        updated_at: res.updated_at
       })
       expect(tracker.queries.count()).to.be.equal(2)
       expect(tracker.queries.first()).to.have.property('method', 'update')
       expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        'running', 'claimed', user, 'deadbeef'
+        res.updated_at, 'running', 'claimed', user, 'deadbeef'
       ])
     })
   })
