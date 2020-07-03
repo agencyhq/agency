@@ -171,7 +171,7 @@ describe('RPCAPI Spec', () => {
             server: new HTTPServer(),
             authenticate: ({ token }) => tokens[token] || false
           })
-          server.registerSpec(filepath, opId => sinon.fake())
+          server.registerSpec(filepath, () => sinon.fake(), () => {})
           server.registerMethod('ready', sinon.fake())
 
           methodFn = server.methods[methodName].fn
@@ -261,7 +261,7 @@ describe('RPCAPI Spec', () => {
             server: new HTTPServer(),
             authenticate: ({ token }) => tokens[token] || false
           })
-          server.registerSpec(filepath, opId => sinon.fake())
+          server.registerSpec(filepath, () => sinon.fake(), () => {})
           server.registerMethod('ready', sinon.fake())
         })
 

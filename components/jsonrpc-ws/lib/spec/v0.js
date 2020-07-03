@@ -60,6 +60,9 @@ module.exports = {
         '^[A-Za-z.]+$': {
           type: 'object',
           properties: {
+            operationId: {
+              type: 'string'
+            },
             scopes: {
               type: 'array',
               items: {

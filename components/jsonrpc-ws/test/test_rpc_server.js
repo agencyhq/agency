@@ -287,7 +287,8 @@ describe('RPC Server', () => {
 
       server.registerSpec(
         path.join(__dirname, 'fixtures/basic.yaml'),
-        opId => operations[opId] || (() => {})
+        (method, { operationId }) => operations[operationId] || (() => {}),
+        () => {}
       )
 
       expect(server.methods).to.have.property('rule.list')
@@ -301,14 +302,19 @@ describe('RPC Server', () => {
     it('should try to resolve operation even when no operationId is provided', () => {
       const resolver = sinon.stub().returns(() => {})
 
-      server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), resolver)
+      server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), resolver, () => {})
 
       expect(server.methods).to.have.property('ready')
       expect(server.methods).to.have.property('rule.list')
 
       expect(resolver).to.be.calledTwice
-      expect(resolver).to.be.calledWith(undefined)
-      expect(resolver).to.be.calledWith('ruleList')
+      expect(resolver).to.be.calledWith('ready', {})
+      expect(resolver).to.be.calledWith('rule.list', {
+        operationId: 'ruleList',
+        parameters: [{ name: 'query', schema: { type: 'object' } }],
+        response: { items: { $ref: '#/definitions/Rule' }, type: 'array' },
+        scopes: ['rule']
+      })
     })
 
     it('should throw if operation is not a function', () => {

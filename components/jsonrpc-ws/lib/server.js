@@ -189,7 +189,7 @@ class RPCServer extends EventEmitter {
     delete this.notifications[name]
   }
 
-  registerSpec (filepath, resolver) {
+  registerSpec (filepath, methodResolver, eventResolver) {
     const content = fs.readFileSync(filepath, 'utf8')
     const spec = yaml.safeLoad(content)
 
@@ -204,12 +204,11 @@ class RPCServer extends EventEmitter {
 
     for (const method in spec.methods) {
       const {
-        operationId,
         scopes
         // TODO: start checking for parameters
       } = spec.methods[method]
 
-      const operation = resolver(operationId)
+      const operation = methodResolver(method, spec.methods[method])
 
       if (typeof operation !== 'function') {
         throw new Error('operationId should resolve to a function')
@@ -224,6 +223,8 @@ class RPCServer extends EventEmitter {
       const {
         scopes
       } = spec.events[event]
+
+      eventResolver(event, spec.events[event])
 
       this.registerNotification(event, { scopes })
     }

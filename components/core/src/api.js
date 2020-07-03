@@ -1,5 +1,4 @@
 const http = require('http')
-const util = require('util')
 
 const metrics = require('@agencyhq/agency-metrics')
 const cors = require('cors')
@@ -20,17 +19,6 @@ const {
   PORT = 3000,
   METRICS = false
 } = process.env
-
-async function handleMessage (type, rpc, msg) {
-  const execution = JSON.parse(msg.content.toString())
-  metrics.countMessages(type, execution)
-  log.debug('reciving %s: %s', msg.fields.routingKey, util.inspect(execution))
-
-  await rpc.notify(type, execution)
-
-  log.debug('acknowledge reciving %s: %s', msg.fields.routingKey, execution.id)
-  pubsub.channel.ack(msg)
-}
 
 async function auth (token) {
   const identity = await models.Tokens
@@ -115,26 +103,6 @@ async function main () {
 
     return require(`./rest/methods/${opId}`)
   }))
-
-  pubsub.subscribe('execution', msg => handleMessage('execution', rpc, msg), {
-    name: false,
-    exclusive: true
-  })
-
-  pubsub.subscribe('rule', msg => handleMessage('rule', rpc, msg), {
-    name: false,
-    exclusive: true
-  })
-
-  pubsub.subscribe('trigger', msg => handleMessage('trigger', rpc, msg), {
-    name: false,
-    exclusive: true
-  })
-
-  pubsub.subscribe('result', msg => handleMessage('result', rpc, msg), {
-    name: false,
-    exclusive: true
-  })
 
   rpc.registerMethod('ready', () => {}, { scopes: ['any'] })
 

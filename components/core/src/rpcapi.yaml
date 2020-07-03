@@ -170,21 +170,25 @@ methods:
 
 events:
   trigger:
+    operationId: trigger
     scopes:
       - rule
     response:
       $ref: '#/definitions/Trigger'
   execution:
+    operationId: execution
     scopes:
       - execution
     response:
       $ref: '#/definitions/Execution'
   rule:
+    operationId: rule
     scopes:
       - rule
     response:
       $ref: '#/definitions/Rule'
   result:
+    operationId: result
     scopes:
       - rule
       - operator
