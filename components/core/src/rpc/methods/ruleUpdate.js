@@ -8,7 +8,7 @@ module.exports = async (query, { user }) => {
 
   const mod = models.Rules.forge(query)
   const rule = await mod.save({
-    updated_at: new Date()
+    updated_at: new Date().toISOString()
   }, {
     method: 'update'
   })

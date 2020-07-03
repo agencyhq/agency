@@ -9,16 +9,22 @@ module.exports = async ({ id, action, parameters }, { user }) => {
   const mod = models.Executions.forge({ id })
     .where({ user })
 
-  const execution = await mod.save({
+  const res = await mod.save({
     updated_at: new Date().toISOString(),
     status: 'scheduled',
     action,
-    parameters
+    parameters: JSON.stringify(parameters)
   }, {
     method: 'update',
     patch: true
   })
-  await pubsub.publish('execution', execution.toJSON())
 
-  return execution.toJSON()
+  const execution = {
+    ...res.toJSON(),
+    parameters
+  }
+
+  await pubsub.publish('execution', execution)
+
+  return execution
 }

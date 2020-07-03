@@ -3,11 +3,14 @@ const models = require('../../models')
 
 module.exports = async ({ id }, { user }) => {
   try {
-    await models.Executions.forge({ id, user })
-      .where('status', 'scheduled')
+    await models.Executions.forge({ id })
+      .where({
+        status: 'scheduled',
+        user
+      })
       .save({
-        updated_at: new Date().toISOString(),
-        status: 'claimed'
+        status: 'claimed',
+        updated_at: new Date().toISOString()
       })
   } catch (e) {
     log.debug(`claim denied: ${id}`)

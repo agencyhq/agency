@@ -67,10 +67,9 @@ describe('RPC Methods', () => {
       const res = await executionClaim({ id: 1 }, { user })
 
       expect(res).to.be.deep.equal({ granted: true })
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'update')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        user, updatedAt, 'claimed', 'scheduled', 1
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `update "executions" set "status" = "claimed", "updated_at" = "${updatedAt}" where "status" = "scheduled" and "user" = "${user}" and "id" = "1" returning *`,
+        'select "executions".* from "executions" where "executions"."id" = "1" limit "1"'
       ])
     })
 
@@ -86,10 +85,8 @@ describe('RPC Methods', () => {
       const res = await executionClaim({ id: 1 }, { user })
 
       expect(res).to.be.deep.equal({ granted: false })
-      expect(tracker.queries.count()).to.be.equal(1)
-      expect(tracker.queries.first()).to.have.property('method', 'update')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        user, updatedAt, 'claimed', 'scheduled', 1
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `update "executions" set "status" = "claimed", "updated_at" = "${updatedAt}" where "status" = "scheduled" and "user" = "${user}" and "id" = "1" returning *`
       ])
     })
   })
@@ -106,7 +103,7 @@ describe('RPC Methods', () => {
 
       sandbox.stub(pubsub, 'publish').resolves()
 
-      const res = await executionCompleted({ id: 1, status: 'succeeded' }, { user })
+      const res = await executionCompleted({ id: 1, status: 'succeeded', result: 'some' }, { user })
 
       expect(res).to.be.deep.equal({
         id: 1,
@@ -115,12 +112,18 @@ describe('RPC Methods', () => {
       })
       expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
         'BEGIN;',
-        `update "executions" set "updated_at" = "${res.updated_at}", "status" = "completed" where "user" = "testuser" and "status" = "running" and "id" = "1" returning *`,
+        `update "executions" set "updated_at" = "${res.updated_at}", "status" = "completed" where "user" = "${user}" and "status" = "running" and "id" = "1" returning *`,
         'select "executions".* from "executions" where "executions"."id" = "1" limit "1"',
-        'insert into "results" ("id", "result", "status", "user") values ("1", DEFAULT, "succeeded", "testuser") returning *',
+        `insert into "results" ("id", "result", "status", "user") values ("1", ""some"", "succeeded", "${user}") returning *`,
         'select "results".* from "results" where "results"."id" = "1" limit "1"',
         'COMMIT;'
       ])
+      expect(pubsub.publish).to.be.calledOnceWith('result', {
+        id: 1,
+        result: 'some',
+        status: 'succeeded',
+        user: 'testuser'
+      })
     })
   })
 
@@ -137,9 +140,10 @@ describe('RPC Methods', () => {
       const res = await executionList({}, { user })
 
       expect(res).to.be.deep.equal([{}, {}, {}])
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'select')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [user, 10])
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `select "executions".* from "executions" where "user" = "${user}" order by "executions"."created_at" DESC limit "10"`,
+        `select count(distinct "executions"."id") from "executions" where "user" = "${user}"`
+      ])
     })
   })
 
@@ -167,10 +171,9 @@ describe('RPC Methods', () => {
         triggered_by: 'some',
         user
       })
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'insert')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        res.created_at, null, res.id, 'thing', 'requested', 'some', user
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `insert into "executions" ("created_at", "hash", "id", "matched_to", "status", "triggered_by", "user") values ("${res.created_at}", "null", "${res.id}", "thing", "requested", "some", "${user}") returning *`,
+        `select "executions".* from "executions" where "executions"."id" = "${res.id}" limit "1"`
       ])
     })
   })
@@ -204,10 +207,9 @@ describe('RPC Methods', () => {
         status: 'scheduled',
         updated_at: res.updated_at
       })
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'update')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        res.updated_at, 'scheduled', 'testaction', { a: 'b' }, user, 'deadbeef'
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `update "executions" set "updated_at" = "${res.updated_at}", "status" = "scheduled", "action" = "testaction", "parameters" = "{"a":"b"}" where "user" = "${user}" and "id" = "deadbeef" returning *`,
+        `select "executions".* from "executions" where "executions"."id" = "${res.id}" limit "1"`
       ])
       expect(pubsub.publish).to.be.calledOnceWith('execution', {
         action: 'testaction',
@@ -238,10 +240,9 @@ describe('RPC Methods', () => {
         status: 'running',
         updated_at: res.updated_at
       })
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'update')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        res.updated_at, 'running', 'claimed', user, 'deadbeef'
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `update "executions" set "updated_at" = "${res.updated_at}", "status" = "running" where "status" = "claimed" and "user" = "${user}" and "id" = "deadbeef" returning *`,
+        `select "executions".* from "executions" where "executions"."id" = "${res.id}" limit "1"`
       ])
     })
   })
@@ -268,10 +269,9 @@ describe('RPC Methods', () => {
         code: '// some code',
         user
       })
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'insert')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        '// some code', res.id, user
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `insert into "rules" ("code", "id", "user") values ("// some code", "${res.id}", "${user}") returning *`,
+        `select "rules".* from "rules" where "rules"."id" = "${res.id}" limit "1"`
       ])
       expect(pubsub.publish).to.be.calledOnceWith('rule', {
         code: '// some code',
@@ -302,10 +302,8 @@ describe('RPC Methods', () => {
         deleted: true,
         user
       })
-      expect(tracker.queries.count()).to.be.equal(1)
-      expect(tracker.queries.first()).to.have.property('method', 'del')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        user, 'deadbeef'
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `delete from "rules" where "user" = "${user}" and "id" = "deadbeef"`
       ])
       expect(pubsub.publish).to.be.calledOnceWith('rule', {
         deleted: true,
@@ -328,10 +326,8 @@ describe('RPC Methods', () => {
       const res = await ruleList(undefined, { user })
 
       expect(res).to.be.deep.equal([{}, {}, {}])
-      expect(tracker.queries.count()).to.be.equal(1)
-      expect(tracker.queries.first()).to.have.property('method', 'select')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        user
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `select "rules".* from "rules" where "user" = "${user}"`
       ])
     })
 
@@ -343,10 +339,9 @@ describe('RPC Methods', () => {
       const res = await ruleList({ pageSize: 10 }, { user })
 
       expect(res).to.be.deep.equal([{}, {}, {}])
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'select')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        user, 10
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `select "rules".* from "rules" where "user" = "${user}" limit "10"`,
+        `select count(distinct "rules"."id") from "rules" where "user" = "${user}"`
       ])
     })
 
@@ -358,9 +353,9 @@ describe('RPC Methods', () => {
       const res = await ruleList({}, { user: '*' })
 
       expect(res).to.be.deep.equal([{}, {}, {}])
-      expect(tracker.queries.count()).to.be.equal(1)
-      expect(tracker.queries.first()).to.have.property('method', 'select')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [])
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        'select "rules".* from "rules"'
+      ])
     })
 
     it('returns empty list if no rules has been found', async () => {
@@ -371,10 +366,8 @@ describe('RPC Methods', () => {
       const res = await ruleList({}, { user })
 
       expect(res).to.be.deep.equal([])
-      expect(tracker.queries.count()).to.be.equal(1)
-      expect(tracker.queries.first()).to.have.property('method', 'select')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        user
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `select "rules".* from "rules" where "user" = "${user}"`
       ])
     })
   })
@@ -402,10 +395,9 @@ describe('RPC Methods', () => {
         updated_at: res.updated_at,
         user
       })
-      expect(tracker.queries.count()).to.be.equal(2)
-      expect(tracker.queries.first()).to.have.property('method', 'update')
-      expect(tracker.queries.first()).to.have.deep.property('bindings', [
-        '// some other code', user, res.updated_at, 'deadbeef'
+      expect(tracker.queries.queries.map(q => serializeQuery(q))).to.be.deep.equal([
+        `update "rules" set "code" = "// some other code", "user" = "${user}", "updated_at" = "${res.updated_at}" where "id" = "deadbeef" returning *`,
+        `select "rules".* from "rules" where "rules"."id" = "${res.id}" limit "1"`
       ])
       expect(pubsub.publish).to.be.calledOnceWith('rule', {
         code: '// some other code',
