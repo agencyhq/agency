@@ -21,6 +21,14 @@ exports.seed = async knex => {
     code: fs.readFileSync(path.join(__dirname, 'rules/http_any_action.js')),
     user: 'enykeev'
   }, {
+    id: 'http-log-message',
+    code: fs.readFileSync(path.join(__dirname, 'rules/http_log_message.js')),
+    user: 'enykeev'
+  }, {
+    id: 'http-error-message',
+    code: fs.readFileSync(path.join(__dirname, 'rules/http_error_message.js')),
+    user: 'enykeev'
+  }, {
     id: crypto.randomBytes(16).toString('hex'),
     code: fs.readFileSync(path.join(__dirname, 'rules/converge.js')),
     user: 'enykeev'

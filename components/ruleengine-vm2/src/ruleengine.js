@@ -19,7 +19,7 @@ function initializeRule (rule) {
     sandbox: {
       console: {
         log: (...args) => {
-          rpc.notify('rule.log', [...args], { become: rule.user })
+          rpc.notify('rule.log', { rule, args }, { become: rule.user })
           log.debug('rule log:', ...args)
         }
       }
@@ -28,7 +28,9 @@ function initializeRule (rule) {
   vm.run('exports = {}; module = { exports }')
 
   const res = {
-    ...rule,
+    id: rule.id,
+    user: rule.user,
+    rule,
     vm,
     errors: []
   }
@@ -75,8 +77,14 @@ async function evaluateRule (rule, trigger) {
     try {
       return rule.if(trigger)
     } catch (e) {
-      rpc.notify('trigger.evaluationError', e, { become: rule.user })
-      log.debug('trigger evaluation error: %s', e.toString())
+      rpc.notify('rule.error', {
+        rule: rule.rule,
+        trigger,
+        error: e.toString()
+      }, {
+        become: rule.user
+      })
+      log.debug('rule evaluation error: %s', e.toString())
       return false
     }
   })()
@@ -106,14 +114,20 @@ async function evaluateRule (rule, trigger) {
   const results = []
   try {
     const res = rule.then(trigger)
-    if (res.length) {
+    if (res && res.length) {
       results.push(...res)
     } else {
       results.push(res)
     }
   } catch (e) {
-    rpc.notify('trigger.evaluationError', e, { become: rule.user })
-    log.debug('trigger evaluation error: %s', e.toString())
+    rpc.notify('rule.error', {
+      rule: rule.rule,
+      trigger,
+      error: e.toString()
+    }, {
+      become: rule.user
+    })
+    log.debug('rule evaluation error: %s', e.toString())
     return {}
   }
   thenDuration.end()
@@ -138,10 +152,14 @@ async function evaluateRule (rule, trigger) {
     } = results[index]
 
     if (!action) {
-      rpc.notify('trigger.evaluationError', `rule ${rule.id}:${hash} produced no action`, {
+      rpc.notify('rule.error', {
+        rule: rule.rule,
+        trigger,
+        error: `no action produced in hash ${hash}`
+      }, {
         become: rule.user
       })
-      log.debug('trigger evaluation error: %s', `rule ${rule.id}:${hash} produced no action`)
+      log.debug('rule evaluation error: %s', `rule ${rule.id}:${hash} produced no action`)
       continue
     }
 

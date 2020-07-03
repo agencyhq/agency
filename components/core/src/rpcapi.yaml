@@ -64,6 +64,22 @@ methods:
           # Rule delete component
     response:
       $ref: '#/definitions/Deleted'
+  rule.log:
+    operationId: ruleLog
+    scopes:
+      - rule
+    parameters:
+      - name: args
+        schema:
+          type: array
+  rule.error:
+    operationId: ruleError
+    scopes:
+      - rule
+    parameters:
+      - name: args
+        schema:
+          type: array
   execution.list:
     operationId: executionList
     scopes:
@@ -194,6 +210,18 @@ events:
       - operator
     response:
       $ref: '#/definitions/Result'
+  rule.log:
+    operationId: ruleLog
+    scopes:
+      - operator
+    response:
+      type: any
+  rule.error:
+    operationId: ruleError
+    scopes:
+      - operator
+    response:
+      type: any
 
 definitions:
   Deleted:
