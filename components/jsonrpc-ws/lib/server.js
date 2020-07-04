@@ -414,7 +414,7 @@ class RPCServer extends EventEmitter {
       }
     }
 
-    if (become) {
+    if (become && become !== context.user) {
       if (!context.service) {
         return {
           ...this._createError(-29001),
