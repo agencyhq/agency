@@ -1,0 +1,66 @@
+apps:
+  - name: personal_bootstrap
+    cwd: deployments/personal
+    script: bash
+    args: bootstrap.sh
+    env:
+      PGPASSWORD: mypassword
+    autorestart: false
+
+  - name: personal_sync
+    cwd: deployments/personal
+    script: ../../components/cli/src/cli.js
+    args:
+      - rule
+      - update
+      - telegram-echo
+      - rules/telegram_echo.js
+      - --quiet
+    env:
+      AGENCY_TOKEN: alltoken
+    autorestart: false
+    watch:
+      - rules/telegram_echo.js
+
+  - name: personal_sensor_cron
+    cwd: components/sensor-cron
+    script: npm start --silent
+    instances: 1
+    autorestart: true
+    restart_delay: 10000
+    watch:
+      - src
+    max_memory_restart: 1G
+
+  - name: personal_ruleengine
+    cwd: components/ruleengine-vm2
+    script: npm start --silent
+    instances: 2
+    autorestart: true
+    restart_delay: 10000
+    watch:
+      - src
+    max_memory_restart: 1G
+
+  - name: personal_agent_telegram
+    cwd: components/telegram
+    script: npm start --silent
+    instances: 1
+    autorestart: true
+    restart_delay: 10000
+    watch:
+      - .
+    max_memory_restart: 1G
+
+  - name: personal_api
+    cwd: components/core
+    script: src/api.js
+    env:
+      PG_CONNECTION_STRING: postgres://ifttt:mypassword@localhost/personal
+      NODE_ENV: staging
+    instances: 2
+    autorestart: true
+    restart_delay: 10000
+    watch:
+      - src
+    max_memory_restart: 1G
