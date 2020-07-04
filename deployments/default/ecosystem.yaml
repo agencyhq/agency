@@ -49,6 +49,18 @@ apps:
       - src
     max_memory_restart: 1G
 
+  - name: ifttt_adapter_docker
+    cwd: components/docker
+    script: npm start --silent
+    env:
+      AGENCY_TOKEN: executiontoken
+    instances: 2
+    autorestart: true
+    restart_delay: 10000
+    watch:
+      - src
+    max_memory_restart: 1G
+
   - name: ifttt_api
     cwd: components/core
     script: src/api.js

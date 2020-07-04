@@ -1,0 +1,47 @@
+{
+  "name": "@agencyhq/agency-adapter-docker",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/docker.js",
+  "scripts": {
+    "start": "node bin/docker.js",
+    "test": "nyc mocha --reporter dot"
+  },
+  "nyc": {
+    "exclude": [
+      "coverage",
+      "dist",
+      "test"
+    ],
+    "reporter": [
+      "lcov",
+      "text"
+    ],
+    "all": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agencyhq/agency.git"
+  },
+  "author": "Kirill Enykeev <enykeev@mech.sh>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/agencyhq/agency/issues"
+  },
+  "homepage": "https://github.com/agencyhq/agency#readme",
+  "dependencies": {
+    "@agencyhq/agency-metrics": "^0.0.0",
+    "@agencyhq/jsonrpc-ws": "^0.0.0",
+    "dockerode": "^3.2.0",
+    "loglevel": "^1.6.8",
+    "mr-params": "^0.3.7"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^8.0.1",
+    "nyc": "^15.1.0",
+    "sinon": "^9.0.2",
+    "sinon-chai": "^3.5.0"
+  }
+}
