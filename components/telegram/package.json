@@ -1,5 +1,5 @@
 {
-  "name": "@agencyhq/agency-telegram-adapter",
+  "name": "@agencyhq/agency-adapter-telegram",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

@@ -38,6 +38,13 @@ exports.seed = async knex => {
       },
       created_by: 'initial seeding'
     }, {
+      id: 'adapter_github',
+      user: 'enykeev',
+      meta: {
+        scopes: ['sensor', 'execution']
+      },
+      created_by: 'initial seeding'
+    }, {
       id: 'sometoken',
       user: 'someuser',
       meta: {
