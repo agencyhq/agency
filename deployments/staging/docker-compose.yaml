@@ -1,0 +1,248 @@
+version: '3.7'
+
+networks:
+  db:
+  mq:
+  http:
+
+volumes:
+  prometheus:
+  grafana:
+
+secrets:
+  agency_database_user:
+    external: true
+    name: agency_database_user
+  agency_database_password:
+    external: true
+    name: agency_database_password
+  agency_database:
+    file: envfiles/database.env
+  agency_cron_env:
+    file: envfiles/cron.env
+  agency_ruleengine_env:
+    file: envfiles/ruleengine.env
+  agency_telegram_env:
+    file: envfiles/telegram.env
+
+
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - prometheus:/prometheus
+      - ../../components/metrics/contrib/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.external-url=http://192.168.200.201:1234/prometheus/'
+      - '--web.route-prefix=/'
+    networks:
+      - http
+      - mq
+      - db
+    deploy:
+      restart_policy:
+        condition: any
+      labels:
+        - agency_staging.address=http://192.168.200.201/prometheus
+        - agency_staging.targetport=9090
+  grafana:
+    image: grafana/grafana:6.7.2
+    networks:
+      - http
+    volumes:
+      - grafana:/var/lib/grafana
+      - ../../components/metrics/contrib/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/rabbitmq.yaml
+      - ../../components/metrics/contrib/grafana/datasources.yml:/etc/grafana/provisioning/datasources/prometheus.yaml
+      - ../../components/metrics/contrib/grafana/dashboards:/dashboards
+    environment:
+      GF_INSTALL_PLUGINS: 'flant-statusmap-panel,grafana-piechart-panel'
+      GF_SERVER_ROOT_URL: 'http://192.168.200.201:1234/grafana'
+    deploy:
+      restart_policy:
+        condition: any
+      labels:
+        - agency_staging.address=http://192.168.200.201/grafana
+        - agency_staging.targetport=3000
+  db:
+    image: postgres:9.6
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/agency_database_user
+      POSTGRES_PASSWORD_FILE: /run/secrets/agency_database_password
+    secrets:
+      - agency_database_user
+      - agency_database_password
+    command:
+      - '-c'
+      - 'log_min_messages=fatal'
+    networks:
+      - db
+    deploy:
+      restart_policy:
+        condition: any
+  mq:
+    build:
+      context: ../../components/metrics/contrib
+      dockerfile: rabbitmq.Dockerfile
+    image: enykeev/rabbitmq:3.8-prometheus
+    networks:
+      - mq
+  http:
+    image: lucaslorentz/caddy-docker-proxy:0.3-alpine
+    command: -log stdout
+    environment:
+      CADDY_DOCKER_LABEL_PREFIX: agency_staging
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - http
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+    deploy:
+      restart_policy:
+        condition: any
+  sink:
+    image: nginx
+    networks:
+      - http
+    volumes:
+      - ../../components/metrics/contrib/nginx.conf:/etc/nginx/nginx.conf
+    deploy:
+      restart_policy:
+        condition: any
+
+  migration:
+    build:
+      context: ../..
+      target: builder
+    image: agencyhq/agency-build:latest
+    environment:
+      NODE_ENV: staging
+      WAIT_DB: 1
+      ENV_FILES: /run/secrets/agency_database
+    secrets:
+      - agency_database
+      - agency_database_user
+      - agency_database_password
+    working_dir: /app
+    entrypoint: /build/entrypoint.sh
+    command: npm run migrate
+    volumes:
+      - type: bind
+        source: .
+        target: /app
+    depends_on:
+      - db
+    networks:
+      - db
+    deploy:
+      restart_policy:
+        condition: on-failure
+
+  api:
+    build:
+      context: ../..
+      args:
+        component: core
+    image: agencyhq/agency-core:latest
+    environment:
+      NODE_ENV: staging
+      WAIT_MQ: 1
+      WAIT_DB: 1
+      METRICS: 1
+      AMQP_CONNECTION_STRING: amqp://mq
+      ENV_FILES: /run/secrets/agency_database
+    secrets:
+      - agency_database
+      - agency_database_user
+      - agency_database_password
+    command: npm start --silent
+    depends_on:
+      - db
+      - mq
+    networks:
+      - http
+      - db
+      - mq
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+      labels:
+        - agency_staging_1=http://192.168.200.201/
+        - agency_staging_1.root=/app/dist
+        - agency_staging_2.address=http://192.168.200.201/api
+        - agency_staging_2.targetport=3000
+        - agency_staging_2.proxy.websocket=
+
+  ruleengine:
+    build:
+      context: ../..
+      args:
+        component: ruleengine-vm2
+    image: agencyhq/agency-ruleengine-vm2:latest
+    environment:
+      NODE_ENV: staging
+      WAIT_API: 1
+      METRICS: 1
+      AGENCY_URL: ws://api:3000
+      ENV_FILES: /run/secrets/agency_ruleengine_env
+    secrets:
+      - agency_ruleengine_env
+    networks:
+      - http
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: any
+
+  sensor_cron:
+    build:
+      context: ../..
+      args:
+        component: sensor-cron
+    image: agencyhq/agency-sensor-cron:latest
+    environment:
+      NODE_ENV: staging
+      WAIT_API: 1
+      METRICS: 1
+      AGENCY_URL: ws://api:3000
+      ENV_FILES: /run/secrets/agency_cron_env
+    secrets:
+      - agency_cron_env
+    networks:
+      - http
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+
+  adapter_telegram:
+    build:
+      context: ../..
+      args:
+        component: telegram
+    image: agencyhq/agency-adapter-telegram:latest
+    environment:
+      NODE_ENV: staging
+      WAIT_API: 1
+      METRICS: 1
+      ENV_FILES: /run/secrets/agency_telegram_env
+      AGENCY_URL: ws://api:3000
+    secrets:
+      - agency_telegram_env
+    networks:
+      - http
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
