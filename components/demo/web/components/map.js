@@ -11,7 +11,7 @@ function Map ({ threats }) {
       map.locations
         .filter(loc => threats.has(loc.id))
         .map(loc => {
-          return <path key={loc.id} ident={loc.id} d={loc.path} />
+          return <path key={loc.id} data-ident={loc.id} d={loc.path} />
         })
     }
   </svg>

@@ -186,7 +186,7 @@ describe('RPC Client', () => {
         const { id } = JSON.parse(json)
         client.ws.emit('message', JSON.stringify({
           jsonrpc: '2.0',
-          id: id,
+          id,
           result: {
             user: 'test',
             scopes: ['mock']
@@ -226,7 +226,7 @@ describe('RPC Client', () => {
         const { id } = JSON.parse(json)
         client.ws.emit('message', JSON.stringify({
           jsonrpc: '2.0',
-          id: id,
+          id,
           result: false
         }))
       })
@@ -242,7 +242,7 @@ describe('RPC Client', () => {
         const { id } = JSON.parse(json)
         client.ws.emit('message', JSON.stringify({
           jsonrpc: '2.0',
-          id: id,
+          id,
           result: {
             user: 'test'
           }

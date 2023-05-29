@@ -438,10 +438,10 @@ class RPCServer extends EventEmitter {
         jsonrpc: '2.0',
         error: err instanceof Error
           ? {
-            code: -32000,
-            message: err.name,
-            data: err.message
-          }
+              code: -32000,
+              message: err.name,
+              data: err.message
+            }
           : err,
         id
       }
@@ -462,7 +462,7 @@ class RPCServer extends EventEmitter {
     ])
 
     const error = {
-      code: code,
+      code,
       message: errors.get(code) || 'Internal Server Error'
     }
 

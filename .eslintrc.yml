@@ -10,16 +10,24 @@ extends:
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
-parser: babel-eslint
+parser: '@babel/eslint-parser'
 parserOptions:
+  requireConfigFile: false
   ecmaFeatures:
     jsx: true
   ecmaVersion: 2018
+  babelOptions:
+    presets: 
+      - '@babel/preset-react'
 plugins:
   - react
 rules:
   no-unused-expressions: 'off'
   react/react-in-jsx-scope: 'off'
+  react/no-unknown-property:
+    - 2
+    - ignore:
+      - 'jsx'
 settings:
   react:
     version: detect
