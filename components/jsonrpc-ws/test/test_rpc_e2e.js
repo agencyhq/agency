@@ -41,8 +41,7 @@ describe('E2E', () => {
     const serverClients = server.wss.clients
 
     expect(client.isConnected()).to.be.false
-    expect(serverClients).to.have.length(1)
-    expect(serverClients.values().next().value).to.have.property('readyState', WS.CLOSING)
+    expect(serverClients).to.have.length(0)
   })
 
   it('handle server disconnecting first', async () => {

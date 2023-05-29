@@ -4,14 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "clean": "lerna clean -y",
-    "debootstrap": "node debootstrap.js",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "migrate": "knex migrate:latest && knex seed:run",
     "depcheck": "depcheck; lerna exec --no-bail --stream depcheck",
     "start": "pm2 start deployments/default/ecosystem.yaml --no-daemon",
-    "test": "lerna exec --no-bail --concurrency 1 -- npm run test",
-    "integration": "lerna exec --no-bail --concurrency 1 -- npm run integration --if-present"
+    "test": "npm exec -ws -- npm test --if-present",
+    "integration": "npm exec -ws -- npm run integration --if-present"
   },
   "keywords": [],
   "author": "",
@@ -31,14 +30,8 @@
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-standard": "^5.0.0",
     "knex": "^0.21.1",
-    "lerna": "^3.22.1",
     "npm-check-updates": "^7.0.1",
     "pg": "^8.2.1",
     "pm2": "^4.4.0"
-  },
-  "dependencies": {
-    "@npmcli/arborist": "0.0.0-pre.21",
-    "globby": "^11.0.1",
-    "npm": "^6.14.5"
   }
 }
