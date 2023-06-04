@@ -69,8 +69,12 @@ describe('RPC', () => {
   })
 
   after(async () => {
-    await ensureRuleDeletion(rpc, initialRule)
-    await rpc.call('token.delete', identity)
+    try {
+      await ensureRuleDeletion(rpc, initialRule)
+      await rpc.call('token.delete', identity)
+    } finally {
+      await rpc.close()
+    }
   })
 
   describe('#rpc.ruleList', () => {
@@ -264,9 +268,5 @@ describe('RPC', () => {
         expect(res).to.have.property('deleted', true)
       })
     })
-  })
-
-  after(async () => {
-    await rpc.close()
   })
 })

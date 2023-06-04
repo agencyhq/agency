@@ -1,1 +1,1 @@
-export { default } from './deployments/default/knexfile.js'
+export * from './deployments/default/knexfile.js'

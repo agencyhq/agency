@@ -67,10 +67,7 @@ describe('E2E', () => {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     expect(mock).to.be.calledTwice
-    expect(mock.getCall(0).firstArg).to.have.property('a', 'b')
-    expect(mock.getCall(0).firstArg).to.have.property('hash', 1)
-    expect(mock.getCall(1).firstArg).to.have.property('a', 'b')
-    expect(mock.getCall(1).firstArg).to.have.property('hash', 2)
+    expect(mock.getCalls().map(e => e.firstArg)).to.have.deep.members([{ a: 'b', hash: 2 }, { a: 'b', hash: 1 }])
   }).slow(3000)
 
   it.skip('should test anything but the happiest of paths')
