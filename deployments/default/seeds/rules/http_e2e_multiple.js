@@ -1,6 +1,9 @@
-export default {
-  if: trigger => trigger.type === 'http' && trigger.event.body.type === 'e2e-multiple',
-  then: trigger => ([{
+export function condition (trigger) {
+  return trigger.type === 'http' && trigger.event.body.type === 'e2e-multiple'
+}
+
+export function then (trigger) {
+  return [{
     action: 'http',
     parameters: {
       url: trigger.event.body.url,
@@ -18,5 +21,5 @@ export default {
         hash: 2
       }
     }
-  }])
+  }]
 }
