@@ -21,7 +21,6 @@ jobs:
       with:
         node-version: ${{ matrix['node-version'] }}
     - run: npm ci
-    - run: npx lerna bootstrap
     - run: npm run lint
     - run: npm test
     - run: docker-compose up -d db mq
