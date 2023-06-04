@@ -24,11 +24,9 @@ jobs:
     - run: npm run lint
     - run: npm test
     - run: docker-compose up -d db mq
-    - run: sleep 30
-    - run: npx knex migrate:latest
-    - run: npx knex seed:run
+    - run: sleep 15
+    - run: npm run migrate
     - run: npx pm2 start deployments/default/ecosystem.yaml
-    - run: sleep 30
-    - run: npx pm2 logs --nostream
+    - run: sleep 15
     - run: npm run integration
     - run: npx pm2 kill
