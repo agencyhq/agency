@@ -28,5 +28,6 @@ jobs:
     - run: npm run migrate --esm
     - run: npx pm2 start deployments/default/ecosystem.yaml
     - run: sleep 30
+    - run: npx pm2 logs --nostream
     - run: npm run integration
     - run: npx pm2 kill
