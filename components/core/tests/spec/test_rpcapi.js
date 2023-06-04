@@ -171,13 +171,15 @@ describe('RPCAPI Spec', () => {
           RPCServer._allScope
         ])
 
+        const sandbox = sinon.createSandbox()
+
         beforeEach(async () => {
           server = new RPCServer({
             server: new HTTPServer(),
             authenticate: ({ token }) => tokens[token] || false
           })
-          await server.registerSpec(filepath, () => ({ default: sinon.fake() }), () => {})
-          server.registerMethod('ready', sinon.fake())
+          await server.registerSpec(filepath, () => ({ default: sandbox.fake() }), () => {})
+          server.registerMethod('ready', sandbox.fake())
 
           methodFn = server.methods[methodName].fn
         })
