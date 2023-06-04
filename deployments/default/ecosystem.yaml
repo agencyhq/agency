@@ -1,7 +1,7 @@
 apps:
   - name: ifttt_migration
     script: npx
-    args: knex migrate:latest
+    args: knex migrate:latest --esm
     autorestart: false
     watch:
       - migrations
