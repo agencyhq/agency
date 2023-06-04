@@ -25,8 +25,8 @@ jobs:
     - run: npm test
     - run: docker-compose up -d db mq
     - run: sleep 30
-    - run: npx knex migrate:latest --esm
-    - run: npx knex seed:run --esm
+    - run: npx knex migrate:latest
+    - run: npx knex seed:run
     - run: npx pm2 start deployments/default/ecosystem.yaml
     - run: sleep 30
     - run: npx pm2 logs --nostream

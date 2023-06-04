@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "migrate": "knex migrate:latest --esm && knex seed:run --esm",
+    "migrate": "knex migrate:latest && knex seed:run",
     "depcheck": "depcheck; lerna exec --no-bail --stream depcheck",
     "start": "pm2 start deployments/default/ecosystem.yaml --no-daemon",
     "test": "npm exec -ws -- npm test --if-present",
