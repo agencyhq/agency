@@ -9,13 +9,13 @@ import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
 import yaml from 'js-yaml'
 import WS from 'ws'
-import * as url from 'url';
+import * as url from 'url'
 
 import RPCServer from '@agencyhq/jsonrpc-ws/lib/server.js'
 import RPCClient from '@agencyhq/jsonrpc-ws/lib/client.js'
 import spec from '@agencyhq/jsonrpc-ws/lib/spec/v0.js'
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const { expect } = chai
 chai.use(chaiAsPromised)

@@ -1,5 +1,5 @@
 import path from 'path'
-import * as url from 'url';
+import * as url from 'url'
 import util from 'util'
 
 import log from 'loglevel'
@@ -9,7 +9,7 @@ import RPC from '@agencyhq/jsonrpc-ws'
 
 import pubsub from '../pubsub.js'
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const connectionGauge = new Prometheus.Gauge({
   name: 'ifttt_rpc_clients',

@@ -8,11 +8,11 @@ import chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
 import sinon from 'sinon'
 import sinonChai from 'sinon-chai'
-import * as url from 'url';
+import * as url from 'url'
 
 import RPCServer from '../lib/server.js'
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const { expect } = chai
 chai.use(chaiAsPromised)

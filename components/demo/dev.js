@@ -3,9 +3,9 @@ import path from 'path'
 import proxy from 'http-proxy-middleware'
 import Bundler from 'parcel-bundler'
 import express from 'express'
-import * as url from 'url';
+import * as url from 'url'
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
 
 const bundler = new Bundler(path.join(__dirname, 'web/index.html'))
 const app = express()
