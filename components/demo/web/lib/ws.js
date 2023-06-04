@@ -1,4 +1,4 @@
-const RPCClient = require('@agencyhq/jsonrpc-ws/lib/client')
-const WebSocket = require('x-platform-ws')
+import RPCClient from '@agencyhq/jsonrpc-ws/lib/client'
+import WebSocket from 'x-platform-ws'
 
-module.exports = window.ws = new RPCClient(`ws://${location.hostname}:1234/api`, { WebSocket })
+export default new RPCClient(`ws://${location.hostname}:1234/api`, { WebSocket })

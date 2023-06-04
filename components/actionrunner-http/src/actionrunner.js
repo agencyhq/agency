@@ -1,22 +1,22 @@
-const metrics = require('@agencyhq/agency-metrics')
-const RPC = require('@agencyhq/jsonrpc-ws')
-const axios = require('axios').default
-const log = require('loglevel')
+import metrics from '@agencyhq/agency-metrics'
+import RPC from '@agencyhq/jsonrpc-ws'
+import axios from 'axios'
+import log from 'loglevel'
 
-const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
+export const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
 
-function httpAction (execution) {
+export function httpAction (execution) {
   const { url, payload } = execution.parameters
   return axios.post(url, payload)
 }
 
-const ACTIONS = {
+export const ACTIONS = {
   http: httpAction
 }
 
-async function handleExecution (execution) {
+export async function handleExecution (execution) {
   const { id, user } = execution
   log.debug('processing execution: %s', id)
 
@@ -61,7 +61,7 @@ async function handleExecution (execution) {
   }
 }
 
-async function main () {
+export async function main () {
   const {
     PORT = 3000,
     METRICS = false,
@@ -82,11 +82,4 @@ async function main () {
   await rpc.subscribe('execution', handleExecution)
 
   await rpc.notify('ready')
-}
-
-module.exports = {
-  rpc,
-  main,
-  handleExecution,
-  ACTIONS
 }

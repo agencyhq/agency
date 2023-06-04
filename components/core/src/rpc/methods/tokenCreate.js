@@ -1,8 +1,8 @@
-const crypto = require('crypto')
+import crypto from 'crypto'
 
-const models = require('../../models')
+import models from '../../models.js'
 
-module.exports = async (identity, { user }) => {
+export default async (identity, { user }) => {
   const mod = models.Tokens.forge({
     id: crypto.randomBytes(16).toString('hex'),
     ...identity,

@@ -1,6 +1,6 @@
-const log = require('loglevel')
+import log from 'loglevel'
 
-const { main } = require('../src/actionrunner')
+import { main } from '../src/actionrunner.js'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 

@@ -1,17 +1,19 @@
-const EventEmitter = require('events')
-const fs = require('fs')
-const http = require('http')
-const url = require('url')
-const uuid = require('uuid')
+import EventEmitter from 'events'
+import fs from 'fs'
+import http from 'http'
+import url from 'url'
+import * as uuid from 'uuid'
 
-const Ajv = require('ajv')
-const WS = require('ws')
-const yaml = require('js-yaml')
+import Ajv from 'ajv'
+import WS from 'ws'
+import yaml from 'js-yaml'
+
+import spec from './spec/v0.js'
 
 const ajv = new Ajv()
-const validateSpec = ajv.compile(require('./spec/v0'))
+const validateSpec = ajv.compile(spec)
 
-class RPCServer extends EventEmitter {
+export default class RPCServer extends EventEmitter {
   static _defaultUsername = 'anonymous'
   static _anyScope = 'any'
   static _allScope = 'all'
@@ -189,7 +191,7 @@ class RPCServer extends EventEmitter {
     delete this.notifications[name]
   }
 
-  registerSpec (filepath, methodResolver, eventResolver) {
+  async registerSpec (filepath, methodResolver, eventResolver) {
     const content = fs.readFileSync(filepath, 'utf8')
     const spec = yaml.safeLoad(content)
 
@@ -208,7 +210,7 @@ class RPCServer extends EventEmitter {
         // TODO: start checking for parameters
       } = spec.methods[method]
 
-      const operation = methodResolver(method, spec.methods[method])
+      const operation = (await methodResolver(method, spec.methods[method])).default
 
       if (typeof operation !== 'function') {
         throw new Error('operationId should resolve to a function')
@@ -556,5 +558,3 @@ class RPCServer extends EventEmitter {
     return !!permissions.length
   }
 }
-
-module.exports = RPCServer

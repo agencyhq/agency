@@ -10,6 +10,7 @@
   "homepage": "",
   "license": "UNLICENSED",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "nyc mocha --reporter=dot"
   },

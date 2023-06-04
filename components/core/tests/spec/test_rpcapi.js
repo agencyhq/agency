@@ -1,23 +1,28 @@
-const EventEmitter = require('events')
-const fs = require('fs')
-const path = require('path')
+import EventEmitter from 'events'
+import fs from 'fs'
+import path from 'path'
 
-const Ajv = require('ajv')
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const sinon = require('sinon')
-const yaml = require('js-yaml')
-const WS = require('ws')
+import Ajv from 'ajv'
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+import yaml from 'js-yaml'
+import WS from 'ws'
+import * as url from 'url';
 
-const RPCServer = require('@agencyhq/jsonrpc-ws/lib/server')
-const RPCClient = require('@agencyhq/jsonrpc-ws/lib/client')
+import RPCServer from '@agencyhq/jsonrpc-ws/lib/server.js'
+import RPCClient from '@agencyhq/jsonrpc-ws/lib/client.js'
+import spec from '@agencyhq/jsonrpc-ws/lib/spec/v0.js'
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const { expect } = chai
 chai.use(chaiAsPromised)
-chai.use(require('sinon-chai'))
+chai.use(sinonChai)
 
 const ajv = new Ajv()
-const validateSpec = ajv.compile(require('@agencyhq/jsonrpc-ws/lib/spec/v0'))
+const validateSpec = ajv.compile(spec)
 
 function loadSpec (filepath) {
   const content = fs.readFileSync(filepath, 'utf8')
@@ -171,7 +176,7 @@ describe('RPCAPI Spec', () => {
             server: new HTTPServer(),
             authenticate: ({ token }) => tokens[token] || false
           })
-          server.registerSpec(filepath, () => sinon.fake(), () => {})
+          await server.registerSpec(filepath, () => ({ default: sinon.fake() }), () => {})
           server.registerMethod('ready', sinon.fake())
 
           methodFn = server.methods[methodName].fn
@@ -261,7 +266,7 @@ describe('RPCAPI Spec', () => {
             server: new HTTPServer(),
             authenticate: ({ token }) => tokens[token] || false
           })
-          server.registerSpec(filepath, () => sinon.fake(), () => {})
+          await server.registerSpec(filepath, () => ({ default: sinon.fake() }), () => {})
           server.registerMethod('ready', sinon.fake())
         })
 

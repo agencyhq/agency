@@ -1,10 +1,10 @@
-const crypto = require('crypto')
+import crypto from 'crypto'
 
-const Agent = require('socks5-https-client/lib/Agent')
-const log = require('loglevel')
-const metrics = require('@agencyhq/agency-metrics')
-const RPC = require('@agencyhq/jsonrpc-ws')
-const TelegramBot = require('node-telegram-bot-api')
+import Agent from 'socks5-https-client/lib/Agent'
+import log from 'loglevel'
+import metrics from '@agencyhq/agency-metrics'
+import RPC from '@agencyhq/jsonrpc-ws'
+import TelegramBot from 'node-telegram-bot-api'
 
 /**
  * The module acts as an adapter for Telegram. It interfaces with a single bot via provided token, converts every message the bot receives into separate trigger and transmits it to every user. It also acts as an actionrunner allowing bot to send back messages to chats that has already been established with it.
@@ -60,11 +60,11 @@ const ACTION_TYPE = 'telegram'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
-const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
+export const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
 
-async function main () {
+export async function main () {
   const {
     PORT = 3000,
     METRICS = false,
@@ -152,6 +152,6 @@ async function main () {
   await rpc.notify('ready')
 }
 
-module.exports = {
+export default {
   main
 }

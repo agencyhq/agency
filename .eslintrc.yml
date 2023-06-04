@@ -7,6 +7,7 @@ env:
 extends:
   - 'plugin:react/recommended'
   - standard
+  - plugin:import/recommended
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -21,6 +22,7 @@ parserOptions:
       - '@babel/preset-react'
 plugins:
   - react
+  - import
 rules:
   no-unused-expressions: 'off'
   react/react-in-jsx-scope: 'off'
@@ -28,6 +30,7 @@ rules:
     - 2
     - ignore:
       - 'jsx'
+  import/no-commonjs: 2
 settings:
   react:
     version: detect

@@ -1,7 +1,7 @@
-const express = require('express')
-const log = require('loglevel')
-const promMid = require('express-prometheus-middleware')
-const Prometheus = require('prom-client')
+import express from 'express'
+import log from 'loglevel'
+import promMid from 'express-prometheus-middleware'
+import Prometheus from 'prom-client'
 
 const rpcMessagesCounter = new Prometheus.Counter({
   name: 'ifttt_rpc_messages_received',
@@ -153,7 +153,7 @@ function measureRuleThenDuration (rule) {
   }
 }
 
-module.exports = {
+export default {
   createServer: createMonitoringServer,
   instrumentRPCClient,
   countClaims,

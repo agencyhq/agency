@@ -1,1 +1,1 @@
-module.exports = require('./deployments/default/knexfile')
+export { default } from './deployments/default/knexfile.js'

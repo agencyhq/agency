@@ -1,7 +1,7 @@
-const React = require('react')
-const PropTypes = require('prop-types')
+import React from 'react'
+import PropTypes from 'prop-types'
 
-function Protocol ({ model }) {
+export default function Protocol ({ model }) {
   const {
     code
   } = model
@@ -14,5 +14,3 @@ function Protocol ({ model }) {
 Protocol.propTypes = {
   model: PropTypes.object.isRequired
 }
-
-module.exports = Protocol

@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
-const crypto = require('crypto')
-const log = require('loglevel')
+import crypto from 'crypto'
+import log from 'loglevel'
 
-const models = require('../../models')
+import models from '../../models.js'
 
-module.exports = async ({ triggered_by, matched_to, hash = null }, { user }) => {
+export default async ({ triggered_by, matched_to, hash = null }, { user }) => {
   const mod = models.Executions.forge({
     id: crypto.randomBytes(16).toString('hex'),
     created_at: new Date().toISOString(),

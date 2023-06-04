@@ -1,8 +1,8 @@
-const log = require('loglevel')
-const models = require('../../models')
-const pubsub = require('../../pubsub')
+import log from 'loglevel'
+import models from '../../models.js'
+import pubsub from '../../pubsub.js'
 
-module.exports = async ({ id, status, result }, { user }) => {
+export default async ({ id, status, result }, { user }) => {
   log.debug('execution reported completed: %s status=$s', id, status)
 
   const res = await models.bookshelf.transaction(async transacting => {

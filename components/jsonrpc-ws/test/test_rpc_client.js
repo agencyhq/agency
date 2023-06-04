@@ -1,18 +1,19 @@
 /* eslint-disable no-unused-expressions */
 
-const EventEmitter = require('events')
+import EventEmitter from 'events'
 
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const sinon = require('sinon')
-const WS = require('ws')
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+import WS from 'ws'
 
-const RPCClient = require('../lib/client')
-const util = require('./util')
+import RPCClient from '../lib/client.js'
+import util from './util.js'
 
 const { expect } = chai
 chai.use(chaiAsPromised)
-chai.use(require('sinon-chai'))
+chai.use(sinonChai)
 
 const MOCK_TOKEN = 'deadbeef'
 

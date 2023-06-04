@@ -1,15 +1,15 @@
-const React = require('react')
-const PropTypes = require('prop-types')
+import React from 'react'
+import PropTypes from 'prop-types'
 
-const { useDispatch, useSelector } = require('react-redux')
+import { useDispatch, useSelector } from 'react-redux'
 
-const { FontAwesomeIcon } = require('@fortawesome/react-fontawesome')
-const {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
   faBalanceScale,
   faShippingFast,
   faGraduationCap,
   faCogs
-} = require('@fortawesome/free-solid-svg-icons')
+} from '@fortawesome/free-solid-svg-icons'
 
 function MenuItem ({ name, icon }) {
   const dispatch = useDispatch()
@@ -32,7 +32,7 @@ function MenuSpacer () {
   return <div className="spacer" />
 }
 
-function Menu () {
+export default function Menu () {
   return <div className="menu">
     <div className="logo" />
 
@@ -43,5 +43,3 @@ function Menu () {
     <MenuItem name="settings" icon={faCogs} />
   </div>
 }
-
-module.exports = Menu

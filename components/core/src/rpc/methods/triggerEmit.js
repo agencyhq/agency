@@ -1,6 +1,6 @@
-const pubsub = require('../../pubsub')
+import pubsub from '../../pubsub.js'
 
-module.exports = async ({ id, type, event }, { user }) => {
+export default async ({ id, type, event }, { user }) => {
   const trigger = {
     id,
     type,

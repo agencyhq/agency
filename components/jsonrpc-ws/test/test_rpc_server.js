@@ -1,18 +1,22 @@
 /* eslint-disable no-unused-expressions */
 
-const http = require('http')
-const EventEmitter = require('events')
-const path = require('path')
+import http from 'http'
+import EventEmitter from 'events'
+import path from 'path'
 
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const sinon = require('sinon')
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+import * as url from 'url';
 
-const RPCServer = require('../lib/server')
+import RPCServer from '../lib/server.js'
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const { expect } = chai
 chai.use(chaiAsPromised)
-chai.use(require('sinon-chai'))
+chai.use(sinonChai)
 
 class WS extends EventEmitter {
   constructor () {
@@ -280,14 +284,14 @@ describe('RPC Server', () => {
   })
 
   describe('#registerSpec()', () => {
-    it('loads the spec file and registers all the methods and events from it', () => {
+    it('loads the spec file and registers all the methods and events from it', async () => {
       const operations = {
         ruleList: () => {}
       }
 
-      server.registerSpec(
+      await server.registerSpec(
         path.join(__dirname, 'fixtures/basic.yaml'),
-        (method, { operationId }) => operations[operationId] || (() => {}),
+        (method, { operationId }) => ({ default: operations[operationId] || (() => {}) }),
         () => {}
       )
 
@@ -299,10 +303,10 @@ describe('RPC Server', () => {
       expect(server.notifications.rule).to.have.deep.property('scopes', new Set(['rule']))
     })
 
-    it('should try to resolve operation even when no operationId is provided', () => {
-      const resolver = sinon.stub().returns(() => {})
+    it('should try to resolve operation even when no operationId is provided', async () => {
+      const resolver = sinon.stub().returns({ default: () => {} })
 
-      server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), resolver, () => {})
+      await server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), resolver, () => {})
 
       expect(server.methods).to.have.property('ready')
       expect(server.methods).to.have.property('rule.list')
@@ -318,31 +322,27 @@ describe('RPC Server', () => {
     })
 
     it('should throw if operation is not a function', () => {
-      const fn = () =>
-        server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), () => {})
+      const fn = server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), () => {})
 
-      expect(fn).to.throw('operationId should resolve to a function')
+      expect(fn).to.eventually.throw('operationId should resolve to a function')
     })
 
     it('should throw when parsing unsupported version of the spec', () => {
-      const fn = () =>
-        server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
+      const fn = server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
 
-      expect(fn).to.throw('unsupported version of rpc spec')
+      expect(fn).to.eventually.throw('unsupported version of rpc spec')
     })
 
     it('should throw when parsing unsupported version of the spec', () => {
-      const fn = () =>
-        server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
+      const fn = server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
 
-      expect(fn).to.throw('unsupported version of rpc spec')
+      expect(fn).to.eventually.throw('unsupported version of rpc spec')
     })
 
     it('should throw when parsing invalid spec', () => {
-      const fn = () =>
-        server.registerSpec(path.join(__dirname, 'fixtures/invalid.yaml'), () => {})
+      const fn = server.registerSpec(path.join(__dirname, 'fixtures/invalid.yaml'), () => {})
 
-      expect(fn).to.throw('spec validation failed')
+      expect(fn).to.eventually.throw('spec validation failed')
     })
   })
 

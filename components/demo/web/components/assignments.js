@@ -1,11 +1,11 @@
-const React = require('react')
-const { useSelector, shallowEqual } = require('react-redux')
+import React from 'react'
+import { useSelector, shallowEqual } from 'react-redux'
 
-const Assignment = require('./assignment')
+import Assignment from './assignment.js'
 
 const PAGE_SIZE = 5
 
-function Assignments () {
+export default function Assignments () {
   const assignments = useSelector(state => {
     return state.assignments
   }, shallowEqual)
@@ -26,5 +26,3 @@ function Assignments () {
     </button>
   </div>
 }
-
-module.exports = Assignments

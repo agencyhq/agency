@@ -1,10 +1,10 @@
-const fs = require('fs')
+import fs from 'fs'
 
-const log = require('loglevel')
-const { table } = require('table')
-const yargs = require('yargs')
+import log from 'loglevel'
+import { table } from 'table'
+import yargs from 'yargs'
 
-const RPC = require('@agencyhq/jsonrpc-ws')
+import RPC from '@agencyhq/jsonrpc-ws'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
@@ -147,7 +147,7 @@ const COMMANDS = [{
   })
 }]
 
-async function main () {
+export async function main () {
   yargs
     .option('agency-token', {
       global: true,
@@ -194,8 +194,4 @@ async function main () {
   yargs
     .demandCommand()
     .parse()
-}
-
-module.exports = {
-  main
 }

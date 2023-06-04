@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-const log = require('loglevel')
+import log from 'loglevel'
 
-const { main } = require('../src/cli')
+import { main } from '../src/cli.js'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 

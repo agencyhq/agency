@@ -1,26 +1,27 @@
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const knex = require('knex')
-const mockDb = require('mock-knex')
-const sinon = require('sinon')
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import knex from 'knex'
+import mockDb from 'mock-knex'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
 
-const models = require('../../src/models')
-const pubsub = require('../../src/pubsub')
-const executionClaim = require('../../src/rpc/methods/executionClaim')
-const executionCompleted = require('../../src/rpc/methods/executionCompleted')
-const executionList = require('../../src/rpc/methods/executionList')
-const executionRequest = require('../../src/rpc/methods/executionRequest')
-const executionSchedule = require('../../src/rpc/methods/executionSchedule')
-const executionStarted = require('../../src/rpc/methods/executionStarted')
-const ruleCreate = require('../../src/rpc/methods/ruleCreate')
-const ruleDelete = require('../../src/rpc/methods/ruleDelete')
-const ruleList = require('../../src/rpc/methods/ruleList')
-const ruleUpdate = require('../../src/rpc/methods/ruleUpdate')
-const triggerEmit = require('../../src/rpc/methods/triggerEmit')
+import models from '../../src/models.js'
+import pubsub from '../../src/pubsub.js'
+import executionClaim from '../../src/rpc/methods/executionClaim.js'
+import executionCompleted from '../../src/rpc/methods/executionCompleted.js'
+import executionList from '../../src/rpc/methods/executionList.js'
+import executionRequest from '../../src/rpc/methods/executionRequest.js'
+import executionSchedule from '../../src/rpc/methods/executionSchedule.js'
+import executionStarted from '../../src/rpc/methods/executionStarted.js'
+import ruleCreate from '../../src/rpc/methods/ruleCreate.js'
+import ruleDelete from '../../src/rpc/methods/ruleDelete.js'
+import ruleList from '../../src/rpc/methods/ruleList.js'
+import ruleUpdate from '../../src/rpc/methods/ruleUpdate.js'
+import triggerEmit from '../../src/rpc/methods/triggerEmit.js'
 
 const { expect } = chai
 chai.use(chaiAsPromised)
-chai.use(require('sinon-chai'))
+chai.use(sinonChai)
 
 function serializeQuery ({ sql, bindings }) {
   return sql.replace(/\$(\d)/g, (_, match) => {

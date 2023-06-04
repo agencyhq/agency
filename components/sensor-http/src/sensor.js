@@ -1,18 +1,18 @@
-const crypto = require('crypto')
+import crypto from 'crypto'
 
-const metrics = require('@agencyhq/agency-metrics')
-const RPC = require('@agencyhq/jsonrpc-ws')
-const express = require('express')
-const log = require('loglevel')
-const morgan = require('morgan')
+import metrics from '@agencyhq/agency-metrics'
+import RPC from '@agencyhq/jsonrpc-ws'
+import express from 'express'
+import log from 'loglevel'
+import morgan from 'morgan'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
-const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
+export const rpc = new RPC.Client(process.env.AGENCY_URL || 'ws://localhost:3000/')
 
 metrics.instrumentRPCClient(rpc)
 
-async function handleRequest (req, res) {
+export async function handleRequest (req, res) {
   const trigger = {
     id: crypto.randomBytes(16).toString('hex'),
     type: 'http',
@@ -29,7 +29,7 @@ async function handleRequest (req, res) {
   res.send('OK')
 }
 
-async function main () {
+export async function main () {
   const {
     PORT = 3001,
     METRICS = false,
@@ -65,7 +65,7 @@ async function main () {
   })
 }
 
-module.exports = {
+export default {
   main,
   rpc,
   handleRequest

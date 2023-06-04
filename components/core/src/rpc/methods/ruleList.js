@@ -1,6 +1,6 @@
-const models = require('../../models')
+import models from '../../models.js'
 
-module.exports = async (query = {}, { user }) => {
+export default async (query = {}, { user }) => {
   const {
     pageSize,
     page,

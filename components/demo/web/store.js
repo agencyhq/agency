@@ -1,4 +1,4 @@
-const { createStore } = require('redux')
+import { createStore } from 'redux'
 
 function rootReducer (state, action) {
   state = state || {
@@ -94,7 +94,7 @@ function rootReducer (state, action) {
   }
 }
 
-module.exports = createStore(
+export default createStore(
   rootReducer,
   window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 )

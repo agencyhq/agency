@@ -1,4 +1,4 @@
-const metrics = require('../lib/metrics')
+import metrics from '../lib/metrics.js'
 
 describe('metrics', () => {
   it.skip('needs tests', () => {

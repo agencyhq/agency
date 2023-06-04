@@ -1,8 +1,8 @@
 import Head from 'next/head'
 import PropTypes from 'prop-types'
 
-import Header from '../components/header'
-import Footer from '../components/footer'
+import Header from '../components/header.js'
+import Footer from '../components/footer.js'
 
 function Hero ({ title, leading }) {
   return <section className="hero">

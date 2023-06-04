@@ -1,12 +1,15 @@
-const path = require('path')
-const util = require('util')
+import path from 'path'
+import * as url from 'url';
+import util from 'util'
 
-const log = require('loglevel')
-const metrics = require('@agencyhq/agency-metrics')
-const Prometheus = require('prom-client')
-const RPC = require('@agencyhq/jsonrpc-ws')
+import log from 'loglevel'
+import metrics from '@agencyhq/agency-metrics'
+import Prometheus from 'prom-client'
+import RPC from '@agencyhq/jsonrpc-ws'
 
-const pubsub = require('../pubsub')
+import pubsub from '../pubsub.js'
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const connectionGauge = new Prometheus.Gauge({
   name: 'ifttt_rpc_clients',
@@ -30,12 +33,14 @@ class RPCServer extends RPC.Server {
 
     this.registerSpec(path.join(__dirname, '../rpcapi.yaml'), (method, { operationId }) => {
       if (!operationId) {
-        return () => {
-          throw new Error('Not implemented')
+        return {
+          default: () => {
+            throw new Error('Not implemented')
+          }
         }
       }
 
-      return require(path.join(__dirname, './methods', operationId))
+      return import(path.join(__dirname, './methods', `${operationId}.js`))
     }, (event, { operationId }) => {
       pubsub.subscribe(operationId, msg => handleMessage(event, this, msg), {
         name: false,
@@ -63,4 +68,4 @@ class RPCServer extends RPC.Server {
   }
 }
 
-module.exports = RPCServer
+export default RPCServer

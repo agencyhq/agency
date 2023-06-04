@@ -3,8 +3,8 @@ import PropTypes from 'prop-types'
 
 import Markdown from 'react-markdown'
 
-import Header from '../../../components/header'
-import Footer from '../../../components/footer'
+import Header from '../../../components/header.js'
+import Footer from '../../../components/footer.js'
 
 function Table ({ cols, rows }) {
   return <table>
@@ -201,7 +201,7 @@ export async function getStaticPaths () {
 }
 
 export async function getStaticProps ({ params }) {
-  const jsdoc = require(`./${params.name}.json`)
+  const jsdoc = await import(`./${params.name}.json`)
 
   return {
     props: {

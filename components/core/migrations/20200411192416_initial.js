@@ -1,4 +1,4 @@
-exports.up = (knex) => {
+export const up = (knex) => {
   return knex.schema
     .createTable('executions', t => {
       t.string('id').primary()
@@ -40,7 +40,7 @@ exports.up = (knex) => {
     .raw('ALTER TABLE tokens ADD CONSTRAINT valid_user CHECK ("user" != \'*\')')
 }
 
-exports.down = (knex) => {
+export const down = (knex) => {
   return knex.schema
     .dropTable('executions')
     .dropTable('results')

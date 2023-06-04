@@ -1,19 +1,21 @@
-const metrics = require('@agencyhq/agency-metrics')
+import metrics from '@agencyhq/agency-metrics'
 
-const axios = require('axios')
-const chai = require('chai')
-const sinon = require('sinon')
+import axios from 'axios'
+import chai from 'chai'
+import sinon from 'sinon'
+import chaiAsPromised from 'chai-as-promised'
+import sinonChai from 'sinon-chai'
 
-const {
-  main: actionrunner,
+import {
+  main as actionrunner,
   rpc,
   handleExecution,
   ACTIONS
-} = require('../src/actionrunner')
+} from '../src/actionrunner.js'
 
 const { expect } = chai
-chai.use(require('chai-as-promised'))
-chai.use(require('sinon-chai'))
+chai.use(chaiAsPromised)
+chai.use(sinonChai)
 
 const sandbox = sinon.createSandbox()
 

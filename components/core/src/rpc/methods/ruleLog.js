@@ -1,5 +1,5 @@
-const pubsub = require('../../pubsub')
+import pubsub from '../../pubsub.js'
 
-module.exports = async ({ rule, args }, { user }) => {
+export default async ({ rule, args }, { user }) => {
   pubsub.publish('ruleLog', { rule, args, user })
 }

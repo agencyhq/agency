@@ -1,16 +1,16 @@
-const http = require('http')
+import http from 'http'
 
-const metrics = require('@agencyhq/agency-metrics')
-const cors = require('cors')
-const express = require('express')
-const log = require('loglevel')
-const morgan = require('morgan')
-const passport = require('passport')
-const bearer = require('passport-http-bearer')
+import metrics from '@agencyhq/agency-metrics'
+import cors from 'cors'
+import express from 'express'
+import log from 'loglevel'
+import morgan from 'morgan'
+import passport from 'passport'
+import bearer from 'passport-http-bearer'
 
-const pubsub = require('./pubsub')
-const RPCServer = require('./rpc/server')
-const models = require('./models')
+import pubsub from './pubsub.js'
+import RPCServer from './rpc/server.js'
+import models from './models.js'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 

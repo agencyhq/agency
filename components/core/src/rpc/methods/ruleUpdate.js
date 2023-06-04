@@ -1,7 +1,7 @@
-const models = require('../../models')
-const pubsub = require('../../pubsub')
+import models from '../../models.js'
+import pubsub from '../../pubsub.js'
 
-module.exports = async (query, { user }) => {
+export default async (query, { user }) => {
   // TODO: makes sense to attempt to prevalidate code before saving it
 
   query.user = user

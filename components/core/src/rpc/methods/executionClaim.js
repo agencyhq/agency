@@ -1,7 +1,7 @@
-const log = require('loglevel')
-const models = require('../../models')
+import log from 'loglevel'
+import models from '../../models.js'
 
-module.exports = async ({ id }, { user }) => {
+export default async ({ id }, { user }) => {
   try {
     await models.Executions.forge({ id })
       .where({

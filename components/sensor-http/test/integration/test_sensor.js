@@ -1,9 +1,11 @@
-const axios = require('axios')
-const chai = require('chai')
+import axios from 'axios'
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import sinonChai from 'sinon-chai'
 
 const { expect } = chai
-chai.use(require('chai-as-promised'))
-chai.use(require('sinon-chai'))
+chai.use(chaiAsPromised)
+chai.use(sinonChai)
 
 describe('Sensor', () => {
   const client = axios.create({

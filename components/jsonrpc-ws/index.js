@@ -1,7 +1,7 @@
-const Client = require('./lib/client')
-const Server = require('./lib/server')
+import Client from './lib/client.js'
+import Server from './lib/server.js'
 
-module.exports = {
+export default {
   Client,
   Server
 }

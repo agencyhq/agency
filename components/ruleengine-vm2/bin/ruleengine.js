@@ -1,6 +1,6 @@
-const log = require('loglevel')
+import log from 'loglevel'
 
-const { main } = require('../src/ruleengine')
+import { main } from '../src/ruleengine.js'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 

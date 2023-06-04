@@ -1,7 +1,7 @@
-const models = require('../../models')
-const pubsub = require('../../pubsub')
+import models from '../../models.js'
+import pubsub from '../../pubsub.js'
 
-module.exports = async ({ id }, { user }) => {
+export default async ({ id }, { user }) => {
   const query = { id, user }
 
   const mod = models.Rules.forge(query)

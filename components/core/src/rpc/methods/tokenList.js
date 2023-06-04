@@ -1,6 +1,6 @@
-const models = require('../../models')
+import models from '../../models.js'
 
-module.exports = async (query) => {
+export default async (query) => {
   const model = await models.Tokens
 
   if (!query) {

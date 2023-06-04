@@ -1,17 +1,17 @@
-const React = require('react')
-const ReactDOM = require('react-dom')
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-const { useSelector, Provider } = require('react-redux')
+import { useSelector, Provider } from 'react-redux'
 
-const ws = require('./lib/ws')
-const store = require('./store')
-const Intro = require('./components/intro')
-const Assignments = require('./components/assignments')
-const Map = require('./components/map')
-const Menu = require('./components/menu')
-const Protocols = require('./components/protocols')
+import ws from './lib/ws.js'
+import store from './store.js'
+import Intro from './components/intro.js'
+import Assignments from './components/assignments.js'
+import Map from './components/map.js'
+import Menu from './components/menu.js'
+import Protocols from './components/protocols.js'
 
-require('./css/index.css')
+import './css/index.css'
 
 async function fetchExecutions () {
   store.dispatch({ type: 'EXECUTION_FETCH', status: 'pending' })

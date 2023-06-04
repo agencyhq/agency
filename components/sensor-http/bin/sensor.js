@@ -1,6 +1,6 @@
-const log = require('loglevel')
+import log from 'loglevel'
 
-const { main } = require('../src/sensor')
+import { main } from '../src/sensor.js'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 

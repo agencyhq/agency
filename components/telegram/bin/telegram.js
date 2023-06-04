@@ -1,6 +1,6 @@
-const log = require('loglevel')
+import log from 'loglevel'
 
-const { main } = require('../src/telegram')
+import { main } from '../src/telegram.js'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 

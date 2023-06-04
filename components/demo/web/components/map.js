@@ -1,10 +1,10 @@
-const React = require('react')
-const PropTypes = require('prop-types')
+import React from 'react'
+import PropTypes from 'prop-types'
 
-const map = require('@agencyhq/world').default
-const mapSVG = require('@agencyhq/world/world.svg')
+import map from '@agencyhq/world'
+import mapSVG from '@agencyhq/world/world.svg'
 
-function Map ({ threats }) {
+export default function Map ({ threats }) {
   return <svg preserveAspectRatio="xMidYMid meet" viewBox={map.viewBox} xmlns="http://www.w3.org/2000/svg" className="map">
     <use href={`${mapSVG}#world`} fill="gray" />
     {
@@ -20,5 +20,3 @@ function Map ({ threats }) {
 Map.propTypes = {
   threats: PropTypes.instanceOf(Set)
 }
-
-module.exports = Map

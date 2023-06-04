@@ -1,8 +1,11 @@
-const path = require('path')
+import path from 'path'
 
-const proxy = require('http-proxy-middleware')
-const Bundler = require('parcel-bundler')
-const express = require('express')
+import proxy from 'http-proxy-middleware'
+import Bundler from 'parcel-bundler'
+import express from 'express'
+import * as url from 'url';
+
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const bundler = new Bundler(path.join(__dirname, 'web/index.html'))
 const app = express()

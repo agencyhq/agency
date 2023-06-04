@@ -1,7 +1,9 @@
-const knexfile = require('../knexfile')
-const knex = require('knex')(knexfile[process.env.NODE_ENV] || knexfile.development)
+import knexfile from '../knexfile.js'
+import Knex from 'knex'
+import Bookshelf from 'bookshelf'
 
-const bookshelf = require('bookshelf')(knex)
+const knex = Knex(knexfile[process.env.NODE_ENV] || knexfile.development)
+const bookshelf = Bookshelf(knex)
 
 const Executions = bookshelf.model('Executions', {
   tableName: 'executions',
@@ -22,7 +24,7 @@ const Tokens = bookshelf.model('Tokens', {
   tableName: 'tokens'
 })
 
-module.exports = {
+export default {
   knex,
   bookshelf,
   Executions,

@@ -19,7 +19,7 @@ function THEN (trigger) {
   })
 }
 
-module.exports = {
+export default {
   if: IF,
   then: THEN
 }

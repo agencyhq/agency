@@ -1,6 +1,6 @@
-const models = require('../../models')
+import models from '../../models.js'
 
-module.exports = async ({ id }) => {
+export default async ({ id }) => {
   const query = { id }
 
   const mod = models.Tokens.forge(query)

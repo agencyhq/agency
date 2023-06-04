@@ -6,6 +6,7 @@
   "homepage": "https://github.com/agencyhq/agency#readme",
   "license": "UNLICENSED",
   "main": "lib/metrics.js",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/agencyhq/agency.git"

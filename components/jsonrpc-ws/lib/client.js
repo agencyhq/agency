@@ -1,7 +1,7 @@
-const once = require('events.once')
-const EventEmitter = require('events')
+import once from 'events.once'
+import EventEmitter from 'events'
 
-const WS = require('ws')
+import WS from 'ws'
 
 function deferred (timeout) {
   const defer = {}
@@ -20,7 +20,7 @@ function deferred (timeout) {
   return defer
 }
 
-class RPCClient extends EventEmitter {
+export default class RPCClient extends EventEmitter {
   /**
    * @param {string} address
    * @param {object} [opts]
@@ -272,5 +272,3 @@ class RPCClient extends EventEmitter {
     delete this.queue[id]
   }
 }
-
-module.exports = RPCClient

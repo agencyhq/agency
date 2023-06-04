@@ -1,10 +1,10 @@
-const chai = require('chai')
-const sinon = require('sinon')
+import chai from 'chai'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
+import RPC from '@agencyhq/jsonrpc-ws'
 
 const { expect } = chai
-chai.use(require('sinon-chai'))
-
-const RPC = require('@agencyhq/jsonrpc-ws')
+chai.use(sinonChai)
 
 function promiseCalledMatching (match) {
   const fn = sinon.stub()

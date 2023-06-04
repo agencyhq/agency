@@ -1,11 +1,11 @@
-const React = require('react')
-const { useSelector, shallowEqual } = require('react-redux')
+import React from 'react'
+import { useSelector, shallowEqual } from 'react-redux'
 
-const Protocol = require('./protocol')
+import Protocol from './protocol.js'
 
 const PAGE_SIZE = 5
 
-function Protocols () {
+export default function Protocols () {
   const protocols = useSelector(state => {
     return state.protocols
   }, shallowEqual)
@@ -26,5 +26,3 @@ function Protocols () {
     </button>
   </div>
 }
-
-module.exports = Protocols

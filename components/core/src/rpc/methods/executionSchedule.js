@@ -1,9 +1,9 @@
-const log = require('loglevel')
+import log from 'loglevel'
 
-const models = require('../../models')
-const pubsub = require('../../pubsub')
+import models from '../../models.js'
+import pubsub from '../../pubsub.js'
 
-module.exports = async ({ id, action, parameters }, { user }) => {
+export default async ({ id, action, parameters }, { user }) => {
   log.debug('execution scheduled: %s', id)
 
   const mod = models.Executions.forge({ id })

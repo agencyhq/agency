@@ -1,12 +1,12 @@
-const React = require('react')
-const PropTypes = require('prop-types')
-const { UnControlled: CodeMirror } = require('react-codemirror2')
-const { useDispatch, useSelector, shallowEqual } = require('react-redux')
+import React from 'react'
+import PropTypes from 'prop-types'
+import { UnControlled as CodeMirror } from 'react-codemirror2'
+import { useDispatch, useSelector, shallowEqual } from 'react-redux'
 
-const ws = require('../lib/ws')
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/mode/javascript/javascript'
 
-require('codemirror/lib/codemirror.css')
-require('codemirror/mode/javascript/javascript')
+import ws from '../lib/ws.js'
 
 function Button ({ children, className = '', onClick, ...rest }) {
   const initialClasses = className.split(' ')
@@ -84,7 +84,7 @@ async function emitEvent (body) {
   })
 }
 
-function Intro () {
+export default function Intro () {
   const protocol = useSelector(state => {
     return state.protocols.find(proto => proto.id === 'http-web')
   }, shallowEqual)
@@ -172,5 +172,3 @@ function Intro () {
     </p>
   </div>
 }
-
-module.exports = Intro

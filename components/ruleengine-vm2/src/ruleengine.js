@@ -1,8 +1,9 @@
-const metrics = require('@agencyhq/agency-metrics')
-const RPC = require('@agencyhq/jsonrpc-ws')
-const log = require('loglevel')
-const { VM } = require('vm2')
-const babel = require('@babel/core')
+import metrics from '@agencyhq/agency-metrics'
+import RPC from '@agencyhq/jsonrpc-ws'
+import log from 'loglevel'
+import { VM } from 'vm2'
+import babel from '@babel/core'
+import pluginTransformModulesCommonJS from '@babel/plugin-transform-modules-commonjs'
 
 log.setLevel(process.env.LOG_LEVEL || 'info')
 
@@ -37,7 +38,7 @@ function initializeRule (rule) {
 
   const transpile = babel.transform(rule.code, {
     plugins: [
-      require('@babel/plugin-transform-modules-commonjs')
+      pluginTransformModulesCommonJS
     ],
     sourceType: 'module'
   })
@@ -48,22 +49,22 @@ function initializeRule (rule) {
     res.errors.push(err.toString())
   }
 
-  const exports = vm.sandbox.module.exports || vm.sandbox.exports
+  const _exports = vm.sandbox.module.exports || vm.sandbox.exports
 
-  if (exports.condition && !exports.if) {
-    exports.if = exports.condition
+  if (_exports.condition && !_exports.if) {
+    _exports.if = _exports.condition
   }
 
-  if (!exports.if || typeof exports.if !== 'function') {
+  if (!_exports.if || typeof _exports.if !== 'function') {
     res.errors.push("expect rule to export function 'if'")
   } else {
-    res.if = exports.if
+    res.if = _exports.if
   }
 
-  if (!exports.then || typeof exports.then !== 'function') {
+  if (!_exports.then || typeof _exports.then !== 'function') {
     res.errors.push("expect rule to export function 'then'")
   } else {
-    res.then = exports.then
+    res.then = _exports.then
   }
 
   initDuration.end()
@@ -171,7 +172,7 @@ async function evaluateRule (rule, trigger) {
   }
 }
 
-async function main () {
+export async function main () {
   const {
     PORT = 3000,
     METRICS = false,
@@ -225,8 +226,4 @@ async function main () {
   })
 
   await rpc.notify('ready')
-}
-
-module.exports = {
-  main
 }

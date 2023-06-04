@@ -1,18 +1,20 @@
-const metrics = require('@agencyhq/agency-metrics')
-const cron = require('node-cron')
+import metrics from '@agencyhq/agency-metrics'
+import cron from 'node-cron'
 
-const chai = require('chai')
-const sinon = require('sinon')
+import chai from 'chai'
+import sinon from 'sinon'
+import chaiAsPromised from 'chai-as-promised'
+import sinonChai from 'sinon-chai'
 
-const {
-  main: sensor,
+import {
+  main as sensor,
   rpc,
   handleTick
-} = require('../src/sensor')
+} from '../src/sensor.js'
 
 const { expect } = chai
-chai.use(require('chai-as-promised'))
-chai.use(require('sinon-chai'))
+chai.use(chaiAsPromised)
+chai.use(sinonChai)
 
 const sandbox = sinon.createSandbox()
 

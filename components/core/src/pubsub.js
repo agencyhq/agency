@@ -1,4 +1,4 @@
-const amqp = require('amqplib')
+import amqp from 'amqplib'
 
 class PubSub {
   constructor (exchange, exchangeType, exchangeOpts) {
@@ -43,7 +43,7 @@ class PubSub {
   }
 }
 
-module.exports = new PubSub('ifttt', 'topic', {
+export default new PubSub('ifttt', 'topic', {
   durable: true,
   autoDelete: true
 })

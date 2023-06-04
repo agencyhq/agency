@@ -1,8 +1,8 @@
-const crypto = require('crypto')
-const fs = require('fs')
-const path = require('path')
+import crypto from 'crypto'
+import fs from 'fs'
+import path from 'path'
 
-exports.seed = async knex => {
+export const seed = async knex => {
   await knex('rules').del()
   await knex('rules').insert([{
     id: crypto.randomBytes(16).toString('hex'),

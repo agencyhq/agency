@@ -1,9 +1,9 @@
-const crypto = require('crypto')
+import crypto from 'crypto'
 
-const models = require('../../models')
-const pubsub = require('../../pubsub')
+import models from '../../models.js'
+import pubsub from '../../pubsub.js'
 
-module.exports = async ({ code }, { user }) => {
+export default async ({ code }, { user }) => {
   // TODO: makes sense to attempt to prevalidate code before saving it
   const mod = models.Rules.forge({
     id: crypto.randomBytes(16).toString('hex'),

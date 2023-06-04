@@ -1,11 +1,12 @@
-const React = require('react')
-const PropTypes = require('prop-types')
-const ReactTimeAgo = require('react-time-ago').default
-const JavascriptTimeAgo = require('javascript-time-ago').default
+import React from 'react'
+import PropTypes from 'prop-types'
+import ReactTimeAgo from 'react-time-ago'
+import JavascriptTimeAgo from 'javascript-time-ago'
+import JavascriptTimeAgoLocale from 'javascript-time-ago/locale/en'
 
-JavascriptTimeAgo.locale(require('javascript-time-ago/locale/en'))
+JavascriptTimeAgo.locale(JavascriptTimeAgoLocale)
 
-function Assignment ({ opts }) {
+export default function Assignment ({ opts }) {
   const {
     created_at: createdAt,
     action,
@@ -28,5 +29,3 @@ function Assignment ({ opts }) {
 Assignment.propTypes = {
   opts: PropTypes.object.isRequired
 }
-
-module.exports = Assignment

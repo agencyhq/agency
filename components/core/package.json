@@ -4,6 +4,7 @@
   "private": true,
   "description": "",
   "main": "src/api.js",
+  "type": "module",
   "scripts": {
     "start": "node .",
     "test": "nyc mocha tests/unit/test_*.js tests/spec/test_*.js --reporter dot",

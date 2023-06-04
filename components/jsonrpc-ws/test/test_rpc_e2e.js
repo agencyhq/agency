@@ -1,17 +1,17 @@
 /* eslint-disable no-unused-expressions */
 
-const EventEmitter = require('events')
+import EventEmitter from 'events'
 
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-const sinon = require('sinon')
-const WS = require('ws')
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
 
-const RPC = require('..')
+import RPC from '../index.js'
 
 const { expect } = chai
 chai.use(chaiAsPromised)
-chai.use(require('sinon-chai'))
+chai.use(sinonChai)
 
 describe('E2E', () => {
   let client

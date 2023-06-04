@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "dev.js",
+  "type": "module",
   "scripts": {
     "start": "node .",
     "test": "echo \"Error: no test specified\" && exit 0"

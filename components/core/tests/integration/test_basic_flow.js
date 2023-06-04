@@ -1,10 +1,11 @@
-const axios = require('axios').default
-const chai = require('chai')
-const express = require('express')
-const sinon = require('sinon')
+import axios from 'axios'
+import chai from 'chai'
+import express from 'express'
+import sinon from 'sinon'
+import sinonChai from 'sinon-chai'
 
 const { expect } = chai
-chai.use(require('sinon-chai'))
+chai.use(sinonChai)
 
 describe('E2E', () => {
   const client = axios.create({
