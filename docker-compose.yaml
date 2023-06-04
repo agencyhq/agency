@@ -95,7 +95,7 @@ services:
       context: .
       target: builder
     image: agencyhq/agency-build:latest
-    command: npm run migrate
+    command: npm run migrate --esm
     restart: on-failure
     environment:
       NODE_ENV: staging
