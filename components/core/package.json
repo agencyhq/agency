@@ -9,7 +9,7 @@
     "start": "node .",
     "test": "nyc mocha tests/unit/test_*.js tests/spec/test_*.js --reporter dot",
     "integration": "mocha tests/integration/test_*.js --reporter dot",
-    "migrate": "knex migrate:latest && knex seed:run"
+    "migrate": "knex migrate:latest --esm && knex seed:run --esm"
   },
   "nyc": {
     "exclude": [

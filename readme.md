@@ -45,7 +45,7 @@ To run development version:
 
     $ npm i
     $ docker-compose up db mq
-    $ npm run migrate
+    $ npm run migrate --esm
     $ npm start
 
 Then you can open http://localhost:1234/ to see some basic UI or hit `npm run integration` to make sure it all works as expected.

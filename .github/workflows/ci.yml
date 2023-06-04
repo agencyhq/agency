@@ -25,7 +25,7 @@ jobs:
     - run: npm test
     - run: docker-compose up -d db mq
     - run: sleep 15
-    - run: npm run migrate
+    - run: npm run migrate --esm
     - run: npx pm2 start deployments/default/ecosystem.yaml
     - run: sleep 15
     - run: npm run integration
