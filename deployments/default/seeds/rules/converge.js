@@ -8,7 +8,7 @@ function IF (trigger) {
 }
 
 function THEN (trigger) {
-  return ({
+  return {
     action: 'http',
     parameters: {
       url: 'https://httpbin.org/post',
@@ -16,7 +16,7 @@ function THEN (trigger) {
         message: `sensor ${sensor} reached critical temperature of ${criticalTemp}`
       }
     }
-  })
+  }
 }
 
 export default {
