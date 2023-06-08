@@ -5,9 +5,10 @@ env:
   node: true
   mocha: true
 extends:
-  - 'plugin:react/recommended'
   - standard
+  - plugin:react/recommended
   - plugin:import/recommended
+  - plugin:jsdoc/recommended
 globals:
   Atomics: readonly
   SharedArrayBuffer: readonly
@@ -23,6 +24,7 @@ parserOptions:
 plugins:
   - react
   - import
+  - jsdoc
 rules:
   no-unused-expressions: 'off'
   react/react-in-jsx-scope: 'off'
@@ -31,6 +33,10 @@ rules:
     - ignore:
       - 'jsx'
   import/no-commonjs: 2
+  no-extra-parens: 
+    - 2
+    - all
+    - allowParensAfterCommentPattern: "@type"
 settings:
   react:
     version: detect

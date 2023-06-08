@@ -28,12 +28,12 @@ describe('Actionrunner', () => {
   })
 
   it('should start metrics server if env variable is set', async () => {
-    sandbox.stub(rpc, 'connect').callsFake()
-    sandbox.stub(rpc, 'auth').returns({})
-    sandbox.stub(rpc, 'subscribe').callsFake()
-    sandbox.stub(rpc, 'notify').callsFake()
+    sandbox.stub(rpc, 'connect').callsFake(async () => {})
+    sandbox.stub(rpc, 'auth').returns(Promise.resolve({}))
+    sandbox.stub(rpc, 'subscribe').callsFake(async () => {})
+    sandbox.stub(rpc, 'notify').callsFake(async () => {})
 
-    sandbox.stub(metrics, 'createServer').callsFake()
+    sandbox.stub(metrics, 'createServer').callsFake(/** @type {any} */(() => {}))
 
     process.env.METRICS = '1'
     process.env.PORT = '0000'
@@ -44,10 +44,10 @@ describe('Actionrunner', () => {
   })
 
   it('should connect to the API', async () => {
-    sandbox.stub(rpc, 'connect').callsFake()
-    sandbox.stub(rpc, 'auth').returns({})
-    sandbox.stub(rpc, 'subscribe').callsFake()
-    sandbox.stub(rpc, 'notify').callsFake()
+    sandbox.stub(rpc, 'connect').callsFake(async () => {})
+    sandbox.stub(rpc, 'auth').returns(Promise.resolve({}))
+    sandbox.stub(rpc, 'subscribe').callsFake(async () => {})
+    sandbox.stub(rpc, 'notify').callsFake(async () => {})
 
     process.env.AGENCY_TOKEN = 'faketoken'
 
@@ -60,12 +60,12 @@ describe('Actionrunner', () => {
   })
 
   it('should exit on disconnect from RPC', async () => {
-    sandbox.stub(rpc, 'connect').callsFake()
-    sandbox.stub(rpc, 'auth').returns({})
-    sandbox.stub(rpc, 'subscribe').callsFake()
-    sandbox.stub(rpc, 'notify').callsFake()
+    sandbox.stub(rpc, 'connect').callsFake(async () => {})
+    sandbox.stub(rpc, 'auth').returns(Promise.resolve({}))
+    sandbox.stub(rpc, 'subscribe').callsFake(async () => {})
+    sandbox.stub(rpc, 'notify').callsFake(async () => {})
 
-    sandbox.stub(process, 'exit').callsFake()
+    sandbox.stub(process, 'exit').callsFake(/** @type {any} */(() => {}))
 
     await actionrunner()
 
@@ -79,24 +79,24 @@ describe('Actionrunner', () => {
       sandbox.stub(rpc, 'call')
         .withArgs('execution.claim')
         .callsFake((method, args) => {
-          return {
+          return Promise.resolve({
             granted: true
-          }
+          })
         })
-      sandbox.stub(rpc, 'notify').callsFake()
+      sandbox.stub(rpc, 'notify').callsFake(async () => {})
 
       sandbox.stub(ACTIONS, 'http').callsFake(async () => {
         return { a: 'b' }
       })
 
-      await handleExecution({
+      await handleExecution(/** @type {Execution<any>} */({
         id: 'deadbeef',
         action: 'http',
         parameters: {
           url: 'some',
           payload: 'thing'
         }
-      })
+      }))
 
       expect(rpc.call).to.be.calledWith('execution.claim', {
         id: 'deadbeef'
@@ -115,25 +115,25 @@ describe('Actionrunner', () => {
       sandbox.stub(rpc, 'call')
         .withArgs('execution.claim')
         .callsFake((method, args) => {
-          return {
+          return Promise.resolve({
             granted: true
-          }
+          })
         })
-      sandbox.stub(rpc, 'notify').callsFake()
+      sandbox.stub(rpc, 'notify').callsFake(async () => {})
 
       const err = new Error('everything went wrong')
       sandbox.stub(ACTIONS, 'http').callsFake(async () => {
         throw err
       })
 
-      await handleExecution({
+      await handleExecution(/** @type {Execution<any>} */({
         id: 'deadbeef',
         action: 'http',
         parameters: {
           url: 'some',
           payload: 'thing'
         }
-      })
+      }))
 
       expect(rpc.call).to.be.calledWith('execution.claim', {
         id: 'deadbeef'
@@ -152,23 +152,23 @@ describe('Actionrunner', () => {
       sandbox.stub(rpc, 'call')
         .withArgs('execution.claim')
         .callsFake((method, args) => {
-          return {
+          return Promise.resolve({
             granted: false
-          }
+          })
         })
 
       sandbox.stub(ACTIONS, 'http').callsFake(async () => {
         return { a: 'b' }
       })
 
-      await handleExecution({
+      await handleExecution(/** @type {Execution<any>} */({
         id: 'deadbeef',
         action: 'http',
         parameters: {
           url: 'some',
           payload: 'thing'
         }
-      })
+      }))
 
       expect(rpc.call).to.be.calledWith('execution.claim', {
         id: 'deadbeef'
@@ -179,10 +179,10 @@ describe('Actionrunner', () => {
     it('should do nothing if action is not present', async () => {
       sandbox.stub(rpc, 'call')
 
-      await handleExecution({
+      await handleExecution(/** @type {Execution<any>} */({
         id: 'deadbeef',
         action: 'some-random-action'
-      })
+      }))
 
       expect(rpc.call).to.not.be.called
     })
@@ -190,14 +190,16 @@ describe('Actionrunner', () => {
 
   describe('#httpAction()', () => {
     it('should make http request', async () => {
-      sandbox.stub(axios, 'post').callsFake()
+      sandbox.stub(axios, 'post').callsFake(async () => {})
 
-      await ACTIONS.http({
+      const executionParams = /** @type {unknown} */({
         parameters: {
           url: 'some',
           payload: 'thing'
         }
       })
+
+      await ACTIONS.http(/** @type {Execution<HttpActionExecutionParameters>} */(executionParams))
 
       expect(axios.post).to.be.calledOnceWith('some', 'thing')
     })

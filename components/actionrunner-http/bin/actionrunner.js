@@ -2,7 +2,7 @@ import log from 'loglevel'
 
 import { main } from '../src/actionrunner.js'
 
-log.setLevel(process.env.LOG_LEVEL || 'info')
+log.setLevel(/** @type {log.LogLevelDesc} */ (process.env.LOG_LEVEL) || 'info')
 
 main()
   .then(() => {
