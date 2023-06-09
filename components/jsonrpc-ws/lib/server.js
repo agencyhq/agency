@@ -210,7 +210,7 @@ export default class RPCServer extends EventEmitter {
         // TODO: start checking for parameters
       } = spec.methods[method]
 
-      const operation = (await methodResolver(method, spec.methods[method])).default
+      const operation = (await methodResolver(method, spec.methods[method]))?.default
 
       if (typeof operation !== 'function') {
         throw new Error('operationId should resolve to a function')

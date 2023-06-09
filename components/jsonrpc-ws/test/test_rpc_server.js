@@ -324,25 +324,25 @@ describe('RPC Server', () => {
     it('should throw if operation is not a function', () => {
       const fn = server.registerSpec(path.join(__dirname, 'fixtures/basic.yaml'), () => {})
 
-      expect(fn).to.eventually.throw('operationId should resolve to a function')
+      expect(fn).to.be.eventually.rejectedWith('operationId should resolve to a function')
     })
 
     it('should throw when parsing unsupported version of the spec', () => {
       const fn = server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
 
-      expect(fn).to.eventually.throw('unsupported version of rpc spec')
+      expect(fn).to.be.eventually.rejectedWith('unsupported version of rpc spec')
     })
 
     it('should throw when parsing unsupported version of the spec', () => {
       const fn = server.registerSpec(path.join(__dirname, 'fixtures/bad_version.yaml'), () => {})
 
-      expect(fn).to.eventually.throw('unsupported version of rpc spec')
+      expect(fn).to.be.eventually.rejectedWith('unsupported version of rpc spec')
     })
 
     it('should throw when parsing invalid spec', () => {
       const fn = server.registerSpec(path.join(__dirname, 'fixtures/invalid.yaml'), () => {})
 
-      expect(fn).to.eventually.throw('spec validation failed')
+      expect(fn).to.be.eventually.rejectedWith('spec validation failed')
     })
   })
 
@@ -554,14 +554,26 @@ describe('RPC Server', () => {
 
       expect(handler).to.be.calledOnce
       await expect(handler.returnValues[0]).to.be.a('promise').fulfilled
-      expect(ws.send).to.be.calledOnceWith(JSON.stringify({
-        jsonrpc: '2.0',
-        error: {
-          code: -32700,
-          message: 'Parse error',
-          data: 'SyntaxError: Unexpected end of JSON input'
-        }
-      }))
+      try {
+        expect(ws.send).to.be.calledOnceWith(JSON.stringify({
+          jsonrpc: '2.0',
+          error: {
+            code: -32700,
+            message: 'Parse error',
+            data: 'SyntaxError: Unexpected end of JSON input'
+          }
+        }))
+      } catch (e) {
+        // Node 20 became more explicit in the error messages it returns it seems
+        expect(ws.send).to.be.calledOnceWith(JSON.stringify({
+          jsonrpc: '2.0',
+          error: {
+            code: -32700,
+            message: 'Parse error',
+            data: 'SyntaxError: Expected property name or \'}\' in JSON at position 1'
+          }
+        }))
+      }
     })
 
     it('runs method requested by message', async () => {
