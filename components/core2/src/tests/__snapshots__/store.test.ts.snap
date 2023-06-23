@@ -1,0 +1,309 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`store should clear operations 1`] = `[]`;
+
+exports[`store should create operation 1`] = `
+{
+  "action": "create",
+  "createdAt": 2021-01-01T00:00:00.000Z,
+  "id": "5",
+  "params": {
+    "name": "John Doe",
+  },
+  "result": {
+    "id": "5",
+    "name": "John Doe",
+  },
+  "status": "completed",
+  "updatedAt": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`store should create operation 2`] = `
+[
+  {
+    "action": "create",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "1",
+    "params": {
+      "name": "John Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "John Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "update",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "2",
+    "params": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "delete",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "3",
+    "params": {
+      "id": "1",
+    },
+    "result": {
+      "id": "1",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "create",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "5",
+    "params": {
+      "name": "John Doe",
+    },
+    "result": {
+      "id": "5",
+      "name": "John Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+]
+`;
+
+exports[`store should delete operation 1`] = `
+{
+  "action": "create",
+  "createdAt": 2021-01-01T00:00:00.000Z,
+  "id": "1",
+  "params": {
+    "name": "John Doe",
+  },
+  "result": {
+    "id": "1",
+    "name": "John Doe",
+  },
+  "status": "completed",
+  "updatedAt": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`store should delete operation 2`] = `
+[
+  {
+    "action": "update",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "2",
+    "params": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "delete",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "3",
+    "params": {
+      "id": "1",
+    },
+    "result": {
+      "id": "1",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+]
+`;
+
+exports[`store should return operation 1`] = `
+{
+  "action": "create",
+  "createdAt": 2021-01-01T00:00:00.000Z,
+  "id": "1",
+  "params": {
+    "name": "John Doe",
+  },
+  "result": {
+    "id": "1",
+    "name": "John Doe",
+  },
+  "status": "completed",
+  "updatedAt": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`store should return operations 1`] = `
+[
+  {
+    "action": "create",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "1",
+    "params": {
+      "name": "John Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "John Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "update",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "2",
+    "params": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "delete",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "3",
+    "params": {
+      "id": "1",
+    },
+    "result": {
+      "id": "1",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+]
+`;
+
+exports[`store should return undefined if deleting operation that does not exist 1`] = `undefined`;
+
+exports[`store should return undefined if deleting operation that does not exist 2`] = `
+[
+  {
+    "action": "create",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "1",
+    "params": {
+      "name": "John Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "John Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "update",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "2",
+    "params": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "delete",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "3",
+    "params": {
+      "id": "1",
+    },
+    "result": {
+      "id": "1",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+]
+`;
+
+exports[`store should update operation 1`] = `
+{
+  "action": "create",
+  "createdAt": 2021-01-01T00:00:00.000Z,
+  "id": "3",
+  "params": {
+    "name": "John Doe",
+  },
+  "result": {
+    "id": "3",
+    "name": "John Doe",
+  },
+  "status": "completed",
+  "updatedAt": 2021-01-01T00:00:00.000Z,
+}
+`;
+
+exports[`store should update operation 2`] = `
+[
+  {
+    "action": "create",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "1",
+    "params": {
+      "name": "John Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "John Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "update",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "2",
+    "params": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "result": {
+      "id": "1",
+      "name": "Jane Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+  {
+    "action": "create",
+    "createdAt": 2021-01-01T00:00:00.000Z,
+    "id": "3",
+    "params": {
+      "name": "John Doe",
+    },
+    "result": {
+      "id": "3",
+      "name": "John Doe",
+    },
+    "status": "completed",
+    "updatedAt": 2021-01-01T00:00:00.000Z,
+  },
+]
+`;

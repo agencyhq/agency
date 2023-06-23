@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`api operationsApi should create operation 1`] = `
+{
+  "action": "create",
+  "createdAt": Any<String>,
+  "id": Any<String>,
+  "params": {
+    "name": "John Doe",
+  },
+  "status": "requested",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`api operationsApi should delete operation 1`] = `
+{
+  "id": "1",
+}
+`;
+
+exports[`api operationsApi should return 404 on non-existent operation 1`] = `{}`;
+
+exports[`api operationsApi should return operation 1`] = `
+{
+  "action": "create",
+  "createdAt": Any<String>,
+  "id": "1",
+  "params": {
+    "name": "John Doe",
+  },
+  "result": {
+    "id": "1",
+    "name": "John Doe",
+  },
+  "status": "completed",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`api operationsApi should return operations 1`] = `
+{
+  "action": "create",
+  "createdAt": Any<String>,
+  "id": "1",
+  "params": {
+    "name": "John Doe",
+  },
+  "result": {
+    "id": "1",
+    "name": "John Doe",
+  },
+  "status": "completed",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`api operationsApi should return operations 2`] = `
+{
+  "action": "update",
+  "createdAt": Any<String>,
+  "id": "2",
+  "params": {
+    "id": "1",
+    "name": "Jane Doe",
+  },
+  "result": {
+    "id": "1",
+    "name": "Jane Doe",
+  },
+  "status": "completed",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`api operationsApi should return operations 3`] = `
+{
+  "action": "delete",
+  "createdAt": Any<String>,
+  "id": "3",
+  "params": {
+    "id": "1",
+  },
+  "result": {
+    "id": "1",
+  },
+  "status": "completed",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`api operationsApi should update operation 1`] = `
+{
+  "action": "update",
+  "createdAt": Any<String>,
+  "id": "1",
+  "params": {
+    "name": "Jane Doe",
+  },
+  "result": {
+    "id": "1",
+    "name": "John Doe",
+  },
+  "status": "completed",
+  "updatedAt": Any<String>,
+}
+`;

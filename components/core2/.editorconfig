@@ -1,0 +1,4 @@
+# Indentation override for all TS under lib directory
+[lib/**.ts]
+indent_style = space
+indent_size = 2
