@@ -15,6 +15,9 @@ export function operationsApi(app: Router, storage: Storage) {
    * PUT /operations/:id
    * DELETE /operations/:id
    * GET /operations/:id/result
+   * POST /operations/:id/claim
+   * GET /operations/:id/status
+   * POST /operations/:id/status
    *
    * @example
    * $ curl -X GET http://localhost:3000/operations
