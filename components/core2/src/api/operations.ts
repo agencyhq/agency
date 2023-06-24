@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Operation } from '../models/operation';
 import { Storage } from '../store';
+import { validateStatus } from '../utils';
 
 export function operationsApi(app: Router, storage: Storage) {
   /**
@@ -100,10 +101,93 @@ export function operationsApi(app: Router, storage: Storage) {
    */
   app.get('/operations/:id/result', (req, res) => {
     const id = req.params.id;
-    const result: Record<string, unknown> = { id: '1', name: 'John Doe' };
+    const operation: Operation = storage.getOperation(id);
 
-    // TODO: Get operation result
+    if (!operation) {
+      res.status(404).send('Operation not found');
+      return;
+    }
+
+    res.json(operation.result);
+  });
+
+  /**
+   * @example
+   * $ curl -X POST http://localhost:3000/operations/1/claim
+   */
+  app.post('/operations/:id/claim', (req, res) => {
+    const id = req.params.id;
+    const operation: Operation = storage.getOperation(id);
+
+    if (!operation) {
+      res.status(404).send('Operation not found');
+      return;
+    }
+
+    if (operation.status !== 'requested') {
+      res.status(400).send('Operation is not in requested state');
+      return;
+    }
+
+    const result = storage.updateOperation({
+      ...operation,
+      status: 'claimed',
+      updatedAt: new Date(),
+    });
 
     res.json(result);
+  });
+
+  /**
+   * @example
+   * $ curl -X GET http://localhost:3000/operations/1/status
+   */
+  app.get('/operations/:id/status', (req, res) => {
+    const id = req.params.id;
+    const operation: Operation = storage.getOperation(id);
+
+    if (!operation) {
+      res.status(404).send('Operation not found');
+      return;
+    }
+
+    res.json({ status: operation.status });
+  });
+
+  /**
+   * @example
+   * $ curl -X POST http://localhost:3000/operations/1/status \
+   *  -H "Content-Type: application/json" \
+   *  -d '{"status":"processing","result":{"name":"John Doe"}}'
+   */
+  app.post('/operations/:id/status', (req, res) => {
+    const id = req.params.id;
+    const operation: Operation = storage.getOperation(id);
+
+    if (!operation) {
+      res.status(404).send('Operation not found');
+      return;
+    }
+
+    if (!['claimed', 'processing'].includes(operation.status)) {
+      res.status(400).send('Operation is not in claimed or processing state');
+      return;
+    }
+
+    const { status, result } = req.body;
+
+    if (!['processing', 'completed', 'failed'].includes(validateStatus(status))) {
+      res.status(400).send('Operation can only transition to processing, completed or failed state');
+      return;
+    }
+
+    const op = storage.updateOperation({
+      ...operation,
+      status,
+      result: result,
+      updatedAt: new Date(),
+    });
+
+    res.json(op);
   });
 }

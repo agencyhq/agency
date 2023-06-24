@@ -43,11 +43,8 @@ exports[`store should create operation 2`] = `
       "id": "1",
       "name": "Jane Doe",
     },
-    "result": {
-      "id": "1",
-      "name": "Jane Doe",
-    },
-    "status": "completed",
+    "result": {},
+    "status": "claimed",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
   {
@@ -60,7 +57,7 @@ exports[`store should create operation 2`] = `
     "result": {
       "id": "1",
     },
-    "status": "completed",
+    "status": "requested",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
   {
@@ -107,11 +104,8 @@ exports[`store should delete operation 2`] = `
       "id": "1",
       "name": "Jane Doe",
     },
-    "result": {
-      "id": "1",
-      "name": "Jane Doe",
-    },
-    "status": "completed",
+    "result": {},
+    "status": "claimed",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
   {
@@ -124,7 +118,7 @@ exports[`store should delete operation 2`] = `
     "result": {
       "id": "1",
     },
-    "status": "completed",
+    "status": "requested",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
 ]
@@ -171,11 +165,8 @@ exports[`store should return operations 1`] = `
       "id": "1",
       "name": "Jane Doe",
     },
-    "result": {
-      "id": "1",
-      "name": "Jane Doe",
-    },
-    "status": "completed",
+    "result": {},
+    "status": "claimed",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
   {
@@ -188,7 +179,7 @@ exports[`store should return operations 1`] = `
     "result": {
       "id": "1",
     },
-    "status": "completed",
+    "status": "requested",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
 ]
@@ -220,11 +211,8 @@ exports[`store should return undefined if deleting operation that does not exist
       "id": "1",
       "name": "Jane Doe",
     },
-    "result": {
-      "id": "1",
-      "name": "Jane Doe",
-    },
-    "status": "completed",
+    "result": {},
+    "status": "claimed",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
   {
@@ -237,7 +225,7 @@ exports[`store should return undefined if deleting operation that does not exist
     "result": {
       "id": "1",
     },
-    "status": "completed",
+    "status": "requested",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
 ]
@@ -284,11 +272,8 @@ exports[`store should update operation 2`] = `
       "id": "1",
       "name": "Jane Doe",
     },
-    "result": {
-      "id": "1",
-      "name": "Jane Doe",
-    },
-    "status": "completed",
+    "result": {},
+    "status": "claimed",
     "updatedAt": 2021-01-01T00:00:00.000Z,
   },
   {

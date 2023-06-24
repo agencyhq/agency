@@ -1,4 +1,4 @@
-export type OperationStatus = 'requested' | 'processing' | 'completed' | 'failed';
+export type OperationStatus = 'requested' | 'claimed' | 'processing' | 'completed' | 'failed';
 
 export class Operation {
   id: string;

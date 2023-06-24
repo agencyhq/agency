@@ -107,5 +107,137 @@ describe('api', () => {
           expect(response.body).toMatchSnapshot();
         });
     });
+
+    it('should claim operation', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .post('/operations/3/claim')
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+          });
+        });
+    });
+
+    it('should return 404 on non-existent operation claim', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .post('/operations/5/claim')
+        .expect(404)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('shoult return 400 on already claimed operation', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .post('/operations/2/claim')
+        .expect(400)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('should return result of operation', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .get('/operations/1/result')
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('should return 404 on non-existent operation result', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .get('/operations/5/result')
+        .expect(404)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('should return status of operation', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .get('/operations/1/status')
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('should return 404 on non-existent operation status', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .get('/operations/5/status')
+        .expect(404)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('should post status of operation', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .post('/operations/2/status')
+        .send({ status: 'processing' })
+        .expect(200)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot({
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+          });
+        });
+    });
+
+    it('should return 404 on non-existent operation status post', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .post('/operations/5/status')
+        .send({ status: 'processing' })
+        .expect(404)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('should return 400 on invalid status operation is in', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .post('/operations/1/status')
+        .send({ status: 'failed' })
+        .expect(400)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+
+    it('should return 400 on invalid status operation should transition to', async () => {
+      operationsApi(app, storage);
+
+      await request(app)
+        .post('/operations/2/status')
+        .send({ status: 'requested' })
+        .expect(400)
+        .then((response) => {
+          expect(response.body).toMatchSnapshot();
+        });
+    });
+    
   });
 });

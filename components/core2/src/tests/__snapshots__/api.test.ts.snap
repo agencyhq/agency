@@ -1,5 +1,21 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`api operationsApi should claim operation 1`] = `
+{
+  "action": "delete",
+  "createdAt": Any<String>,
+  "id": "3",
+  "params": {
+    "id": "1",
+  },
+  "result": {
+    "id": "1",
+  },
+  "status": "claimed",
+  "updatedAt": Any<String>,
+}
+`;
+
 exports[`api operationsApi should create operation 1`] = `
 {
   "action": "create",
@@ -19,7 +35,33 @@ exports[`api operationsApi should delete operation 1`] = `
 }
 `;
 
+exports[`api operationsApi should post status of operation 1`] = `
+{
+  "action": "update",
+  "createdAt": Any<String>,
+  "id": "2",
+  "params": {
+    "id": "1",
+    "name": "Jane Doe",
+  },
+  "status": "processing",
+  "updatedAt": Any<String>,
+}
+`;
+
+exports[`api operationsApi should return 400 on invalid status operation is in 1`] = `{}`;
+
+exports[`api operationsApi should return 400 on invalid status operation should transition to 1`] = `{}`;
+
 exports[`api operationsApi should return 404 on non-existent operation 1`] = `{}`;
+
+exports[`api operationsApi should return 404 on non-existent operation claim 1`] = `{}`;
+
+exports[`api operationsApi should return 404 on non-existent operation result 1`] = `{}`;
+
+exports[`api operationsApi should return 404 on non-existent operation status 1`] = `{}`;
+
+exports[`api operationsApi should return 404 on non-existent operation status post 1`] = `{}`;
 
 exports[`api operationsApi should return operation 1`] = `
 {
@@ -64,11 +106,8 @@ exports[`api operationsApi should return operations 2`] = `
     "id": "1",
     "name": "Jane Doe",
   },
-  "result": {
-    "id": "1",
-    "name": "Jane Doe",
-  },
-  "status": "completed",
+  "result": {},
+  "status": "claimed",
   "updatedAt": Any<String>,
 }
 `;
@@ -84,8 +123,21 @@ exports[`api operationsApi should return operations 3`] = `
   "result": {
     "id": "1",
   },
-  "status": "completed",
+  "status": "requested",
   "updatedAt": Any<String>,
+}
+`;
+
+exports[`api operationsApi should return result of operation 1`] = `
+{
+  "id": "1",
+  "name": "John Doe",
+}
+`;
+
+exports[`api operationsApi should return status of operation 1`] = `
+{
+  "status": "completed",
 }
 `;
 
@@ -105,3 +157,5 @@ exports[`api operationsApi should update operation 1`] = `
   "updatedAt": Any<String>,
 }
 `;
+
+exports[`api operationsApi shoult return 400 on already claimed operation 1`] = `{}`;
