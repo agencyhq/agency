@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint": "npm exec -ws -- npm run lint --if-present",
+    "lint:fix": "npm exec -ws -- npm run lint:fix --if-present",
     "migrate": "knex migrate:latest && knex seed:run",
     "depcheck": "depcheck; lerna exec --no-bail --stream depcheck",
     "start": "pm2 start deployments/default/ecosystem.yaml --no-daemon",

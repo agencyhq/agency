@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node bin/sensor.js",
     "test": "nyc mocha --reporter dot test/unit/test_*.js",
-    "integration": "mocha test/integration/test_*.js --reporter dot"
+    "integration": "mocha test/integration/test_*.js --reporter dot",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "nyc": {
     "exclude": [

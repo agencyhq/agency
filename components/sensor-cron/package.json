@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "start": "node bin/sensor.js",
-    "test": "nyc mocha --reporter dot"
+    "test": "nyc mocha --reporter dot",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "nyc": {
     "exclude": [

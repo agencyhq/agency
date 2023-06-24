@@ -12,7 +12,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "nyc mocha --reporter=dot"
+    "test": "nyc mocha --reporter=dot",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "nyc": {
     "exclude": [
