@@ -5,20 +5,24 @@ import { Operation } from '../models/operation';
 import { Storage } from '../store';
 import { validateStatus } from '../utils';
 
+/**
+ * Operations
+ *
+ * GET /operations
+ * GET /operations/:id
+ * POST /operations
+ * PUT /operations/:id
+ * DELETE /operations/:id
+ * GET /operations/:id/result
+ * POST /operations/:id/claim
+ * GET /operations/:id/status
+ * POST /operations/:id/status
+ * @param {Router} app - express router
+ * @param {Storage} storage - storage instance
+ * @returns {void}
+ */
 export function operationsApi(app: Router, storage: Storage) {
   /**
-   * Operations
-   *
-   * GET /operations
-   * GET /operations/:id
-   * POST /operations
-   * PUT /operations/:id
-   * DELETE /operations/:id
-   * GET /operations/:id/result
-   * POST /operations/:id/claim
-   * GET /operations/:id/status
-   * POST /operations/:id/status
-   *
    * @example
    * $ curl -X GET http://localhost:3000/operations
    */
@@ -180,14 +184,16 @@ export function operationsApi(app: Router, storage: Storage) {
     const { status, result } = req.body;
 
     if (!['processing', 'completed', 'failed'].includes(validateStatus(status))) {
-      res.status(400).send('Operation can only transition to processing, completed or failed state');
+      res
+        .status(400)
+        .send('Operation can only transition to processing, completed or failed state');
       return;
     }
 
     const op = storage.updateOperation({
       ...operation,
       status,
-      result: result,
+      result,
       updatedAt: new Date(),
     });
 

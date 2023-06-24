@@ -3,6 +3,7 @@ import express from 'express';
 import request from 'supertest';
 
 import { operationsApi } from '../api';
+import { Operation } from '../models/operation';
 import { Storage } from '../store';
 import fixtures from './__fixtures__/operations';
 
@@ -28,7 +29,7 @@ describe('api', () => {
         .get('/operations')
         .expect(200)
         .then((response) => {
-          response.body.forEach((operation: any) => {
+          response.body.forEach((operation: Operation) => {
             expect(operation).toMatchSnapshot({
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
@@ -75,7 +76,7 @@ describe('api', () => {
       operationsApi(app, storage);
 
       await request(app)
-        .put(`/operations/1`)
+        .put('/operations/1')
         .send({ action: 'update', params: { name: 'Jane Doe' } })
         .expect(200)
         .then((response) => {
@@ -238,6 +239,5 @@ describe('api', () => {
           expect(response.body).toMatchSnapshot();
         });
     });
-    
   });
 });
